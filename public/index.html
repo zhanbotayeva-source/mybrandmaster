@@ -1,0 +1,2452 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>brandmaster — стратегия личного бренда</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.17.0/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* === Claude design-system variables (light theme defaults) === */
+:root{
+  --font-sans:"Inter","Söhne","Söhne Buch",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",sans-serif;
+  --font-serif:"Söhne","Tiempos","Times New Roman",serif;
+
+  --color-background-primary:#FFFFFF;
+  --color-background-secondary:#F5F4EE;
+  --color-background-tertiary:#EDEBE4;
+
+  --color-text-primary:#1B1B19;
+  --color-text-secondary:#5C5B57;
+  --color-text-tertiary:#8B8A83;
+
+  --color-border-primary:#D8D5CB;
+  --color-border-secondary:#D0CDC3;
+  --color-border-tertiary:#E6E2D8;
+
+  --border-radius-sm:6px;
+  --border-radius-md:8px;
+  --border-radius-lg:12px;
+  --border-radius-xl:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --color-background-primary:#1E1E1C;
+    --color-background-secondary:#262624;
+    --color-background-tertiary:#2F2F2C;
+    --color-text-primary:#F0EFEA;
+    --color-text-secondary:#B8B6AE;
+    --color-text-tertiary:#8B8A83;
+    --color-border-primary:#3A3A37;
+    --color-border-secondary:#46463F;
+    --color-border-tertiary:#34342F;
+  }
+}
+html,body{
+  margin:0;padding:0;
+  background:var(--color-background-secondary);
+  color:var(--color-text-primary);
+  font-family:var(--font-sans);
+  font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+}
+*{font-family:inherit}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit}
+
+/* Tabler icons base sizing fallback if CDN takes a moment */
+.ti{font-size:14px;line-height:1;display:inline-block;vertical-align:-2px}
+
+/* Stretch app to full height since Claude.ai gave it a parent */
+.app{min-height:100vh}
+</style>
+<body>
+<style>
+:root{--teal:#1D9E75;--teal-light:#E1F5EE;--teal-mid:#5DCAA5;--teal-dark:#0F6E56;}
+*{box-sizing:border-box;margin:0;padding:0;}
+.app{display:flex;min-height:640px;background:var(--color-background-secondary);}
+.sidebar{width:220px;min-width:220px;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary);display:flex;flex-direction:column;}
+.logo{padding:18px 20px 14px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.logo-text{font-size:17px;font-weight:500;color:var(--teal);letter-spacing:-0.3px;}
+.logo-sub{font-size:10px;color:var(--color-text-tertiary);margin-top:2px;}
+.nav{padding:10px 0;flex:1;overflow-y:auto;}
+.nav-section{padding:14px 20px 4px;font-size:10px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.8px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 20px;font-size:13px;color:var(--color-text-secondary);cursor:pointer;border-left:2px solid transparent;}
+.nav-item:hover{background:var(--teal-light);color:var(--teal);}
+.nav-item.active{background:var(--teal-light);color:var(--teal);border-left-color:var(--teal);font-weight:500;}
+.nav-item.done{color:var(--color-text-tertiary);}
+.num{width:18px;height:18px;border-radius:50%;background:var(--color-background-secondary);font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;color:var(--color-text-tertiary);flex-shrink:0;}
+.nav-item.active .num{background:var(--teal);color:white;}
+.nav-item.done .num{background:var(--teal-mid);color:white;}
+.prog-wrap{padding:0 20px 18px;}
+.prog-label{font-size:11px;color:var(--color-text-tertiary);margin-bottom:6px;}
+.prog-bar{height:4px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--teal);border-radius:4px;transition:width 0.3s;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:13px 24px;display:flex;align-items:center;justify-content:space-between;}
+.topbar-title{font-size:15px;font-weight:500;color:var(--color-text-primary);}
+.topbar-sub{font-size:12px;color:var(--color-text-tertiary);margin-top:2px;}
+.badge{font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);background:var(--teal-light);color:var(--teal);font-weight:500;}
+.content{flex:1;overflow-y:auto;padding:20px 24px;}
+.footer{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;}
+.btn-primary{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--border-radius-md);background:var(--teal);color:white;border:none;font-size:13px;font-weight:500;cursor:pointer;}
+.btn-ghost{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--border-radius-md);background:transparent;color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary);font-size:13px;cursor:pointer;}
+.btn-teal-out{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--border-radius-md);background:transparent;color:var(--teal);border:0.5px solid var(--teal);font-size:12px;cursor:pointer;}
+.time-hint{font-size:12px;color:var(--color-text-tertiary);display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.time-hint.saved .save-text{color:var(--teal);font-weight:500;}
+.time-hint.saved .ti-clock{color:var(--teal);}
+textarea{width:100%;min-height:72px;resize:vertical;font-size:13px;line-height:1.6;color:var(--color-text-primary);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:9px 11px;font-family:var(--font-sans);}
+textarea:focus{outline:none;border-color:var(--teal);background:var(--color-background-primary);}
+.qcard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 18px;margin-bottom:12px;position:relative;}
+.qcard .q-label,.qcard .q-text{padding-right:42px;}
+.card-save{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;color:var(--color-text-tertiary);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.15s;padding:0;}
+.card-save:hover{background:var(--teal-light);color:var(--teal);border-color:var(--teal-mid);}
+.card-save.saved{background:var(--teal);color:white;border-color:var(--teal);animation:pulseSaved 0.3s ease;}
+@keyframes pulseSaved{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.q-label{font-size:11px;color:var(--teal);font-weight:500;margin-bottom:6px;}
+.q-text{font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:6px;}
+.q-hint{font-size:12px;color:var(--color-text-tertiary);line-height:1.5;margin-bottom:10px;font-style:italic;}
+.vals-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.val-item{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 10px;}
+.val-inp{width:100%;border:none;background:transparent;font-size:12px;font-weight:500;color:var(--color-text-primary);font-family:var(--font-sans);margin-bottom:4px;}
+.val-inp:focus{outline:none;}
+.val-ta{width:100%;border:none;background:transparent;font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans);resize:none;min-height:36px;line-height:1.5;}
+.val-ta:focus{outline:none;color:var(--color-text-primary);}
+.add-btn{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--teal);cursor:pointer;background:none;border:none;padding:6px 0;margin-top:4px;}
+/* multi-item */
+.mi-list{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+.mi-row{display:flex;align-items:flex-start;gap:6px;}
+.mi-row textarea{flex:1;min-height:44px;}
+.mi-rm{background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;padding:10px 6px;font-size:13px;}
+.mi-rm:hover{color:#E24B4A;}
+.mi-add{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--teal);cursor:pointer;background:none;border:none;padding:6px 0;margin-top:4px;}
+.mi-note{font-size:12px;color:var(--color-text-tertiary);font-style:italic;margin-top:10px;padding:9px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:3px solid var(--teal-mid);}
+.char-counter{font-size:11px;color:#A86918;margin-top:6px;font-style:italic;display:flex;align-items:center;gap:5px;}
+.char-counter.ok{color:var(--teal);font-style:normal;font-weight:500;}
+.char-counter::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+/* блок 0 — опросник */
+.b0-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 18px;margin-bottom:12px;}
+.b0-label{font-size:11px;color:var(--teal);font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.b0-text{font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:10px;}
+.b0-input{width:100%;padding:9px 11px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;}
+.b0-input:focus{outline:none;border-color:var(--teal);background:var(--color-background-primary);}
+.b0-radio-row{display:flex;flex-wrap:wrap;gap:6px;}
+.b0-radio{padding:8px 14px;border-radius:999px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);cursor:pointer;font-size:12px;color:var(--color-text-secondary);font-family:var(--font-sans);}
+.b0-radio:hover{border-color:var(--teal-mid);color:var(--teal);}
+.b0-radio.active{background:var(--teal-light);border-color:var(--teal);color:var(--teal-dark);font-weight:500;}
+.b0-progress{display:flex;align-items:center;gap:10px;background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--teal-dark);}
+.b0-progress .b0-pct{font-weight:500;}
+/* экран авторизации */
+.auth-screen{position:fixed;inset:0;background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;}
+.auth-screen.hidden{display:none;}
+.auth-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-xl);padding:32px 28px;width:380px;max-width:100%;box-shadow:0 12px 48px rgba(0,0,0,.08);}
+.auth-logo{font-size:22px;font-weight:500;color:var(--teal);text-align:center;letter-spacing:-0.3px;}
+.auth-sub{font-size:12px;color:var(--color-text-tertiary);text-align:center;margin-bottom:24px;}
+.auth-lang{display:flex;gap:4px;justify-content:center;margin-bottom:18px;}
+.auth-lang button{padding:4px 12px;border-radius:999px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);font-size:11px;cursor:pointer;font-family:var(--font-sans);}
+.auth-lang button.active{background:var(--teal);color:white;border-color:var(--teal);}
+.auth-tabs{display:flex;gap:4px;background:var(--color-background-secondary);padding:3px;border-radius:var(--border-radius-md);margin-bottom:20px;}
+.auth-tab{flex:1;padding:8px;background:none;border:none;border-radius:var(--border-radius-md);color:var(--color-text-secondary);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
+.auth-tab.active{background:var(--color-background-primary);color:var(--teal);box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.auth-input{width:100%;padding:11px 13px;margin-bottom:10px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);font-size:13px;font-family:var(--font-sans);}
+.auth-input:focus{outline:none;border-color:var(--teal);background:var(--color-background-primary);}
+.auth-submit{width:100%;padding:11px;margin-top:8px;background:var(--teal);color:white;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
+.auth-submit:hover{background:var(--teal-dark);}
+.auth-submit:disabled{opacity:0.5;cursor:not-allowed;}
+.auth-msg{font-size:12px;margin-top:10px;min-height:16px;text-align:center;line-height:1.4;}
+.auth-msg.err{color:#E24B4A;}
+.auth-msg.ok{color:var(--teal-dark);}
+/* бейдж пользователя в сайдбаре */
+.user-badge{padding:10px 20px;border-top:0.5px solid var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary);}
+.user-email{font-weight:500;color:var(--color-text-primary);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;}
+.user-logout{background:none;border:none;color:var(--teal);font-size:11px;cursor:pointer;padding:0;font-family:var(--font-sans);display:flex;align-items:center;gap:4px;}
+.user-logout:hover{color:var(--teal-dark);}
+.cloud-status{font-size:10px;color:var(--color-text-tertiary);display:inline-flex;align-items:center;gap:4px;margin-left:6px;}
+.cloud-status.synced{color:var(--teal);}
+.lang-switcher{display:flex;gap:4px;padding:10px 20px 4px;}
+.lang-btn{flex:1;padding:5px 0;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
+.lang-btn:hover{border-color:var(--teal-mid);color:var(--teal);}
+.lang-btn.active{background:var(--teal);color:white;border-color:var(--teal);}
+.nav-item.locked{opacity:0.4;cursor:not-allowed;}
+.nav-item.locked:hover{background:transparent;color:var(--color-text-secondary);}
+.nav-item .lock-ic{margin-left:auto;color:var(--color-text-tertiary);font-size:11px;}
+.pup-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px;}
+.pup-item{background:var(--teal-light);border-radius:var(--border-radius-md);padding:10px 12px;}
+.pup-label{font-size:10px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+.pup-ta{width:100%;border:none;background:transparent;font-size:12px;color:var(--teal-dark);font-family:var(--font-sans);resize:none;min-height:44px;}
+.pup-ta:focus{outline:none;}
+.checklist{display:flex;flex-direction:column;gap:8px;}
+.chk-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);cursor:pointer;}
+.chk-item.checked{background:var(--teal-light);}
+.chk-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--color-border-secondary);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.chk-item.checked .chk-box{background:var(--teal);border-color:var(--teal);color:white;}
+.chk-text{font-size:13px;color:var(--color-text-primary);line-height:1.4;}
+.chk-section{font-size:12px;font-weight:500;color:var(--color-text-secondary);margin:14px 0 6px;}
+.prod-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.prod-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.ptab{padding:6px 14px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-secondary);}
+.ptab.active{background:var(--teal);color:white;border-color:var(--teal);}
+.prod-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:20px;}
+.prod-name-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.prod-num{width:28px;height:28px;border-radius:50%;background:var(--teal);color:white;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.prod-name-inp{flex:1;border:none;background:transparent;font-size:15px;font-weight:500;color:var(--color-text-primary);font-family:var(--font-sans);}
+.prod-name-inp:focus{outline:none;}
+.del-btn{background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:16px;padding:4px;}
+.del-btn:hover{color:#E24B4A;}
+.fg{margin-bottom:16px;}
+.fl{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.ml{display:flex;flex-direction:column;gap:6px;margin-bottom:6px;}
+.mi{display:flex;align-items:flex-start;gap:6px;}
+.mi textarea{min-height:44px;flex:1;}
+.rm-btn{background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;padding:10px 6px;font-size:14px;flex-shrink:0;}
+.rm-btn:hover{color:#E24B4A;}
+.add-line{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--teal);cursor:pointer;background:none;border:none;padding:4px 0;}
+.empty-st{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;}
+.empty-icon{font-size:36px;color:var(--color-text-tertiary);margin-bottom:12px;}
+.empty-title{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;}
+.empty-sub{font-size:13px;color:var(--color-text-tertiary);margin-bottom:20px;line-height:1.5;}
+.doc-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:18px;margin-bottom:12px;}
+/* ===== CRM «База клиентов» ===== */
+.cl-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.cl-stat{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;}
+.cl-stat-n{font-size:24px;font-weight:500;color:var(--teal);line-height:1;margin-bottom:4px;}
+.cl-stat-l{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.6px;}
+.cl-stat-sub{font-size:11px;color:var(--color-text-secondary);margin-top:3px;}
+.cl-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;justify-content:space-between;}
+.cl-filters{display:flex;gap:6px;flex-wrap:wrap;}
+.cl-filter{padding:6px 13px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-secondary);font-family:var(--font-sans);}
+.cl-filter.active{background:var(--teal);color:white;border-color:var(--teal);}
+.cl-filter .cnt{font-size:10px;margin-left:4px;opacity:0.8;}
+.cl-search-wrap{display:flex;gap:6px;align-items:center;}
+.cl-search{padding:7px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;width:200px;}
+.cl-search:focus{outline:none;border-color:var(--teal);background:var(--color-background-primary);}
+.cl-add-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--border-radius-md);background:var(--teal);color:white;border:none;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
+.cl-add-btn:hover{background:var(--teal-dark);}
+.cl-table{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;}
+.cl-row{display:grid;grid-template-columns:1.6fr 1fr 1.3fr 0.9fr 1fr auto;gap:12px;padding:13px 16px;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;align-items:center;font-size:13px;}
+.cl-row:last-child{border-bottom:none;}
+.cl-row:hover{background:var(--color-background-secondary);}
+.cl-row-head{background:var(--color-background-secondary);font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.6px;font-weight:500;cursor:default;}
+.cl-row-head:hover{background:var(--color-background-secondary);}
+.cl-name{font-weight:500;color:var(--color-text-primary);}
+.cl-name-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:2px;}
+.cl-status{padding:3px 9px;border-radius:10px;font-size:11px;font-weight:500;display:inline-block;}
+.cl-status.lead{background:#FAEEDA;color:#A86918;}
+.cl-status.inProgress{background:#E6F1FB;color:#0C447C;}
+.cl-status.customer{background:#E1F5EE;color:#0F6E56;}
+.cl-status.done{background:#F1EFE8;color:#444441;}
+.cl-row-acts{display:flex;gap:4px;justify-content:flex-end;}
+.cl-icon-btn{background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:4px 7px;cursor:pointer;color:var(--color-text-secondary);font-size:12px;}
+.cl-icon-btn:hover{background:var(--teal-light);color:var(--teal);border-color:var(--teal-mid);}
+.cl-icon-btn.del:hover{background:#FAEEDA;color:#A86918;border-color:#E69D49;}
+.cl-empty{padding:48px 24px;text-align:center;color:var(--color-text-tertiary);}
+.cl-empty-icon{font-size:36px;color:var(--color-text-tertiary);margin-bottom:12px;}
+/* модалка клиента */
+.cl-modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);padding:24px 26px;width:560px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.16);}
+.cl-modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:0.5px solid var(--color-border-tertiary);}
+.cl-modal-ttl{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:400;color:var(--color-text-primary);}
+.cl-modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--color-text-tertiary);padding:0 4px;}
+.cl-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.cl-fld{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.cl-fld.full{grid-column:1/-1;}
+.cl-fld-lbl{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.6px;font-weight:500;}
+.cl-fld input,.cl-fld select,.cl-fld textarea{padding:9px 11px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;}
+.cl-fld input:focus,.cl-fld select:focus,.cl-fld textarea:focus{outline:none;border-color:var(--teal);background:var(--color-background-primary);}
+.cl-fld textarea{min-height:60px;resize:vertical;line-height:1.5;}
+.cl-modal-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:0.5px solid var(--color-border-tertiary);}
+.cl-modal-acts .left{margin-right:auto;}
+/* заметки */
+.cl-notes-section{margin-top:18px;padding-top:14px;border-top:0.5px solid var(--color-border-tertiary);}
+.cl-notes-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cl-notes-ttl{font-size:14px;font-weight:500;color:var(--color-text-primary);}
+.cl-notes-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.cl-note{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;border-left:3px solid var(--teal-mid);}
+.cl-note.meeting{border-left-color:var(--teal);background:var(--teal-light);}
+.cl-note-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.cl-note-meta{font-size:11px;color:var(--color-text-tertiary);display:flex;align-items:center;gap:6px;}
+.cl-note-type{font-size:10px;font-weight:500;padding:1px 7px;border-radius:8px;background:var(--color-background-primary);color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.5px;}
+.cl-note-type.meeting{background:var(--teal);color:white;}
+.cl-note-del{background:none;border:none;color:var(--color-text-tertiary);font-size:13px;cursor:pointer;padding:0 4px;}
+.cl-note-del:hover{color:#E24B4A;}
+.cl-note-txt{font-size:13px;color:var(--color-text-primary);line-height:1.5;white-space:pre-wrap;}
+.cl-note-form{background:var(--color-background-secondary);border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:12px;}
+.cl-note-form-row{display:flex;gap:8px;margin-bottom:8px;}
+.cl-note-form-row input[type="date"]{flex:1;}
+.cl-note-form-row select{flex:1;}
+.cl-note-form textarea{width:100%;min-height:60px;padding:8px 10px;border-radius:6px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);font-family:var(--font-sans);font-size:13px;resize:vertical;line-height:1.5;}
+.cl-note-form textarea:focus{outline:none;border-color:var(--teal);}
+.cl-note-form-acts{display:flex;justify-content:flex-end;gap:6px;margin-top:8px;}
+@media (max-width:760px){
+  .cl-stats{grid-template-columns:repeat(2,1fr);}
+  .cl-row{grid-template-columns:1fr;gap:6px;}
+  .cl-row-head{display:none;}
+  .cl-form-grid{grid-template-columns:1fr;}
+}
+/* ===== Документ «Моя стратегия» — стиль презентации ===== */
+.doc2-actions{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.doc2-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:8px;border:0.5px solid #D0CCC4;background:#fff;color:#2A2622;font-size:13px;cursor:pointer;font-family:var(--font-sans);font-weight:500;}
+.doc2-btn:hover{background:#F5F2EC;}
+.doc2-btn.primary{background:#2A2622;color:#fff;border-color:#2A2622;}
+.doc2-btn.primary:hover{background:#000;}
+.doc2{font-family:var(--font-sans);}
+.doc2-page{background:#F0EDE7;border-radius:14px;padding:56px 64px;margin-bottom:22px;position:relative;min-height:540px;}
+.doc2-page.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 40px;}
+.doc2-page.cover .doc2-cover-title{font-family:"Cormorant Garamond",Georgia,serif;font-size:46px;font-weight:300;letter-spacing:8px;color:#2A2622;text-transform:uppercase;margin-bottom:14px;line-height:1.15;}
+.doc2-page.cover .doc2-cover-sub{font-family:"Cormorant Garamond",Georgia,serif;font-weight:400;font-size:18px;color:#6B6660;letter-spacing:1px;}
+.doc2-page.cover .doc2-cover-meta{margin-top:64px;font-size:11px;color:#6B6660;letter-spacing:3px;text-transform:uppercase;}
+.doc2-num{font-family:"Cormorant Garamond",Georgia,serif;font-size:88px;font-weight:300;color:#C9C5BD;line-height:1;position:absolute;top:48px;left:64px;letter-spacing:0;}
+.doc2-heading{font-family:"Cormorant Garamond",Georgia,serif;font-size:32px;font-weight:300;color:#2A2622;text-transform:uppercase;letter-spacing:5px;margin:34px 0 6px;padding-left:132px;line-height:1.2;}
+.doc2-tagline{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:16px;color:#6B6660;padding-left:132px;margin-bottom:32px;}
+.doc2-content{padding-left:132px;}
+.doc2-block{border-left:2px solid #C9C5BD;padding:4px 0 4px 18px;margin-bottom:22px;}
+.doc2-block-label{font-size:10px;text-transform:uppercase;letter-spacing:2.5px;color:#6B6660;margin-bottom:8px;font-weight:500;}
+.doc2-block-body{font-size:14px;color:#2A2622;line-height:1.7;}
+.doc2-block-body ul{margin:0;padding-left:18px;}
+.doc2-block-body li{margin-bottom:5px;}
+.doc2-block-body strong{color:#2A2622;font-weight:600;}
+.doc2-block-empty{color:#A09B93;font-style:italic;font-size:13px;}
+.doc2-position{font-family:"Cormorant Garamond",Georgia,serif;font-size:26px;font-weight:300;color:#2A2622;line-height:1.4;padding:26px 32px;background:#fff;border-left:3px solid #2A2622;margin:18px 0 24px;font-style:italic;}
+.doc2-brief{background:#fff;border:1px solid #D8D5CB;border-radius:10px;padding:24px;font-family:"SF Mono",Monaco,"Courier New",monospace;font-size:12px;line-height:1.7;color:#2A2622;white-space:pre-wrap;max-height:520px;overflow:auto;}
+.doc2-brief-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.doc2-prod{background:#fff;border-left:2px solid #C9C5BD;padding:18px 22px;margin-bottom:14px;}
+.doc2-prod-name{font-family:"Cormorant Garamond",Georgia,serif;font-size:20px;font-weight:400;color:#2A2622;margin-bottom:10px;}
+.doc2-final-title{font-family:"Cormorant Garamond",Georgia,serif;font-size:42px;font-weight:300;text-transform:uppercase;letter-spacing:8px;color:#2A2622;text-align:center;margin-bottom:30px;}
+.doc2-final-text{text-align:center;font-family:"Cormorant Garamond",Georgia,serif;font-size:20px;color:#6B6660;line-height:1.6;max-width:520px;margin:0 auto;}
+/* печать */
+@media print {
+  body{background:#fff;}
+  body * {visibility: hidden;}
+  .doc2, .doc2 * {visibility: visible;}
+  .doc2 {position:absolute;left:0;top:0;width:100%;}
+  .doc2-actions {display:none !important;}
+  .doc2-page {break-after: page; page-break-after: always; margin:0; border-radius:0; min-height:auto; padding:64px;}
+  .doc2-page:last-child {break-after: auto; page-break-after: auto;}
+  @page {size: A4; margin: 0;}
+}
+.doc-sec{font-size:12px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;}
+.doc-val{font-size:13px;color:var(--color-text-primary);line-height:1.6;}
+.doc-empty{font-size:13px;color:var(--color-text-tertiary);font-style:italic;}
+.delivs{display:flex;flex-direction:column;gap:10px;}
+.deliv-cat{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;}
+.deliv-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cat-badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:var(--border-radius-md);border:0.5px solid;}
+.cat-знания{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5;}
+.cat-навыки{background:#E6F1FB;color:#0C447C;border-color:#85B7EB;}
+.cat-материалы{background:#FAEEDA;color:#633806;border-color:#EF9F27;}
+.cat-результаты{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC;}
+.cat-другое{background:#F1EFE8;color:#444441;border-color:#B4B2A9;}
+.deliv-items{display:flex;flex-direction:column;gap:6px;margin-bottom:6px;}
+.di{display:flex;align-items:flex-start;gap:6px;}
+.di textarea{min-height:36px;flex:1;font-size:12px;}
+.add-cat-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--border-radius-md);background:transparent;color:var(--teal);border:0.5px dashed var(--teal);font-size:12px;cursor:pointer;width:100%;justify-content:center;margin-top:8px;}
+.cat-sel{font-size:12px;padding:4px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);cursor:pointer;}
+.sec-div{font-size:12px;font-weight:500;color:var(--color-text-secondary);margin:18px 0 10px;padding-top:14px;border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px;}
+.welcome-card{background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:16px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;}
+.task-row{display:flex;align-items:flex-start;gap:10px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;margin-bottom:8px;}
+.task-row.done-t{background:var(--teal-light);border-color:var(--teal-mid);}
+.task-cb{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--color-border-secondary);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:2px;}
+.task-row.done-t .task-cb{background:var(--teal);border-color:var(--teal);color:white;}
+.task-inp{flex:1;border:none;background:transparent;font-size:13px;color:var(--color-text-primary);font-family:var(--font-sans);}
+.task-inp:focus{outline:none;}
+.task-row.done-t .task-inp{color:var(--teal-dark);text-decoration:line-through;}
+.task-del{background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:13px;padding:2px;}
+.wp-wrap{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:14px;}
+.wp-bar{height:6px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden;margin:6px 0 4px;}
+.wp-fill{height:100%;background:var(--teal);border-radius:4px;transition:width 0.3s;}
+/* AI reco */
+.ai-hero{background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:18px 20px;margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.ai-gen-btn{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--border-radius-md);background:var(--teal);color:white;border:none;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.ai-gen-btn:disabled{opacity:0.6;cursor:not-allowed;}
+.ai-sec{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px 18px;margin-bottom:12px;}
+.ai-sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.ai-sec-icon{width:30px;height:30px;border-radius:var(--border-radius-md);background:var(--teal-light);display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:15px;flex-shrink:0;}
+.reco-item{padding:11px 13px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:8px;border-left:3px solid var(--teal);}
+.reco-label{font-size:10px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.reco-text{font-size:13px;color:var(--color-text-primary);line-height:1.6;}
+.meta-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.meta-chip{font-size:11px;padding:3px 9px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-tertiary);}
+.meta-chip.filled{background:var(--teal-light);color:var(--teal);border-color:var(--teal-mid);}
+.ai-empty{display:flex;flex-direction:column;align-items:center;padding:24px;text-align:center;}
+.ai-empty-text{font-size:12px;color:var(--color-text-tertiary);font-style:italic;}
+/* Ideas bank */
+.ideas-tabs-row{display:flex;gap:0;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;margin-bottom:14px;}
+.ideas-tab{flex:1;padding:8px 10px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:var(--color-background-primary);color:var(--color-text-secondary);display:flex;align-items:center;justify-content:center;gap:5px;}
+.ideas-tab:not(:last-child){border-right:0.5px solid var(--color-border-tertiary);}
+.ideas-tab.active{background:var(--teal);color:white;}
+.ideas-tab .cnt{font-size:10px;padding:1px 6px;border-radius:10px;background:rgba(255,255,255,0.25);min-width:18px;text-align:center;}
+.ideas-tab:not(.active) .cnt{background:var(--color-background-secondary);color:var(--color-text-tertiary);}
+.ideas-add-form{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:12px;}
+.iform-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.iform-row select{width:100%;font-size:12px;padding:7px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);}
+.iform-row select:focus{outline:none;border-color:var(--teal);}
+.iform-input{width:100%;font-size:12px;padding:7px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);margin-bottom:8px;}
+.iform-input:focus{outline:none;border-color:var(--teal);}
+.iform-ta{width:100%;font-size:12px;padding:7px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);min-height:48px;resize:none;line-height:1.5;margin-bottom:8px;}
+.iform-ta:focus{outline:none;border-color:var(--teal);}
+.fl-sm{font-size:11px;color:var(--color-text-tertiary);margin-bottom:3px;}
+.ideas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.idea-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;display:flex;flex-direction:column;gap:6px;}
+.idea-card.ai-c{border-left:3px solid var(--teal);}
+.idea-card.user-c{border-left:3px solid #7F77DD;}
+.idea-top{display:flex;align-items:center;gap:6px;justify-content:space-between;}
+.idea-badges{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.idea-fmt{font-size:10px;font-weight:500;padding:2px 7px;border-radius:var(--border-radius-md);}
+.idea-plt{font-size:10px;color:var(--color-text-tertiary);}
+.idea-src{font-size:9px;padding:1px 6px;border-radius:10px;}
+.src-ai{background:var(--teal-light);color:var(--teal);}
+.src-user{background:#EEEDFE;color:#3C3489;}
+.idea-title{font-size:13px;font-weight:500;color:var(--color-text-primary);line-height:1.4;}
+.idea-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.5;}
+.idea-acts{display:flex;gap:6px;margin-top:2px;align-items:center;}
+.idea-cal-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--teal);background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-md);cursor:pointer;padding:4px 9px;font-weight:500;}
+.idea-cal-btn:hover{background:var(--teal);color:white;}
+.idea-del{display:flex;align-items:center;font-size:11px;color:var(--color-text-tertiary);background:none;border:none;cursor:pointer;padding:0;margin-left:auto;}
+.idea-del:hover{color:#E24B4A;}
+.sched-badge{font-size:10px;color:var(--teal);display:flex;align-items:center;gap:3px;background:var(--teal-light);padding:2px 7px;border-radius:10px;}
+.sort-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.sort-lbl{font-size:11px;color:var(--color-text-tertiary);}
+.sort-btn{font-size:11px;padding:3px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;}
+.sort-btn.active{background:var(--teal-light);color:var(--teal);border-color:var(--teal-mid);}
+/* Calendar */
+.plt-tabs-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+.plt-tab{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-secondary);}
+.plt-tab.p-ig{background:#FDEEF4;color:#E1306C;border-color:#E1306C;}
+.plt-tab.p-th{background:#F1EFE8;color:#2C2C2A;border-color:#888780;}
+.plt-tab.p-yt{background:#FFF0F0;color:#FF0000;border-color:#FF0000;}
+.plt-tab.p-tt{background:#F0F0F0;color:#010101;border-color:#888780;}
+.plt-dot{width:7px;height:7px;border-radius:50%;}
+.d-ig{background:#E1306C;}.d-th{background:#444441;}.d-yt{background:#FF0000;}.d-tt{background:#010101;}
+.view-toggle{display:flex;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;}
+.view-btn{padding:5px 12px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:var(--color-background-primary);color:var(--color-text-secondary);display:flex;align-items:center;gap:5px;}
+.view-btn:first-child{border-right:0.5px solid var(--color-border-tertiary);}
+.view-btn.active{background:var(--teal);color:white;}
+.cal-top-row{display:grid;grid-template-columns:300px 1fr;gap:12px;margin-bottom:14px;}
+.cal-panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;}
+.cal-panel-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;}
+.cal-form{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
+.cal-form select,.cal-form input{width:100%;font-size:12px;padding:7px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);}
+.cal-form select:focus,.cal-form input:focus{outline:none;border-color:var(--teal);}
+.cal-form textarea{width:100%;font-size:12px;padding:7px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);min-height:48px;resize:none;line-height:1.5;}
+.cal-form textarea:focus{outline:none;border-color:var(--teal);}
+.cal-fl{font-size:11px;color:var(--color-text-tertiary);margin-bottom:3px;}
+.cal-create-btn{width:100%;padding:8px;border-radius:var(--border-radius-md);background:var(--teal);color:white;border:none;font-size:12px;font-weight:500;cursor:pointer;}
+.cal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.cs{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:7px;text-align:center;}
+.cs-n{font-size:16px;font-weight:500;color:var(--teal);}
+.cs-l{font-size:10px;color:var(--color-text-tertiary);}
+.queue-wrap{display:flex;flex-wrap:wrap;gap:6px;max-height:120px;overflow-y:auto;align-content:flex-start;}
+.q-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:7px 9px;cursor:grab;user-select:none;display:flex;flex-direction:column;gap:3px;width:128px;flex-shrink:0;}
+.q-card.sel{border-color:var(--teal);background:var(--teal-light);}
+.q-fmt{font-size:10px;font-weight:500;}
+.q-ttl{font-size:11px;color:var(--color-text-primary);line-height:1.3;font-weight:500;word-break:break-word;}
+.q-idea{font-size:10px;color:var(--color-text-tertiary);line-height:1.3;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.drop-zone{border:0.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:7px;text-align:center;font-size:11px;color:var(--color-text-tertiary);margin-top:6px;cursor:pointer;}
+.tap-hint{font-size:11px;color:var(--teal);margin-top:5px;display:none;text-align:center;font-style:italic;}
+.tap-hint.vis{display:block;}
+.cal-sec{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;}
+.cal-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cal-period{font-size:14px;font-weight:500;color:var(--color-text-primary);}
+.cal-nav-btn{background:none;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:4px 10px;cursor:pointer;color:var(--color-text-secondary);font-size:12px;}
+.cal-scroll{overflow-x:auto;padding-bottom:4px;}
+.cal-grid-m{display:grid;grid-template-columns:repeat(7,100px);gap:4px;min-width:724px;}
+.cal-dow{width:100px;font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-align:center;padding:4px 0;}
+.cal-day{width:100px;min-height:90px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);padding:5px;background:var(--color-background-secondary);cursor:pointer;}
+.cal-day.other-m{opacity:0.3;}
+.cal-day.today-d{border-color:var(--teal);background:var(--teal-light);}
+.cal-day.drag-ov{background:var(--teal-light);border-color:var(--teal);}
+.cal-day.tap-tgt{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal-mid);}
+.cal-grid-w{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.week-day{border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:10px;background:var(--color-background-secondary);min-height:150px;cursor:pointer;}
+.week-day.today-d{border-color:var(--teal);background:var(--teal-light);}
+.week-day.drag-ov{background:var(--teal-light);border-color:var(--teal);}
+.week-day.tap-tgt{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal-mid);}
+.w-dow{font-size:10px;font-weight:500;color:var(--color-text-tertiary);margin-bottom:2px;}
+.w-num{font-size:17px;font-weight:500;color:var(--color-text-secondary);margin-bottom:7px;}
+.week-day.today-d .w-num{color:var(--teal);}
+.day-num{font-size:10px;font-weight:500;color:var(--color-text-secondary);margin-bottom:3px;}
+.cal-day.today-d .day-num{color:var(--teal);}
+.day-pill{font-size:9px;padding:2px 4px;border-radius:3px;cursor:grab;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:88px;margin-bottom:2px;}
+.week-pill{font-size:10px;padding:3px 6px;border-radius:4px;line-height:1.4;cursor:grab;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-reel{background:#FDEEF4;color:#E1306C;}
+.p-post{background:#E1F5EE;color:#0F6E56;}
+.p-story{background:#EEEDFE;color:#3C3489;}
+.p-video{background:#FFF0F0;color:#A32D2D;}
+.p-thread{background:#F1EFE8;color:#444441;}
+.p-short{background:#FFF0F0;color:#A32D2D;}
+/* Modal */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:1000;}
+.modal{background:var(--color-background-primary);border-radius:var(--border-radius-lg);padding:20px;width:340px;max-width:92vw;box-shadow:0 8px 40px rgba(0,0,0,0.16);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.modal-title{font-size:14px;font-weight:500;color:var(--color-text-primary);}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--color-text-tertiary);}
+.modal-fmt{font-size:11px;font-weight:500;padding:3px 10px;border-radius:var(--border-radius-md);margin-bottom:10px;display:inline-block;}
+.modal-field{margin-bottom:10px;}
+.modal-lbl{font-size:11px;color:var(--color-text-tertiary);margin-bottom:3px;}
+.modal-val{font-size:13px;color:var(--color-text-primary);line-height:1.6;}
+.modal-val.emp{color:var(--color-text-tertiary);font-style:italic;}
+.modal-acts{display:flex;gap:8px;margin-top:14px;}
+.modal-btn{flex:1;padding:8px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;cursor:pointer;border:none;}
+.mb-del{background:var(--color-background-secondary);color:#E24B4A;border:0.5px solid #E24B4A;}
+.mb-ok{background:var(--teal);color:white;}
+/* Date picker */
+.dp-card-prev{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:9px 12px;margin:10px 0 14px;border-left:3px solid var(--teal);}
+.dp-card-fmt{font-size:10px;font-weight:500;margin-bottom:3px;}
+.dp-card-ttl{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.dp-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.dp-month-lbl{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.dp-nav-btn{background:none;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:4px 10px;cursor:pointer;font-size:12px;color:var(--color-text-secondary);}
+.dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.dp-dow{font-size:9px;font-weight:500;color:var(--color-text-tertiary);text-align:center;padding:3px 0;}
+.dp-day{height:32px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:var(--color-text-primary);border:0.5px solid transparent;position:relative;}
+.dp-day:hover{background:var(--teal-light);color:var(--teal);}
+.dp-day.dp-other{color:var(--color-text-tertiary);opacity:0.4;cursor:default;}
+.dp-day.dp-other:hover{background:transparent;color:var(--color-text-tertiary);}
+.dp-day.dp-today{border-color:var(--teal);color:var(--teal);font-weight:500;}
+.dp-day.dp-sel{background:var(--teal);color:white;font-weight:500;}
+.dp-day.dp-has::after{content:'';position:absolute;bottom:2px;width:4px;height:4px;border-radius:50%;background:var(--teal-mid);}
+.dp-day.dp-sel::after{background:white;}
+.dp-plt-row{display:flex;gap:6px;margin:10px 0 8px;flex-wrap:wrap;}
+.dp-plt-btn{font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;font-weight:500;}
+.dp-plt-btn.a-ig{background:#FDEEF4;color:#E1306C;border-color:#E1306C;}
+.dp-plt-btn.a-th{background:#F1EFE8;color:#2C2C2A;border-color:#888780;}
+.dp-plt-btn.a-yt{background:#FFF0F0;color:#FF0000;border-color:#FF0000;}
+.dp-plt-btn.a-tt{background:#F0F0F0;color:#010101;border-color:#888780;}
+.dp-sel-lbl{font-size:12px;color:var(--color-text-secondary);margin:8px 0 12px;min-height:18px;}
+.dp-acts{display:flex;gap:8px;}
+.dp-cancel{flex:1;padding:8px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);font-size:12px;cursor:pointer;}
+.dp-confirm{flex:2;padding:8px;border-radius:var(--border-radius-md);background:var(--teal);color:white;border:none;font-size:12px;font-weight:500;cursor:pointer;}
+.dp-confirm:disabled{opacity:0.5;cursor:not-allowed;}
+.spinner{width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+.spinner-d{border-color:var(--color-border-tertiary);border-top-color:var(--teal);}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+
+<div id="auth-screen" class="auth-screen hidden">
+  <div class="auth-card">
+    <div class="auth-logo">brandmaster</div>
+    <div class="auth-sub">стратегия личного бренда</div>
+    <div class="auth-lang">
+      <button data-auth-lang="ru" onclick="setLang('ru')">Русский</button>
+      <button data-auth-lang="en" onclick="setLang('en')">English</button>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Войти</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Создать аккаунт</button>
+    </div>
+    <input type="email" class="auth-input" id="auth-email" placeholder="Email" autocomplete="email" />
+    <input type="password" class="auth-input" id="auth-password" placeholder="Пароль" autocomplete="current-password" />
+    <button class="auth-submit" id="auth-submit" onclick="doAuth()">Войти</button>
+    <div class="auth-msg" id="auth-msg"></div>
+  </div>
+</div>
+
+<div class="app">
+<div class="sidebar">
+  <div class="logo"><div class="logo-text">brandmaster</div><div class="logo-sub">стратегия личного бренда</div></div>
+  <div class="nav">
+    <div class="lang-switcher">
+      <button class="lang-btn" data-lang-btn="ru" onclick="setLang('ru')">Русский</button>
+      <button class="lang-btn" data-lang-btn="en" onclick="setLang('en')">English</button>
+    </div>
+    <div class="nav-section">Старт</div>
+    <div class="nav-item active" onclick="show(0)" id="nav0"><i class="ti ti-clipboard-list" aria-hidden="true"></i>Текущая ситуация</div>
+    <div class="nav-section">Стратегия</div>
+    <div class="nav-item" onclick="show(1)" id="nav1"><span class="num" id="n1">1</span>Цели и планы</div>
+    <div class="nav-item" onclick="show(2)" id="nav2"><span class="num" id="n2">2</span>Распаковка</div>
+    <div class="nav-item" onclick="show(3)" id="nav3"><span class="num" id="n3">3</span>Аудитория</div>
+    <div class="nav-item" onclick="show(4)" id="nav4"><span class="num" id="n4">4</span>Продукты</div>
+    <div class="nav-item" onclick="show(5)" id="nav5"><span class="num" id="n5">5</span>Позиционирование</div>
+    <div class="nav-item" onclick="show(6)" id="nav6"><span class="num" id="n6">6</span>Контент-стратегия</div>
+    <div class="nav-item" onclick="show(7)" id="nav7"><span class="num" id="n7">7</span>Упаковка страницы</div>
+    <div class="nav-section">Действия</div>
+    <div class="nav-item" onclick="show(8)" id="nav8"><i class="ti ti-checkbox" aria-hidden="true"></i>Задачи на неделю</div>
+    <div class="nav-section">Контент</div>
+    <div class="nav-item" onclick="show(9)" id="nav9"><i class="ti ti-sparkles" aria-hidden="true"></i>Рекомендации AI</div>
+    <div class="nav-item" onclick="show(10)" id="nav10"><i class="ti ti-bulb" aria-hidden="true"></i>Банк идей</div>
+    <div class="nav-item" onclick="show(11)" id="nav11"><i class="ti ti-calendar" aria-hidden="true"></i>Контент-план</div>
+    <div class="nav-section">Клиенты</div>
+    <div class="nav-item" onclick="show(13)" id="nav13"><i class="ti ti-users-group" aria-hidden="true"></i>База клиентов</div>
+    <div class="nav-section">Итог</div>
+    <div class="nav-item" onclick="show(12)" id="nav12"><i class="ti ti-file-text" aria-hidden="true"></i>Моя стратегия</div>
+  </div>
+  <div id="user-badge" class="user-badge"></div>
+  <div class="prog-wrap">
+    <div class="prog-label" id="prog-label">Прогресс: 0 из 7</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+</div>
+<div class="main">
+  <div class="topbar">
+    <div><div class="topbar-title" id="ttitle">Блок 1 — Цели и планы</div><div class="topbar-sub" id="tsub">С чего начинается любой сильный бренд — с ясного зачем</div></div>
+    <span class="badge" id="tbadge">~15 мин</span>
+  </div>
+  <div class="content" id="content"></div>
+  <div class="footer">
+    <div class="time-hint" id="save-state">
+      <i class="ti ti-clock" aria-hidden="true"></i><span class="save-text">Сохраняется автоматически</span>
+      <span style="margin:0 10px;color:var(--color-border-tertiary);">|</span>
+      <button onclick="downloadBackup()" title="Скачать резервную копию всех ответов" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:0;">
+        <i class="ti ti-download" aria-hidden="true"></i>Скачать копию
+      </button>
+      <button onclick="importBackup()" title="Восстановить из ранее сохранённой копии" style="background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:0;margin-left:10px;">
+        <i class="ti ti-upload" aria-hidden="true"></i>Загрузить копию
+      </button>
+      <button onclick="showSaved()" title="Показать всё что реально сохранено" style="background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:0;margin-left:10px;">
+        <i class="ti ti-eye" aria-hidden="true"></i>Что сохранено?
+      </button>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-ghost" id="btn-ai" onclick="aiSum()"><i class="ti ti-sparkles" aria-hidden="true"></i>Получить итог блока ↗</button>
+      <button class="btn-primary" id="btn-done" onclick="markDone()"><i class="ti ti-check" aria-hidden="true"></i>Блок готов</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const META={0:{title:'Текущая ситуация',sub:'Расскажите коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто вы — ваш путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого вы работаете и какую боль закрываете',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опишите каждый ваш продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Ваше место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности вашей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые вы делаете прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе вашей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируйте контент по площадкам и перетаскивайте в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляйте клиентами, заметками и встречами в одном месте',time:''}};
+const CATS=['знания','навыки','материалы','результаты','другое'];
+const PLATS={ig:{formats:['Reels','Пост-карусель','Пост-фото','Сторис','Прямой эфир']},th:{formats:['Тред','Пост','Цитата','Опрос']},yt:{formats:['Видео','Shorts','Прямой эфир','Пост']},tt:{formats:['Короткое видео','Дуэт','Прямой эфир','Фото-слайды']}};
+const FMT={Reels:'p-reel','Пост-карусель':'p-post','Пост-фото':'p-post','Сторис':'p-story','Прямой эфир':'p-post','Тред':'p-thread','Пост':'p-post','Цитата':'p-thread','Опрос':'p-thread','Видео':'p-video','Shorts':'p-short','Дуэт':'p-short','Фото-слайды':'p-short','Короткое видео':'p-short'};
+const MONTHS_R=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const DOWS=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const PMAP={Instagram:'ig',Threads:'th',YouTube:'yt',TikTok:'tt'};
+const TAB_LABELS={expert:'Экспертные',personal:'Личные',fun:'Развлекательные'};
+
+let done={},cur=1,prods=[],activeProd=0;
+let calPlt='ig',calData={ig:[],th:[],yt:[],tt:[]},calY=2026,calM=4,calView='month',calDrag=null,calSel=null;
+let weeks={},curWKey='',wOff=0;
+let ideas={expert:[],personal:[],fun:[]},activeIdTab='expert',ideaFilter='all';
+let dpIdea=null,dpY=2026,dpM=4,dpSelDate=null,dpPlt='ig';
+let lastCtx=null;
+let weekStart=new Date(2026,4,11);
+
+function sv(k,v){const j=JSON.stringify(v);try{localStorage.setItem('bm_'+k,j);flashSaved();}catch(e){console.warn('[save failed]',k,e);}syncToCloud(k,j);}
+function ld(k){try{return JSON.parse(localStorage.getItem('bm_'+k)||'null');}catch(e){return null;}}
+
+// ===== Двуязычность RU/EN =====
+let lang = (function(){try{return localStorage.getItem('bm_lang')||'ru';}catch(e){return 'ru';}})();
+const EN_MAP = {
+  // Бренд / навигация
+  'brandmaster':'brandmaster',
+  'стратегия личного бренда':'personal brand strategy',
+  'Старт':'Start','Стратегия':'Strategy','Действия':'Actions','Контент':'Content','Итог':'Summary',
+  'Текущая ситуация':'Current situation',
+  'Цели и планы':'Goals & plans','Распаковка':'Unpacking','Аудитория':'Audience',
+  'Позиционирование':'Positioning','Продукты':'Products','Контент-стратегия':'Content strategy',
+  'Упаковка страницы':'Profile packaging','Задачи на неделю':'Weekly tasks',
+  'Рекомендации AI':'AI recommendations','Банк идей':'Ideas bank','Контент-план':'Content calendar',
+  'Моя стратегия':'My strategy',
+  // Подвал и сохранение
+  'Сохраняется автоматически':'Saved automatically','Сохранено':'Saved',
+  'Скачать копию':'Download backup','Загрузить копию':'Restore backup','Что сохранено?':"What's saved?",
+  'Скачать резервную копию всех ответов':'Download a backup of all answers',
+  'Восстановить из ранее сохранённой копии':'Restore from a previously saved backup',
+  'Показать всё что реально сохранено':'Show what is actually saved',
+  // Кнопки
+  'Получить итог блока ↗':'Get block summary ↗','Блок готов':'Block done','Готово!':'Done!',
+  'Добавить':'Add','Удалить':'Delete','Сохранить':'Save','Сохранить ответ':'Save answer',
+  'Сохранить ответы':'Save answers','Закрыть':'Close','Отмена':'Cancel','Напишите здесь...':'Write here...',
+  // METAtitles
+  'Блок 1 — Цели и планы':'Block 1 — Goals & plans','Блок 2 — Распаковка':'Block 2 — Unpacking',
+  'Блок 3 — Аудитория':'Block 3 — Audience','Блок 4 — Продукты':'Block 4 — Products',
+  'Блок 5 — Позиционирование':'Block 5 — Positioning','Блок 6 — Контент-стратегия':'Block 6 — Content strategy',
+  'Блок 7 — Упаковка страницы':'Block 7 — Profile packaging',
+  'С чего начинается любой сильный бренд — с ясного зачем':'Every strong brand starts with a clear why',
+  'Кто вы — ваш путь, сила и уникальность':'Who you are — your path, strength and uniqueness',
+  'Для кого вы работаете и какую боль закрываете':'Who you work for and what pain you solve',
+  'Ваше место на рынке и ключевое отличие':'Your place in the market and your key differentiator',
+  'Опишите каждый ваш продукт':'Describe each of your products',
+  'О чём говорить, где и в каком формате':'What to talk about, where, and in what format',
+  'Чек-лист готовности вашей страницы':'Checklist for your profile readiness',
+  'Конкретные действия которые вы делаете прямо сейчас':'Concrete actions you do right now',
+  'Стратегический анализ на основе вашей стратегии':'Strategic analysis based on your strategy',
+  'Сохраняй идеи от AI и свои — планируй в календарь одним кликом':'Save AI and your own ideas — plan them in one click',
+  'Планируйте контент по площадкам и перетаскивайте в календарь':'Plan content by platform and drag onto the calendar',
+  'Итоговый документ личного бренда':'Final personal brand document',
+  'Расскажите коротко о точке отсчёта — это нужно до начала стратегии':'Briefly share your starting point — needed before strategy',
+  // Times
+  '~5 мин':'~5 min','~15 мин':'~15 min','~20 мин':'~20 min','~25 мин':'~25 min','~30 мин':'~30 min','~60–70 мин':'~60–70 min',
+  // Welcome / b0
+  'Прежде чем начать работу со стратегией — расскажите о точке отсчёта. Через 3–6 месяцев вернётесь к этому опроснику и увидите прогресс. Ответьте на все 5 вопросов, после этого откроются блоки стратегии.':
+    "Before starting the strategy — share your starting point. In 3–6 months you'll come back to this questionnaire and see your progress. Answer all 5 questions to unlock the strategy blocks.",
+  'Заполнено':'Filled in',
+  'Ведёшь ли ты свой блог?':'Do you have a blog?',
+  'Да, веду активно':'Yes, actively','Иногда, нестабильно':'Sometimes, irregularly',
+  'Только начинаю':'Just starting','Нет, ещё не начала':"No, haven't started yet",
+  'Сколько у тебя сейчас подписчиков?':'How many followers do you have now?',
+  'Например: 1 200 в Instagram, 300 в Threads':'Example: 1,200 on Instagram, 300 on Threads',
+  'Каким образом ты зарабатываешь с блога?':'How do you currently earn from your blog?',
+  'Например: продаю услуги напрямую, веду консультации, направляю в свой курс':
+    'Example: I sell services directly, do consultations, funnel followers to my course',
+  'Сколько ты зарабатываешь с блога в месяц?':'How much do you earn from your blog per month?',
+  'Пока ничего':'Nothing yet','До $500':'Up to $500',
+  'Бизнес: блог влияет на обороты, точно не отследить':"Business: blog impacts revenue, can't be tracked exactly",
+  'Почему ты решила участвовать в стратсессии BrandMaster? Какой главный результат хочешь получить?':
+    'Why did you join the BrandMaster strategy session? What is the main result you want?',
+  'Например: хочу собрать систему, при которой клиенты приходят сами через контент':
+    'Example: I want to build a system where clients come to me through content',
+  'Вопрос':'Question',
+  // Welcome b1
+  'Прежде чем начать — ответьте на главный вопрос. Когда есть чёткое зачем, всё остальное становится проще.':
+    'Before starting — answer the main question. With a clear why, everything else gets easier.',
+  // Block 1
+  'Зачем вы хотите развивать свой личный бренд?':'Why do you want to grow your personal brand?',
+  'Подумайте о своей глубинной потребности — зачем на самом деле, помимо заработка.':
+    'Think about your deepest reason — what is the real why beyond money.',
+  'Основные 3 цели в блоге на 6 месяцев':'Top 3 goals for your blog in 6 months',
+  'По одной цели в каждой строке.':'One goal per line.',
+  'Например: запустить онлайн-курс / выйти на доход $3 000 в месяц / собрать комьюнити 5 000 человек':
+    'Example: launch an online course / reach $3,000/mo income / build a 5,000-person community',
+  'Как ты поймёшь, что личный бренд и блог начали работать эффективно?':
+    'How will you know your personal brand and blog have started working effectively?',
+  'Например: клиенты приходят сами, появляются стабильные продажи через контент, аудитория растёт органично.':
+    'Example: clients come on their own, content drives steady sales, the audience grows organically.',
+  'Что останавливало раньше?':'What stopped you before?',
+  'Например: боялся осуждения, не знал о чём говорить.':"Example: feared judgement, didn't know what to talk about.",
+  // Block 2
+  '5–7 фактов о себе, которые по-настоящему вас характеризуют':'5–7 facts about you that truly define who you are',
+  'То что удивляет людей когда узнают впервые. Это могут быть интересные опыты, которые вы проходили, необычные путешествия, особые умения и др.':
+    'What surprises people when they hear it first time — unusual experiences, travels, special skills, etc.',
+  'Например: жила полгода в монастыре в Тибете':'Example: spent six months in a monastery in Tibet',
+  'Ваши ценности 5–7 — как каждая проявляется в жизни?':'Your 5–7 values — how does each show up in life?',
+  'Конкретные примеры, не просто слова.':'Specific examples, not just words.',
+  'Добавить ценность':'Add value',
+  'Принципы и идеи которые хотите транслировать миру?':'Principles and ideas you want to broadcast to the world?',
+  'По одной идее в строке.':'One idea per line.',
+  'Например: верю что каждый может зарабатывать на любимом деле':
+    'Example: I believe everyone can make a living from what they love',
+  'За какими советами обращаются друзья и знакомые?':'What advice do friends and acquaintances ask you for?',
+  'В каких темах вы для них авторитет.':"Topics where you're an authority for them.",
+  'Например: как договориться о повышении зарплаты':'Example: how to negotiate a raise',
+  'Через какие переломные моменты и боли вы пришли к делу, которым занимаетесь сейчас?':
+    'Through which turning points and pains did you come to the work you do now?',
+  'Это ваша история — самый ценный контент.':'This is your story — the most valuable content.',
+  '5 профессиональных достижений и кейсы клиентов в цифрах':'5 professional achievements and client case studies in numbers',
+  'По одному достижению в строке. Не скромничайте — это ваша сила.':'One achievement per line. Don\'t be modest — this is your strength.',
+  'Например: за 3 месяца увеличил доход клиента в 2 раза':"Example: doubled a client's income in 3 months",
+  'Какой конечный результат вы даёте людям?':'What is the final result you give people?',
+  'По одному пункту в строке.':'One point per line.',
+  'Например: человек понимает, как работает личный бренд, как и что делать в блоге, начинает получать результаты':
+    'Example: the person understands how personal brand works, what to do in their blog, starts seeing results',
+  'В чём ваша суперсила как эксперта?':'What is your superpower as an expert?',
+  'Что вы делаете легко, а другим даётся с трудом?':'What comes easy to you that others struggle with?',
+  '3–5 якорей-ассоциаций с вами':'3–5 anchor associations with you',
+  'По одной ассоциации в строке.':'One association per line.',
+  'Например: личный бренд + Бали + духовное развитие':'Example: personal brand + Bali + spiritual growth',
+  // Block 3
+  'Кто ваш идеальный клиент?':'Who is your ideal client?',
+  'Например: эксперт с продуктом, который потерял себя в блоге.':
+    'Example: an expert with a product who has lost themselves in their blog.',
+  'Как проблемы возникают у ваших клиентов по вашей теме?':'How do problems arise for your clients in your topic?',
+  'По одной ситуации в строке. Опишите контекст и триггеры.':'One situation per line. Describe the context and triggers.',
+  'Например: пишу посты регулярно, но охваты падают, а продажи стоят':
+    'Example: I post regularly but reach is dropping and sales are stuck',
+  'Как эта проблема конкретно проявляется в жизни?':'How does this problem manifest specifically in life?',
+  'По одному проявлению в строке.':'One manifestation per line.',
+  'Например: открывает Instagram и закрывает, не написав ни одного поста':
+    'Example: opens Instagram, then closes it without writing a single post',
+  'О чём они мечтают?':'What do they dream about?',
+  'По одной мечте в строке.':'One dream per line.',
+  'Например: ясность что делать каждый день, клиенты приходят сами через контент':
+    'Example: clarity about what to do daily, clients coming in through content',
+  'Что пробовали до вас?':'What did they try before coming to you?',
+  'Например: курсы по SMM — дали техники но не понимание.':'Example: SMM courses — gave techniques but no understanding.',
+  'Какими словами говорят о проблеме?':'In what words do they talk about the problem?',
+  'Прямые цитаты клиентов — по одной в строке.':'Direct client quotes — one per line.',
+  'Например: «не знаю о чём писать», «всё уже было сказано до меня»':
+    "Example: \"I don't know what to write about\", \"everything has been said before me\"",
+  // Block 4
+  'Презентация по технике ПУП':'Presentation using the PUU technique',
+  'Три элемента первого впечатления':'Three elements of first impression',
+  'Простой':'Plain','Удивительный':'Unexpected','Полезный':'Useful',
+  'Кто вы профессионально':'Who you are professionally',
+  'Факт который удивляет':'A fact that surprises',
+  'Что вы даёте людям':'What you give people',
+  'Чем ваш подход отличается от других?':'How is your approach different from others?',
+  'Например: я не учу делать вирусные рилсы — я строю фундамент.':"Example: I don't teach viral reels — I build the foundation.",
+  'Позиционирование в одном предложении':'Positioning in one sentence',
+  'Для [целевая аудитория], чьей главной потребностью является [потребность/боль], наш продукт — это [категория/название продукта], который обеспечивает [основная выгода/главное отличие].':
+    'For [target audience], whose main need is [need/pain], our product is a [category/product name] that provides [main benefit/key difference].',
+  // Block 5
+  'Продуктов: 0':'Products: 0',
+  'Добавить продукт':'Add product',
+  'Концепция':'Concept','Опишите концепцию...':'Describe the concept...',
+  'Уникальность':'Uniqueness','В чём уникальность...':"What's the uniqueness...",
+  'Задачи продукта':'Product tasks','Задача...':'Task...','Добавить задачу':'Add task',
+  'Что получат клиенты':'What clients will receive',
+  'Добавить категорию':'Add category',
+  'Для какой аудитории':'For which audience','Опишите аудиторию...':'Describe the audience...',
+  'Для чего человеку ваш продукт?':'What is your product for the person?','Какую цель или глубинную потребность вы решите...':'What goal or deep need will you address...',
+  'Добавить результат':'Add result',
+  'знания':'knowledge','навыки':'skills','материалы':'materials','результаты':'results','другое':'other',
+  'Напишите...':'Write here...','Добавить пункт':'Add item',
+  'Название продукта...':'Product name...',
+  // Block 6
+  '3 основные темы блога':'3 main blog topics','По одной теме в строке.':'One topic per line.',
+  'Например: личный бренд / жизнь на Бали / духовное развитие':'Example: personal brand / life on Bali / spiritual growth',
+  'Форматы контента':'Content formats',
+  'Какие именно форматы рилсов / каруселей / др. вам нравятся и вы готовы делать. Например: говорящая голова с субтитрами, экспертные карусели, раскрывающие вашу тему, и др.':
+    'Which specific reel / carousel / other formats do you like and are willing to make. Example: talking head with subtitles, expert carousels expanding your topic, etc.',
+  'Советую сделать отдельную папочку в «Сохранённые» в Instagram, куда вы будете складывать все понравившиеся форматы контента.':
+    'I recommend creating a separate folder in Instagram "Saved" where you collect every content format you like.',
+  'Площадки':'Platforms',
+  'Например: основная — Instagram, дополнительные — Threads, YouTube.':'Example: main — Instagram, secondary — Threads, YouTube.',
+  'Какое впечатление хотите оставлять?':'What impression do you want to leave?',
+  'Например: эксперт своего дела, интересная насыщенная жизнь, щедро делюсь полезной информацией.':
+    'Example: an expert in their field, an interesting full life, generously sharing useful information.',
+  'Сколько времени в неделю на контент?':'How much time per week for content?',
+  'Например: 2 часа в день, рилсы по вторникам и пятницам.':'Example: 2 hours per day, reels on Tuesdays and Fridays.',
+  'Какой визуал вам нравится?':'What kind of visuals do you like?',
+  'Например: основные цвета — белый, чёрный, бирюзовый. Спокойные тона, чёткие линии, живые «непостановочные» фото и видео, эстетично.':
+    'Example: main colors — white, black, teal. Calm tones, clean lines, candid (un-staged) photos and videos, aesthetic.',
+  // Block 7
+  'Шапка профиля':'Profile header','Имя и фамилия или понятный ник':'Name and surname, or a clear handle',
+  'Качественное фото':'Quality photo','Описание: кто я + для кого + что даю':'Bio: who I am + for whom + what I give',
+  'Ссылка на сайт или лид-магнит':'Link to website or lead magnet',
+  'Визуал':'Visuals','Единый стиль':'Consistent style',
+  'По первым 9 постам понятно о чём блог':'First 9 posts make the blog topic clear',
+  'Закреплённые сторис':'Pinned highlights',
+  'Контент':'Content','Пост-знакомство':'Intro post','Экспертные посты':'Expert posts',
+  'Кейсы с результатами':'Cases with results','Понятно что продаёшь':'Clear what is being sold',
+  'Общее':'Overall','За 10 сек понятно кто я':'It is clear who I am within 10 seconds',
+  'Есть призыв к действию':'There is a call to action',
+  // Weekly tasks
+  'Эта неделя':'This week','Выполнено':'Completed','Добавить задачу':'Add task',
+  'Добавьте задачи на эту неделю':'Add tasks for this week','Напишите задачу...':'Write a task...',
+  // AI / Ideas / Calendar — заголовки и общее
+  'Экспертные':'Expert','Личные':'Personal','Развлекательные':'Entertaining',
+  'Все':'All','От AI':'From AI','Мои':'Mine','Показать:':'Show:',
+  'Сгенерировать AI':'Generate with AI','Добавить свою идею':'Add your idea',
+  'Формат':'Format','Площадка':'Platform','Тема (заголовок)':'Topic (title)','Идея (подробнее)':'Idea (details)',
+  'Опиши что снять или написать...':'Describe what to film or write...',
+  'Например: Как я нашла свою нишу через 3 провала':'Example: How I found my niche through 3 failures',
+  'Вкладка:':'Tab:',
+  'Здесь появятся идеи — от AI и ваши':'Ideas will appear here — from AI and yours',
+  'Новая единица контента':'New content unit',
+  'Идея (кратко)':'Idea (brief)','Опиши идею рилса, карусели или поста...':'Describe the idea of the reel, carousel or post...',
+  'Например: Почему блог вызывает раздражение':'Example: Why blogging feels irritating',
+  'Добавить в очередь':'Add to queue','Месяц':'Month','Неделя':'Week',
+  'Пред.':'Prev','След.':'Next','всего':'total','в плане':'planned','в очереди':'in queue',
+  'Очередь':'Queue','Все единицы запланированы':'All units are planned',
+  '← Перетащи или нажми чтобы убрать из плана':"← Drag or click to remove from plan",
+  'Моя стратегия':'My strategy',
+  'Запросить анализ AI':'Request AI analysis','Скачать как текст':'Download as text',
+  // Заглушки / надписи в модалках
+  'Прогресс':'Progress','из':'of',
+  // Авторизация
+  'Войти':'Sign in','Создать аккаунт':'Create account','Пароль':'Password',
+  'Введите email и пароль':'Enter email and password',
+  'Подождите…':'Please wait…',
+  'Аккаунт создан. Проверьте почту и подтвердите email, затем войдите.':
+    'Account created. Check your email to confirm, then sign in.',
+  'Выйти':'Log out','Синхронизировано':'Synced',
+  'Локально (нет соединения с облаком)':'Local only (no cloud connection)',
+};
+function t(s){ if(lang==='ru') return s; return EN_MAP[s] || s; }
+// Пробегает по DOM и заменяет известные русские строки на английские
+function applyTranslations(){
+  if(lang==='ru') return;
+  const root=document.body;
+  // текстовые узлы
+  const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  const nodes=[];
+  let n; while(n=walker.nextNode()) nodes.push(n);
+  nodes.forEach(node=>{
+    const raw=node.textContent;
+    const trimmed=raw.trim();
+    if(!trimmed) return;
+    if(EN_MAP[trimmed]){
+      node.textContent=raw.replace(trimmed, EN_MAP[trimmed]);
+      return;
+    }
+    // частичный матч: "Прогресс: 3 из 7" → "Progress: 3 of 7"
+    const m=trimmed.match(/^Прогресс:\s*(\d+)\s+из\s+(\d+)$/);
+    if(m){ node.textContent=raw.replace(trimmed, `Progress: ${m[1]} of ${m[2]}`); return; }
+    const m2=trimmed.match(/^(\d+)\s+из\s+(\d+)$/);
+    if(m2){ node.textContent=raw.replace(trimmed, `${m2[1]} of ${m2[2]}`); return; }
+  });
+  // placeholder / title
+  document.querySelectorAll('[placeholder]').forEach(el=>{
+    const v=(el.placeholder||'').trim();
+    if(v && EN_MAP[v]) el.placeholder=EN_MAP[v];
+  });
+  document.querySelectorAll('[title]').forEach(el=>{
+    const v=(el.title||'').trim();
+    if(v && EN_MAP[v]) el.title=EN_MAP[v];
+  });
+}
+function setLang(l){
+  lang=l;
+  try{localStorage.setItem('bm_lang',l);}catch(e){}
+  // обновить переключатель в сайдбаре
+  document.querySelectorAll('[data-lang-btn]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.langBtn===l);
+  });
+  // обновить переключатель на экране авторизации
+  document.querySelectorAll('[data-auth-lang]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.authLang===l);
+  });
+  // если экран авторизации виден — перевести его статичные тексты
+  applyTranslations();
+  updateAuthLabels();
+  renderUserBadge();
+  // перерисовать текущий экран приложения
+  if(typeof show==='function' && typeof cur!=='undefined') show(cur);
+}
+
+// ===== Supabase Auth + облачное сохранение =====
+const SUPABASE_URL = 'https://walrrmxrrtmytkmtmnss.supabase.co';
+const SUPABASE_KEY = 'sb_publishable__HWgN4dZfgqhLAp-Xa9LmA_GxtAHAxS';
+let sb = null;
+let currentUser = null;
+let authMode = 'login';
+
+function initSupabase(){
+  if(!window.supabase){
+    console.warn('Supabase SDK не загружен — работает только локальное сохранение.');
+    return Promise.resolve();
+  }
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true }
+  });
+  return sb.auth.getSession().then(({data})=>{
+    if(data && data.session){
+      currentUser = data.session.user;
+      return onLogin();
+    } else {
+      showAuth();
+    }
+  }).catch(e=>{
+    console.warn('Auth init error:', e);
+    showAuth();
+  });
+}
+
+function showAuth(){ document.getElementById('auth-screen').classList.remove('hidden'); updateAuthLabels(); }
+function hideAuth(){ document.getElementById('auth-screen').classList.add('hidden'); }
+function updateAuthLabels(){
+  // помечаем активный язык в экране авторизации
+  document.querySelectorAll('[data-auth-lang]').forEach(b=>{
+    b.classList.toggle('active', b.dataset.authLang===lang);
+  });
+  // плейсхолдер пароля + текст кнопки в зависимости от языка
+  const pwd=document.getElementById('auth-password');
+  if(pwd) pwd.placeholder = lang==='en' ? 'Password' : 'Пароль';
+  const tl=document.getElementById('tab-login');
+  const ts=document.getElementById('tab-signup');
+  if(tl) tl.textContent = lang==='en' ? 'Sign in' : 'Войти';
+  if(ts) ts.textContent = lang==='en' ? 'Create account' : 'Создать аккаунт';
+  const sb2=document.getElementById('auth-submit');
+  if(sb2) sb2.textContent = (authMode==='login' ? (lang==='en'?'Sign in':'Войти') : (lang==='en'?'Create account':'Создать аккаунт'));
+}
+
+function switchAuthTab(mode){
+  authMode=mode;
+  document.getElementById('tab-login').classList.toggle('active', mode==='login');
+  document.getElementById('tab-signup').classList.toggle('active', mode==='signup');
+  document.getElementById('auth-msg').textContent='';
+  document.getElementById('auth-msg').className='auth-msg';
+  updateAuthLabels();
+}
+
+async function doAuth(){
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  const msg=document.getElementById('auth-msg');
+  msg.className='auth-msg err'; msg.textContent='';
+  if(!email||!password){ msg.textContent = lang==='en'?'Enter email and password':'Введите email и пароль'; return; }
+  if(!sb){ msg.textContent = lang==='en'?'Auth is unavailable (no internet?)':'Авторизация недоступна (нет интернета?)'; return; }
+  const btn=document.getElementById('auth-submit');
+  btn.disabled=true; const old=btn.textContent;
+  btn.textContent = lang==='en'?'Please wait…':'Подождите…';
+  try{
+    let result;
+    if(authMode==='login') result=await sb.auth.signInWithPassword({email,password});
+    else result=await sb.auth.signUp({email,password});
+    if(result.error){
+      msg.textContent = result.error.message;
+      btn.disabled=false; btn.textContent=old;
+      return;
+    }
+    if(authMode==='signup' && (!result.data.session)){
+      msg.className='auth-msg ok';
+      msg.textContent = lang==='en'?'Account created. Check your email to confirm, then sign in.':'Аккаунт создан. Проверьте почту и подтвердите email, затем войдите.';
+      authMode='login';
+      btn.disabled=false; updateAuthLabels();
+      return;
+    }
+    currentUser = result.data.user;
+    await onLogin();
+  }catch(e){
+    const errText = (e && e.message) ? e.message : String(e);
+    let hint='';
+    if(/Load failed|Failed to fetch|NetworkError|TypeError/i.test(errText)){
+      hint = lang==='en'
+        ? "\n\nLooks like the page is opened via file://. Run it via local server:\nTerminal → python3 -m http.server 8000 → open http://localhost:8000"
+        : "\n\nПохоже, страница открыта через file://. Запусти через локальный сервер:\nТерминал → python3 -m http.server 8000 → открой http://localhost:8000";
+    }
+    msg.textContent = errText + hint;
+    btn.disabled=false; btn.textContent=old;
+  }
+}
+
+// При загрузке: если страница открыта по file://, сразу подскажем
+if (typeof window!=='undefined' && location && location.protocol==='file:'){
+  console.warn('Brandmaster: file:// origin блокирует Supabase. Запустите через http://localhost');
+}
+
+async function onLogin(){
+  hideAuth();
+  await syncFromCloud();
+  // подтянем done из обновлённого localStorage
+  done = ld('done') || {};
+  renderUserBadge();
+  if(typeof show==='function' && typeof cur!=='undefined') show(isB0Complete()?Math.max(cur,1):0);
+}
+
+async function doLogout(){
+  if(!sb) return;
+  try{ await sb.auth.signOut(); }catch(e){}
+  currentUser = null;
+  renderUserBadge();
+  showAuth();
+}
+
+function renderUserBadge(){
+  const el=document.getElementById('user-badge');
+  if(!el) return;
+  if(currentUser){
+    const email=currentUser.email||'';
+    el.innerHTML = `<div class="user-email" title="${email}">${email}</div>`
+      +`<button class="user-logout" onclick="doLogout()"><i class="ti ti-logout"></i>${lang==='en'?'Log out':'Выйти'}</button>`;
+  } else {
+    el.innerHTML = '';
+  }
+}
+
+// Облачное сохранение: дебаунс 800 мс, делаем upsert батчем
+const _syncQueue = new Map();
+let _syncTimer = null;
+function syncToCloud(key, jsonValue){
+  if(!sb || !currentUser) return;
+  _syncQueue.set(key, jsonValue);
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(flushSyncQueue, 800);
+}
+async function flushSyncQueue(){
+  if(!sb || !currentUser) return;
+  const rows = Array.from(_syncQueue.entries()).map(([k,v])=>({
+    user_id: currentUser.id,
+    block_key: k,
+    value: v,
+    updated_at: new Date().toISOString()
+  }));
+  _syncQueue.clear();
+  if(!rows.length) return;
+  try{
+    const {error} = await sb.from('strategy_answers').upsert(rows, {onConflict:'user_id,block_key'});
+    if(error) console.warn('[cloud upsert error]', error);
+  }catch(e){ console.warn('[cloud upsert exception]', e); }
+}
+async function syncFromCloud(){
+  if(!sb || !currentUser) return;
+  try{
+    const {data,error} = await sb.from('strategy_answers')
+      .select('block_key,value').eq('user_id', currentUser.id);
+    if(error){ console.warn('[cloud fetch error]', error); return; }
+    (data||[]).forEach(row=>{
+      try{ localStorage.setItem('bm_'+row.block_key, row.value); }catch(e){}
+    });
+  }catch(e){ console.warn('[cloud fetch exception]', e); }
+}
+
+// Принудительно сохранить ВСЕ видимые поля — защита от потери данных
+function saveAllVisible(){
+  function s(k,j){try{localStorage.setItem('bm_'+k,j);}catch(e){}syncToCloud(k,j);}
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
+      s(el.dataset.key, JSON.stringify(el.value));
+    }
+  });
+  // Блок 2 — ценности
+  const vg=document.getElementById('vg');
+  if(vg){
+    const vals=Array.from(vg.querySelectorAll('.val-item')).map(d=>({
+      n:(d.querySelector('.val-inp')||{}).value||'',
+      b:(d.querySelector('.val-ta')||{}).value||''
+    }));
+    s('b2_values', JSON.stringify(vals));
+  }
+  s('done', JSON.stringify(done));
+  // multi-item списки
+  document.querySelectorAll('.mi-list').forEach(listEl=>{
+    const key=listEl.dataset.listKey;
+    const vals=Array.from(listEl.querySelectorAll('textarea')).map(t=>t.value);
+    s(key+'_list', JSON.stringify(vals));
+  });
+  flashSaved();
+}
+
+let _saveTimer=null;
+function flashSaved(){
+  const el=document.getElementById('save-state');
+  if(!el) return;
+  el.classList.add('saved');
+  const t=el.querySelector('.save-text');
+  if(t) t.textContent='Сохранено · '+new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(()=>{
+    el.classList.remove('saved');
+    if(t) t.textContent='Сохраняется автоматически';
+  },2500);
+}
+
+// Кнопка-иконка «сохранить» внутри карточки вопроса
+function saveCardBtn(btn){
+  saveAllVisible();
+  btn.classList.add('saved');
+  btn.innerHTML='<i class="ti ti-check"></i>';
+  setTimeout(()=>{
+    btn.classList.remove('saved');
+    btn.innerHTML='<i class="ti ti-device-floppy"></i>';
+  },1500);
+}
+
+// Скачать резервную копию всех ответов в JSON
+function downloadBackup(){
+  saveAllVisible();
+  const data={};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('bm_')) data[k]=localStorage.getItem(k);
+  }
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`brandmaster-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+// Загрузить резервную копию из файла
+function importBackup(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='application/json';
+  input.onchange=(e)=>{
+    const file=e.target.files&&e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      try{
+        const data=JSON.parse(reader.result);
+        let n=0;
+        Object.entries(data).forEach(([k,v])=>{
+          if(k.startsWith('bm_')){localStorage.setItem(k,v);n++;}
+        });
+        alert('Загружено '+n+' записей. Сейчас перезагрузим страницу.');
+        location.reload();
+      }catch(err){alert('Ошибка загрузки: '+err.message);}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// Показать всё, что реально лежит в localStorage — диагностика
+function showSaved(){
+  const rows=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('bm_')){
+      let v=localStorage.getItem(k);
+      try{const p=JSON.parse(v); v=typeof p==='string'?p:JSON.stringify(p);}catch(e){}
+      if(v&&String(v).trim()) rows.push({k:k.replace(/^bm_/,''), v:String(v)});
+    }
+  }
+  const labels={
+    b1_q1:'Б1 · Зачем развивать бренд',b1_q2:'Б1 · Цель на 3–6 мес',b1_q3:'Б1 · Что значит «работает»',b1_q4:'Б1 · Что останавливало',
+    b2_q1:'Б2 · Факты о себе',b2_q3:'Б2 · Принципы',b2_q4:'Б2 · За какими советами обращаются',b2_q5:'Б2 · Путь через боли',b2_q6:'Б2 · Достижения',b2_q7:'Б2 · Конечный результат',b2_q8:'Б2 · Суперсила',b2_q9:'Б2 · Якоря-ассоциации',b2_values:'Б2 · Ценности',
+    b3_q1:'Б3 · Идеальный клиент',b3_q2:'Б3 · Главная боль',b3_q3:'Б3 · Как боль проявляется',b3_q4:'Б3 · О чём мечтают',b3_q5:'Б3 · Что пробовали',b3_q6:'Б3 · Словами клиента',
+    b4_pup1:'Б4 · ПУП — Простой',b4_pup2:'Б4 · ПУП — Удивительный',b4_pup3:'Б4 · ПУП — Полезный',b4_q2:'Б4 · Чем отличается подход',b4_q3:'Б4 · Позиционирование',
+    b6_q1:'Б6 · 3 темы',b6_q2:'Б6 · Форматы',b6_q3:'Б6 · Площадки',b6_q4:'Б6 · Впечатление',b6_q5:'Б6 · Время в неделю',
+    products:'Продукты',weeks:'Задачи на неделю',done:'Прогресс блоков',ideas:'Банк идей',calData3:'Контент-план',
+  };
+  const html = rows.length===0
+    ? '<div style="padding:24px;text-align:center;color:var(--color-text-tertiary)">Пока ничего не сохранено в этом браузере.</div>'
+    : rows.map(r=>`<div style="margin-bottom:14px;padding:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)"><div style="font-size:11px;color:var(--teal);font-weight:500;margin-bottom:4px">${labels[r.k]||r.k}</div><div style="font-size:13px;color:var(--color-text-primary);white-space:pre-wrap;word-break:break-word">${r.v.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}</div></div>`).join('');
+  const ov=document.createElement('div');
+  ov.className='modal-ov';
+  ov.innerHTML=`<div class="modal" style="width:560px;max-height:80vh;overflow:auto">
+    <div class="modal-hdr"><div class="modal-title">Что сейчас сохранено</div><button class="modal-close" onclick="this.closest('.modal-ov').remove()">×</button></div>
+    <div style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:14px">Показаны только непустые поля. Если чего-то нет в списке — оно не сохранилось.</div>
+    ${html}
+    <div class="modal-acts"><button class="modal-btn mb-ok" onclick="this.closest('.modal-ov').remove()">Закрыть</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+// Save-on-blur: когда курсор уходит из поля — сохраняем
+document.addEventListener('focusout', (e)=>{
+  const el=e.target;
+  if(el&&el.dataset&&el.dataset.key&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT')){
+    const j=JSON.stringify(el.value);
+    try{localStorage.setItem('bm_'+el.dataset.key, j);flashSaved();}catch(err){}
+    syncToCloud(el.dataset.key, j);
+  }
+});
+
+window.addEventListener('beforeunload', saveAllVisible);
+// Фоновое сохранение раз в 30 секунд — последний рубеж защиты
+setInterval(saveAllVisible, 30000);
+
+function updateNav(){
+  let cnt=0;
+  // nav0 (текущая ситуация) — теперь просто отдельный пункт, не блокер
+  const nav0=document.getElementById('nav0');
+  if(nav0){
+    nav0.classList.remove('active','done');
+    if(cur===0) nav0.classList.add('active');
+    if(isB0Complete()) nav0.classList.add('done');
+  }
+  for(let i=1;i<=7;i++){
+    const el=document.getElementById('nav'+i),n=document.getElementById('n'+i);
+    el.classList.remove('active','done','locked');
+    let lockMark=el.querySelector('.lock-ic'); if(lockMark) lockMark.remove();
+    if(i===cur) el.classList.add('active');
+    else if(done[i]){
+      el.classList.add('done');
+      if(n) n.innerHTML='<i class="ti ti-check" style="font-size:11px"></i>';
+      cnt++;
+    } else if(n) n.textContent=i;
+  }
+  [8,9,10,11,12,13].forEach(i=>{
+    const el=document.getElementById('nav'+i);
+    if(!el) return;
+    el.classList.remove('active','locked');
+    let lockMark=el.querySelector('.lock-ic'); if(lockMark) lockMark.remove();
+    if(cur===i) el.classList.add('active');
+  });
+  document.getElementById('prog-label').textContent='Прогресс: '+cnt+' из 7';
+  document.getElementById('prog-fill').style.width=(cnt/7*100)+'%';
+}
+
+function show(n){
+  saveAllVisible();
+  if(cur===4)saveProd();if(cur===8)saveWk();
+  cur=n;const m=META[n];
+  document.getElementById('ttitle').textContent=m.title;
+  document.getElementById('tsub').textContent=m.sub;
+  document.getElementById('tbadge').textContent=m.time;
+  const sp=n===0||n>=8;
+  document.getElementById('btn-ai').style.display=sp?'none':'flex';
+  document.getElementById('btn-done').style.display=sp?'none':'flex';
+  updateNav();
+  const c=document.getElementById('content');
+  if(n===0)c.innerHTML=rB0();
+  else if(n===1)c.innerHTML=rB1();
+  else if(n===2)c.innerHTML=rB2();
+  else if(n===3)c.innerHTML=rB3();
+  else if(n===4){c.innerHTML=rB5();renderProdArea();}
+  else if(n===5)c.innerHTML=rB4();
+  else if(n===6)c.innerHTML=rB6();
+  else if(n===7)c.innerHTML=rB7();
+  else if(n===8){c.innerHTML=rTasks();initTasks();}
+  else if(n===9){c.innerHTML=rAI();initAI();}
+  else if(n===10){c.innerHTML=rIdeas();initIdeas();}
+  else if(n===11){c.innerHTML=rCal();initCal();}
+  else if(n===12)c.innerHTML=rDoc();
+  else if(n===13){c.innerHTML=rClients();initClients();}
+  if(n===0){restoreTA();setupAS();setupB0();}
+  else if(![5,8,9,10,11,13].includes(n)){restoreTA();setupAS();restoreAllMI();}
+  setTimeout(applyTranslations, 0);
+}
+
+function q(num,icon,text,hint,body){return`<div class="qcard"><button class="card-save" onclick="saveCardBtn(this)" title="Сохранить ответ" type="button"><i class="ti ti-device-floppy"></i></button><div class="q-label"><i class="ti ti-${icon}"></i> Вопрос ${num}</div><div class="q-text">${text}</div><div class="q-hint">${hint}</div>${body||`<textarea data-key="b${cur}_q${num}" placeholder="Напишите здесь..."></textarea>`}</div>`;}
+
+// qList — версия q() с динамическим списком ответов (мульти-айтем)
+function qList(num,icon,text,hint,placeholder,note){
+  const key=`b${cur}_q${num}`;
+  const ph=(placeholder||'Напишите здесь...').replace(/"/g,'&quot;');
+  return `<div class="qcard">
+    <button class="card-save" onclick="saveCardBtn(this)" title="Сохранить ответы" type="button"><i class="ti ti-device-floppy"></i></button>
+    <div class="q-label"><i class="ti ti-${icon}"></i> Вопрос ${num}</div>
+    <div class="q-text">${text}</div>
+    <div class="q-hint">${hint}</div>
+    <div class="mi-list" data-list-key="${key}" data-placeholder="${ph}"></div>
+    <button class="mi-add" onclick="addMI(this)" type="button"><i class="ti ti-plus"></i>Добавить</button>
+    ${note?`<div class="mi-note"><i class="ti ti-info-circle"></i> ${note}</div>`:''}
+  </div>`;
+}
+
+function renderMI(listEl){
+  const key=listEl.dataset.listKey;
+  const ph=listEl.dataset.placeholder||'Напишите здесь...';
+  const items=ld(key+'_list')||[''];
+  listEl.innerHTML=items.map((v,i)=>`<div class="mi-row"><textarea data-mi-key="${key}" data-mi-idx="${i}" placeholder="${ph}">${(v||'').replace(/</g,'&lt;')}</textarea><button class="mi-rm" onclick="removeMI(this)" type="button" title="Удалить"><i class="ti ti-x"></i></button></div>`).join('');
+  listEl.querySelectorAll('textarea').forEach(t=>{
+    t.addEventListener('input',()=>saveMI(t));
+  });
+}
+function saveMI(t){
+  const listEl=t.closest('.mi-list');if(!listEl)return;
+  const key=listEl.dataset.listKey;
+  const vals=Array.from(listEl.querySelectorAll('textarea')).map(x=>x.value);
+  sv(key+'_list',vals);
+}
+function addMI(btn){
+  const card=btn.closest('.qcard');
+  const listEl=card.querySelector('.mi-list');
+  if(!listEl)return;
+  const key=listEl.dataset.listKey;
+  const vals=Array.from(listEl.querySelectorAll('textarea')).map(x=>x.value);
+  vals.push('');
+  sv(key+'_list',vals);
+  renderMI(listEl);
+  const all=listEl.querySelectorAll('textarea');
+  if(all.length) all[all.length-1].focus();
+}
+function removeMI(btn){
+  const row=btn.closest('.mi-row');
+  const listEl=btn.closest('.mi-list');
+  if(!row||!listEl)return;
+  const key=listEl.dataset.listKey;
+  const idx=parseInt(row.querySelector('textarea')?.dataset.miIdx||'0',10);
+  let vals=Array.from(listEl.querySelectorAll('textarea')).map(x=>x.value);
+  vals.splice(idx,1);
+  if(!vals.length)vals=[''];
+  sv(key+'_list',vals);
+  renderMI(listEl);
+}
+function restoreAllMI(){
+  document.querySelectorAll('.mi-list').forEach(renderMI);
+}
+
+// ===== Блок 0 — Опросник «Текущая ситуация» =====
+function rB0(){return `
+  <div class="welcome-card" style="margin-bottom:18px">
+    <div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-clipboard-list"></i></div>
+    <div style="font-size:13px;color:var(--teal-dark);line-height:1.6;">
+      Прежде чем начать работу со стратегией — расскажите о точке отсчёта. Через 3–6 месяцев вернётесь к этому опроснику и увидите прогресс. Ответьте на все 5 вопросов, после этого откроются блоки стратегии.
+    </div>
+  </div>
+  <div class="b0-progress"><i class="ti ti-progress-check" style="font-size:16px;"></i><span>Заполнено</span><span class="b0-pct" id="b0-pct">0 из 5</span><div style="flex:1;height:5px;background:white;border-radius:5px;overflow:hidden;margin-left:8px;"><div id="b0-fill" style="height:100%;background:var(--teal);width:0%;transition:width .25s;"></div></div></div>
+
+  <div class="b0-card">
+    <div class="b0-label"><i class="ti ti-pencil"></i> Вопрос 1</div>
+    <div class="b0-text">Ведёшь ли ты свой блог?</div>
+    <div class="b0-radio-row" data-b0-radio="b0_q1">
+      <button type="button" class="b0-radio" data-v="Да, веду активно">Да, веду активно</button>
+      <button type="button" class="b0-radio" data-v="Иногда, нестабильно">Иногда, нестабильно</button>
+      <button type="button" class="b0-radio" data-v="Только начинаю">Только начинаю</button>
+      <button type="button" class="b0-radio" data-v="Нет, ещё не начала">Нет, ещё не начала</button>
+    </div>
+  </div>
+
+  <div class="b0-card">
+    <div class="b0-label"><i class="ti ti-users"></i> Вопрос 2</div>
+    <div class="b0-text">Сколько у тебя сейчас подписчиков?</div>
+    <input class="b0-input" data-key="b0_q2" placeholder="Например: 1 200 в Instagram, 300 в Threads" />
+  </div>
+
+  <div class="b0-card">
+    <div class="b0-label"><i class="ti ti-coin"></i> Вопрос 3</div>
+    <div class="b0-text">Каким образом ты зарабатываешь с блога?</div>
+    <textarea data-key="b0_q3" placeholder="Например: продаю услуги напрямую, веду консультации, направляю в свой курс"></textarea>
+  </div>
+
+  <div class="b0-card">
+    <div class="b0-label"><i class="ti ti-wallet"></i> Вопрос 4</div>
+    <div class="b0-text">Сколько ты зарабатываешь с блога в месяц?</div>
+    <div class="b0-radio-row" data-b0-radio="b0_q4">
+      <button type="button" class="b0-radio" data-v="Пока ничего">Пока ничего</button>
+      <button type="button" class="b0-radio" data-v="До $500">До $500</button>
+      <button type="button" class="b0-radio" data-v="$500–$2 000">$500–$2 000</button>
+      <button type="button" class="b0-radio" data-v="$2 000–$5 000">$2 000–$5 000</button>
+      <button type="button" class="b0-radio" data-v="$5 000+">$5 000+</button>
+      <button type="button" class="b0-radio" data-v="Бизнес: блог влияет на обороты, точно не отследить">Бизнес: блог влияет на обороты, точно не отследить</button>
+    </div>
+  </div>
+
+  <div class="b0-card">
+    <div class="b0-label"><i class="ti ti-target"></i> Вопрос 5</div>
+    <div class="b0-text">Выбери задачу на ближайшее время</div>
+    <div class="b0-radio-row" data-b0-radio="b0_q5">
+      <button type="button" class="b0-radio" data-v="Упаковка">Упаковка</button>
+      <button type="button" class="b0-radio" data-v="Запуск">Запуск</button>
+      <button type="button" class="b0-radio" data-v="Набор аудитории">Набор аудитории</button>
+    </div>
+  </div>
+
+  <div style="margin-top:28px;display:flex;justify-content:flex-end;">
+    <button class="btn-primary" style="padding:11px 24px;font-size:14px;" onclick="b0Next()">
+      Далее — Блок 1 <i class="ti ti-arrow-right"></i>
+    </button>
+  </div>
+`;}
+
+function b0Next(){
+  saveAllVisible();
+  show(1);
+}
+
+function setupB0(){
+  // radio-кнопки
+  document.querySelectorAll('[data-b0-radio]').forEach(row=>{
+    const key=row.dataset.b0Radio;
+    const saved=ld(key);
+    row.querySelectorAll('.b0-radio').forEach(btn=>{
+      if(btn.dataset.v===saved) btn.classList.add('active');
+      btn.onclick=()=>{
+        row.querySelectorAll('.b0-radio').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        sv(key,btn.dataset.v);
+        renderB0Progress();
+        updateNav();
+      };
+    });
+  });
+  // input/textarea с data-key уже подхватятся restoreTA/setupAS, но добавим пересчёт прогресса
+  document.querySelectorAll('#content [data-key^="b0_"]').forEach(el=>{
+    el.addEventListener('input',()=>{ renderB0Progress(); updateNav(); });
+  });
+  renderB0Progress();
+}
+function renderB0Progress(){
+  let n=0;
+  for(let i=1;i<=5;i++){
+    const v=ld('b0_q'+i);
+    if(v&&String(v).trim()) n++;
+  }
+  const pct=Math.round(n/5*100);
+  const lbl=document.getElementById('b0-pct'),fill=document.getElementById('b0-fill');
+  if(lbl) lbl.textContent=n+' из 5';
+  if(fill) fill.style.width=pct+'%';
+}
+function isB0Complete(){
+  for(let i=1;i<=5;i++){
+    const v=ld('b0_q'+i);
+    if(!v||!String(v).trim()) return false;
+  }
+  return true;
+}
+
+function rB1(){return`<div class="welcome-card" style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:18px 22px;margin-bottom:18px;display:flex;gap:14px;align-items:flex-start;"><div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-message-circle-2"></i></div><div style="font-size:13px;color:var(--teal-dark);line-height:1.7;"><strong>Чтобы прийти к твоей задаче, мне нужно больше информации о тебе.</strong><br>Пожалуйста, отвечай максимально подробно — так я смогу предложить конкретный контент-план, описание профиля, а также подробный текст для каждой единицы контента.</div></div><div class="welcome-card"><div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-rocket"></i></div><div style="font-size:13px;color:var(--teal-dark);line-height:1.6;">Прежде чем начать — ответьте на главный вопрос. Когда есть чёткое зачем, всё остальное становится проще.</div></div>`+q(1,'rocket','Зачем вы хотите развивать свой личный бренд?','Подумайте о своей глубинной потребности — зачем на самом деле, помимо заработка.')+qList(2,'flag','Основные 3 цели в блоге на 6 месяцев','По одной цели в каждой строке.','Например: запустить онлайн-курс / выйти на доход $3 000 в месяц / собрать комьюнити 5 000 человек')+q(3,'check','Как ты поймёшь, что личный бренд и блог начали работать эффективно?','Например: клиенты приходят сами, появляются стабильные продажи через контент, аудитория растёт органично.')+q(4,'lock-open','Что останавливало раньше?','Например: боялся осуждения, не знал о чём говорить.');}
+function rB2(){return `<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:24px 28px;margin-bottom:18px;text-align:center;">
+  <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:400;color:var(--teal-dark);line-height:1.4;letter-spacing:0.3px;margin-bottom:8px;">Сильный личный бренд — это правильно рассказанная история.</div>
+  <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:#6B6660;">Давайте напишем вашу.</div>
+</div>`+qList(1,'sparkles','5–7 фактов о себе, которые по-настоящему вас характеризуют','То что удивляет людей когда узнают впервые. Это могут быть интересные опыты, которые вы проходили, необычные путешествия, особые умения и др.','Например: жила полгода в монастыре в Тибете')+q(2,'heart','Ваши ценности 5–7 — как каждая проявляется в жизни?','Конкретные примеры, не просто слова.',`<div class="vals-grid" id="vg"></div><button class="add-btn" onclick="addVal()"><i class="ti ti-plus"></i>Добавить ценность</button>`)+qList(3,'bulb','Принципы и идеи которые хотите транслировать миру?','По одной идее в строке.','Например: верю что каждый может зарабатывать на любимом деле')+qList(4,'users','За какими советами обращаются друзья и знакомые?','В каких темах вы для них авторитет.','Например: как договориться о повышении зарплаты')+q(5,'route','Через какие переломные моменты и боли вы пришли к делу, которым занимаетесь сейчас?','Это ваша история — самый ценный контент.')+qList(6,'trophy','5 профессиональных достижений и кейсы клиентов в цифрах','По одному достижению в строке. Не скромничайте — это ваша сила.','Например: за 3 месяца увеличил доход клиента в 2 раза')+qList(7,'star','Какой конечный результат вы даёте людям?','По одному пункту в строке.','Например: человек понимает, как работает личный бренд, как и что делать в блоге, начинает получать результаты')+q(8,'bolt','В чём ваша суперсила как эксперта?','Что вы делаете легко, а другим даётся с трудом?')+qList(9,'anchor','3–5 якорей-ассоциаций с вами','По одной ассоциации в строке.','Например: личный бренд + Бали + духовное развитие')+q(10,'compass','Чем твой подход отличается от других?','Например: я не учу делать вирусные рилсы — я строю фундамент. Опирайся на свою суперсилу и личный опыт, а не только на инструменты.');}
+function rB3(){return q(1,'user','Кто ваш идеальный клиент?','Например: эксперт с продуктом, который потерял себя в блоге.')+qList(2,'moon','Как проблемы возникают у ваших клиентов по вашей теме?','По одной ситуации в строке. Опишите контекст и триггеры.','Например: пишу посты регулярно, но охваты падают, а продажи стоят')+qList(3,'activity','Как эта проблема конкретно проявляется в жизни?','По одному проявлению в строке.','Например: открывает Instagram и закрывает, не написав ни одного поста')+qList(4,'heart','О чём они мечтают?','По одной мечте в строке.','Например: ясность что делать каждый день, клиенты приходят сами через контент')+q(5,'x','Что пробовали до вас?','Например: курсы по SMM — дали техники но не понимание.')+qList(6,'message','Какими словами говорят о проблеме?','Прямые цитаты клиентов — по одной в строке.','Например: «не знаю о чём писать», «всё уже было сказано до меня»');}
+function rB4(){
+  // Авто-сверка: формируем варианты ПУП и позиционирования из ответов в Б2 и Б3
+  const sp=ld('b2_q8')||''; const ach=ld('b2_q9_list')||[]; const facts=ld('b2_q1_list')||[];
+  const client=ld('b3_q1')||''; const pain=(ld('b3_q2_list')||[])[0]||'';
+  const result=(ld('b2_q7_list')||[])[0]||''; const path=ld('b2_q5')||'';
+  const different=ld('b2_q10')||''; const sup=sp.trim();
+  const sugPlain = client ? `Я помогаю ${client.toLowerCase().slice(0,80)}${client.length>80?'…':''}` : 'Сформулируй коротко: кому ты помогаешь';
+  const sugSurprise = sup || (ach[0]||'') || (path?path.slice(0,90)+(path.length>90?'…':''):'') || 'Опиши свою суперсилу или необычный поворот';
+  const sugUseful = result || 'Назови ощутимый результат, который получает клиент';
+  const sugPos = (client && pain && sup)
+    ? `Я помогаю ${client.toLowerCase().slice(0,60)} ${pain?'справиться с «'+pain.slice(0,50)+'»':''} через ${sup.toLowerCase()}.`
+    : 'Заполни Распаковку и Аудиторию — я предложу формулировку';
+  const hasAny = sp||client||pain||result||path||ach.length||facts.length;
+  const sverka = hasAny ? `<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:20px 24px;margin-bottom:18px;">
+    <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+      <div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-sparkles"></i></div>
+      <div style="flex:1;">
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:400;color:var(--teal-dark);line-height:1.3;margin-bottom:6px;">Правильно ли я тебя услышала?</div>
+        <div style="font-size:13px;color:var(--teal-dark);line-height:1.6;">На основе твоих ответов в «Распаковке» и «Аудитории» я собрала черновик позиционирования. Сверь и подкорректируй — это сэкономит время и поможет не зависнуть.</div>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;margin-top:8px;">
+      <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Возможная ПУП-сборка</div>
+      <div style="font-size:13px;color:var(--color-text-primary);line-height:1.7;">
+        <strong>Просто:</strong> ${sugPlain}<br>
+        <strong>Удивительно:</strong> ${sugSurprise}<br>
+        <strong>Полезно:</strong> ${sugUseful}
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;margin-top:10px;border-left:3px solid var(--teal);">
+      <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Черновик позиционирования</div>
+      <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:var(--color-text-primary);line-height:1.5;">${sugPos}</div>
+    </div>
+    <div style="font-size:12px;color:var(--teal-dark);margin-top:12px;font-style:italic;">Это только подсказка. Ниже напиши свой финальный вариант — он останется в твоей стратегии.</div>
+  </div>` : '';
+
+  return sverka + `<div class="qcard"><button class="card-save" onclick="saveCardBtn(this)" title="Сохранить ответ" type="button"><i class="ti ti-device-floppy"></i></button><div class="q-label"><i class="ti ti-speakerphone"></i> Вопрос 1</div><div class="q-text">Презентация по технике ПУП</div><div class="q-hint">Три элемента первого впечатления</div><div class="pup-grid"><div class="pup-item"><div class="pup-label">Простой</div><textarea class="pup-ta" data-key="b4_pup1" placeholder="Кто вы профессионально"></textarea></div><div class="pup-item"><div class="pup-label">Удивительный</div><textarea class="pup-ta" data-key="b4_pup2" placeholder="Факт который удивляет"></textarea></div><div class="pup-item"><div class="pup-label">Полезный</div><textarea class="pup-ta" data-key="b4_pup3" placeholder="Что вы даёте людям"></textarea></div></div></div>
+<div class="qcard"><button class="card-save" onclick="saveCardBtn(this)" title="Сохранить ответ" type="button"><i class="ti ti-device-floppy"></i></button><div class="q-label"><i class="ti ti-target"></i> Вопрос 2</div><div class="q-text">Позиционирование в одном предложении</div><div class="q-hint">Для [целевая аудитория], чьей главной потребностью является [потребность/боль], наш продукт — это [категория/название продукта], который обеспечивает [основная выгода/главное отличие].</div><textarea data-key="b4_q3" placeholder="Напишите здесь..."></textarea></div>`;}
+function rB5(){return`<div class="prod-header"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary)" id="prod-count">Продуктов: 0</div><button class="btn-teal-out" onclick="addProd()"><i class="ti ti-plus"></i>Добавить продукт</button></div><div class="prod-tabs" id="ptabs"></div><div id="parea"></div>
+<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:18px 22px;margin-top:20px;display:flex;gap:14px;align-items:flex-start;">
+  <div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-confetti"></i></div>
+  <div style="font-size:13px;color:var(--teal-dark);line-height:1.7;">
+    <strong>Спасибо за такой подробный ответ.</strong><br>
+    Мы почти закончили со сбором информации. Дальше я сама подскажу варианты позиционирования и упаковки на основе твоих ответов — тебе останется только сверить и подкорректировать. Активно отвечать нужно ещё в Контент-стратегии.
+  </div>
+</div>`;}
+function rB6(){return qList(1,'layout','3 основные темы блога','По одной теме в строке.','Например: личный бренд / жизнь на Бали / духовное развитие')+q(2,'video','Форматы контента','Какие именно форматы рилсов / каруселей / др. вам нравятся и вы готовы делать. Например: говорящая голова с субтитрами, экспертные карусели, раскрывающие вашу тему, и др.',`<textarea data-key="b${cur}_q2" placeholder="Напишите здесь..."></textarea><div class="mi-note"><i class="ti ti-bookmark"></i> Советую сделать отдельную папочку в «Сохранённые» в Instagram, куда вы будете складывать все понравившиеся форматы контента.</div>`)+q(3,'brand-instagram','Площадки','Например: основная — Instagram, дополнительные — Threads, YouTube.')+q(4,'eye','Какое впечатление хотите оставлять?','Например: эксперт своего дела, интересная насыщенная жизнь, щедро делюсь полезной информацией.')+q(5,'clock','Сколько времени в неделю на контент?','Например: 2 часа в день, рилсы по вторникам и пятницам.')+q(6,'palette','Какой визуал вам нравится?','Например: основные цвета — белый, чёрный, бирюзовый. Спокойные тона, чёткие линии, живые «непостановочные» фото и видео, эстетично.')+`<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:20px 24px;margin-top:20px;">
+  <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;">
+    <div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-calendar-event"></i></div>
+    <div style="flex:1;">
+      <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:400;color:var(--teal-dark);line-height:1.3;margin-bottom:4px;">Рекомендации под твою задачу</div>
+      <div style="font-size:13px;color:var(--teal-dark);line-height:1.6;">Я знаю, что ты выбрала в начале — и сразу подкручиваю контент-план под эту цель.</div>
+    </div>
+  </div>
+  ${renderTaskRecommendations()}
+</div>`;}
+
+function renderTaskRecommendations(){
+  const task = ld('b0_q5')||'';
+  const time = ld('b6_q5')||'';
+  if(!task) return `<div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;font-size:13px;color:var(--color-text-secondary);font-style:italic;">Выбери задачу в «Текущая ситуация» (Вопрос 5) — здесь появятся персональные рекомендации.</div>`;
+  const recs = {
+    'Упаковка': {
+      title:'Цель: Упаковка профиля',
+      items:[
+        '<strong>Первая неделя:</strong> переписать шапку (имя, описание, оффер) и закрепить 4 актуальные «истории» с обложками.',
+        '<strong>Первые 9 постов в ленте</strong> должны давать понять, кто ты, для кого ты и что предлагаешь — по 3 поста на каждую из 3 тем блога.',
+        '<strong>Формат:</strong> 60% карусели (экспертные), 30% Reels (личное / знакомство), 10% сторис-знакомства.',
+        '<strong>Что не делать:</strong> не запускать платные продукты, пока не подтянется визуальная и смысловая упаковка.',
+      ]
+    },
+    'Запуск': {
+      title:'Цель: Запуск продукта',
+      items:[
+        '<strong>За 1 месяц до старта:</strong> прогрев — посты «о боли клиента», личные истории провалов и побед, кейсы.',
+        '<strong>За 2 недели до старта:</strong> анонс продукта, открытие предзаписи, сторис «закулисье запуска».',
+        '<strong>Старт продаж:</strong> 1 ключевой пост-приглашение + сторис каждый день + Reels с ответами на возражения.',
+        '<strong>Формат:</strong> 40% продающее (Reels-сторис), 40% экспертное (карусели), 20% личное.',
+      ]
+    },
+    'Набор аудитории': {
+      title:'Цель: Набор аудитории',
+      items:[
+        '<strong>Фокус — Reels:</strong> 3–5 коротких видео в неделю, цель — охват, не продажи.',
+        '<strong>Темы:</strong> цепляющие на боль клиента, развенчание мифов, личный опыт «до/после».',
+        '<strong>Коллаборации:</strong> 1 совместный эфир или Reels в месяц с близкой по нише аудиторией.',
+        '<strong>Метрики:</strong> смотри на сохранения и комментарии, а не лайки.',
+        '<strong>Что не делать:</strong> не запускать платные продукты, пока охваты не вырастут вдвое.',
+      ]
+    }
+  };
+  const r = recs[task] || recs['Упаковка'];
+  const timeNote = time ? `<div style="font-size:12px;color:var(--teal-dark);margin-top:12px;font-style:italic;">У тебя ${time} в неделю — рекомендую держать ${task==='Набор аудитории'?'3–4 Reels':'2–3 единицы контента'} в неделю, не больше. Лучше реже, но качественно.</div>` : '';
+  return `<div style="background:#fff;border-radius:var(--border-radius-md);padding:16px 18px;">
+    <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">${r.title}</div>
+    <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--color-text-primary);line-height:1.7;">
+      ${r.items.map(i=>'<li style="margin-bottom:6px;">'+i+'</li>').join('')}
+    </ul>
+    ${timeNote}
+  </div>`;
+}
+function rB7(){
+  const checks=[{s:'Шапка профиля',items:['Имя и фамилия или понятный ник','Качественное фото','Описание: кто я + для кого + что даю','Ссылка на сайт или лид-магнит']},{s:'Визуал',items:['Единый стиль','По первым 9 постам понятно о чём блог','Закреплённые сторис']},{s:'Контент',items:['Пост-знакомство','Экспертные посты','Кейсы с результатами','Понятно что продаёшь']},{s:'Общее',items:['За 10 сек понятно кто я','Есть призыв к действию']}];
+  const task = ld('b0_q5')||'';
+  const client = ld('b3_q1')||''; const sp = ld('b2_q8')||''; const pos = ld('b4_q3')||'';
+  let aiSuggest = '';
+  if(task==='Упаковка'){
+    const bioLine1 = pos ? pos.replace(/^я помогаю\s*/i,'Помогаю ').slice(0,80) : 'Сформулируй позиционирование в Б5 — подставлю сюда';
+    const bioLine2 = sp ? 'Суперсила: '+sp : 'Опиши свою суперсилу в Б2';
+    aiSuggest = `<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:20px 24px;margin-bottom:18px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
+        <div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-wand"></i></div>
+        <div style="flex:1;">
+          <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:400;color:var(--teal-dark);line-height:1.3;margin-bottom:4px;">Твоя задача — упаковка. Вот что я подготовила</div>
+          <div style="font-size:13px;color:var(--teal-dark);line-height:1.6;">На основе твоих ответов я собрала предложения для шапки профиля и визуала. Сверь, подкорректируй — и используй в Instagram прямо сегодня.</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Шапка профиля — драфт</div>
+        <div style="font-size:13px;color:var(--color-text-primary);line-height:1.6;">
+          <div style="font-weight:600;margin-bottom:4px;">Твоё имя</div>
+          <div style="margin-bottom:3px;">${bioLine1}</div>
+          <div style="margin-bottom:3px;">${bioLine2}</div>
+          <div style="color:var(--color-text-secondary);font-style:italic;">📩 Связаться · 🔗 ссылка на лид-магнит</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;border-left:3px solid var(--teal);">
+        <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Хочешь, чтобы я разобрала твою шапку прицельно?</div>
+        <div style="font-size:13px;color:var(--color-text-primary);line-height:1.6;margin-bottom:10px;">Пришли скриншот текущей шапки профиля — я укажу, что заменить в имени, описании и обложках сторис, чтобы за 10 секунд было понятно кто ты, для кого и что предлагаешь.</div>
+        <button class="btn-teal-out" onclick="alert('В этой версии скриншот примет ваш стратег вручную. Перешлите фото на удобный канал связи. В следующей версии загрузка будет прямо здесь.')"><i class="ti ti-photo-up"></i>Прислать скрин для разбора</button>
+      </div>
+    </div>`;
+  }
+  let h=aiSuggest+'<div class="checklist">';
+  checks.forEach(s=>{h+=`<div class="chk-section">${s.s}</div>`;s.items.forEach((item,i)=>{const k=`b7_${s.s}_${i}`,ch=ld(k);h+=`<div class="chk-item${ch?' checked':''}" onclick="toggleChk(this,'${k}')"><div class="chk-box">${ch?'<i class="ti ti-check" style="font-size:11px"></i>':''}</div><div class="chk-text">${item}</div></div>`;});});
+  return h+'</div>';
+}
+function rTasks(){return`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">Задачи на неделю</div><span style="font-size:11px;padding:3px 10px;border-radius:var(--border-radius-md);background:var(--teal-light);color:var(--teal);font-weight:500;" id="wrange"></span></div><div style="display:flex;gap:8px;margin-bottom:14px;"><button style="flex:1;padding:7px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-secondary);" onclick="switchWk(-1)" id="wbtn-prev"></button><button style="flex:1;padding:7px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;border:0.5px solid var(--teal);background:var(--teal);color:white;" onclick="switchWk(0)">Эта неделя</button><button style="flex:1;padding:7px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-secondary);" onclick="switchWk(1)" id="wbtn-next"></button></div><div class="wp-wrap"><div style="font-size:12px;color:var(--color-text-secondary);">Выполнено</div><div class="wp-bar"><div class="wp-fill" id="wp-fill" style="width:0%"></div></div><div style="font-size:11px;color:var(--teal);font-weight:500;" id="wp-pct">0%</div></div><div id="task-list"></div><button class="add-btn" onclick="addTask()"><i class="ti ti-plus"></i>Добавить задачу</button>`;}
+function initTasks(){const s=ld('weeks');if(s)weeks=s;wOff=0;renderWk();}
+function getWKey(o){const d=new Date();d.setDate(d.getDate()-d.getDay()+1+o*7);return`w_${d.getFullYear()}_${d.getMonth()}_${Math.ceil(d.getDate()/7)}`;}
+function getWLabel(o){const d=new Date();d.setDate(d.getDate()-d.getDay()+1+o*7);const e=new Date(d);e.setDate(d.getDate()+6);const f=dt=>dt.toLocaleDateString('ru',{day:'numeric',month:'short'});return`${f(d)} — ${f(e)}`;}
+function switchWk(o){saveWk();wOff=o;renderWk();}
+function renderWk(){
+  const key=getWKey(wOff);curWKey=key;
+  const r=document.getElementById('wrange');if(r)r.textContent=getWLabel(wOff);
+  const p=document.getElementById('wbtn-prev'),n=document.getElementById('wbtn-next');
+  if(p)p.textContent=getWLabel(wOff-1).split('—')[0].trim();
+  if(n)n.textContent=getWLabel(wOff+1).split('—')[0].trim();
+  const tasks=weeks[key]||[];
+  const dc=tasks.filter(t=>t.done).length,pct=tasks.length?Math.round(dc/tasks.length*100):0;
+  const f=document.getElementById('wp-fill'),pe=document.getElementById('wp-pct');
+  if(f)f.style.width=pct+'%';if(pe)pe.textContent=pct+'%';
+  const list=document.getElementById('task-list');if(!list)return;
+  if(!tasks.length){list.innerHTML='<div style="font-size:13px;color:var(--color-text-tertiary);text-align:center;padding:20px;font-style:italic;margin-bottom:12px;">Добавьте задачи на эту неделю</div>';return;}
+  list.innerHTML=tasks.map((t,i)=>`<div class="task-row${t.done?' done-t':''}"><div class="task-cb" onclick="togTask(${i})">${t.done?'<i class="ti ti-check" style="font-size:11px"></i>':''}</div><input type="text" class="task-inp" value="${(t.text||'').replace(/"/g,'&quot;')}" placeholder="Напишите задачу..." oninput="updTask(${i},this.value)"><button class="task-del" onclick="delTask(${i})"><i class="ti ti-x"></i></button></div>`).join('');
+}
+function saveWk(){if(!curWKey)return;const list=document.getElementById('task-list');if(!list)return;list.querySelectorAll('.task-inp').forEach((inp,i)=>{if(weeks[curWKey]&&weeks[curWKey][i])weeks[curWKey][i].text=inp.value;});sv('weeks',weeks);}
+function addTask(){if(!weeks[curWKey])weeks[curWKey]=[];weeks[curWKey].push({text:'',done:false});sv('weeks',weeks);renderWk();}
+function togTask(i){if(!weeks[curWKey])return;weeks[curWKey][i].done=!weeks[curWKey][i].done;sv('weeks',weeks);renderWk();}
+function updTask(i,v){if(weeks[curWKey]&&weeks[curWKey][i])weeks[curWKey][i].text=v;sv('weeks',weeks);}
+function delTask(i){if(!weeks[curWKey])return;weeks[curWKey].splice(i,1);sv('weeks',weeks);renderWk();}
+
+// AI Recommendations
+function rAI(){return`<div class="ai-hero"><div><div style="font-size:15px;font-weight:500;color:var(--teal-dark);margin-bottom:4px;">Рекомендации AI</div><div style="font-size:12px;color:var(--teal-dark);opacity:0.8;line-height:1.5;">AI проанализирует стратегию и даст персональные рекомендации</div><div class="meta-chips" id="meta-chips"></div></div><button class="ai-gen-btn" id="reco-btn" onclick="genReco()"><i class="ti ti-sparkles"></i>Сгенерировать</button></div><div class="ai-sec"><div class="ai-sec-hdr"><div class="ai-sec-icon"><i class="ti ti-compass"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Стратегические рекомендации</div><div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px;">О чём говорить, как подавать, чего избегать</div></div></div><div id="reco-out"><div class="ai-empty"><div class="ai-empty-text">Нажмите "Сгенерировать" чтобы получить рекомендации</div></div></div></div>`;}
+function initAI(){buildChips();}
+function buildChips(){const ctx=getCtx();const ch=document.getElementById('meta-chips');if(!ch)return;[{l:'Зачем',v:ctx.why},{l:'Суперсила',v:ctx.sp},{l:'Аудитория',v:ctx.cl},{l:'Позиционирование',v:ctx.pos},{l:'Темы',v:ctx.topics}].forEach(i=>{ch.innerHTML+=`<span class="meta-chip${i.v?' filled':''}">${i.v?'✓ ':''}${i.l}</span>`;});}
+function getCtx(){return{why:ld('b1_q1')||'',goal:ld('b1_q2')||'',sp:ld('b2_q8')||'',anchors:ld('b2_q9')||'',cl:ld('b3_q1')||'',pain:ld('b3_q2')||'',pos:ld('b4_q3')||'',topics:ld('b6_q1')||'',fmts:ld('b6_q2')||'',prods:(ld('products')||[]).map(p=>p.name).join(', ')};}
+async function callAI(prompt){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});const d=await r.json();return JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());}
+function ldTxt(id,txt){const el=document.getElementById(id);if(el)el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:16px;color:var(--color-text-secondary);font-size:13px;"><div class="spinner spinner-d"></div>${txt}</div>`;}
+async function genReco(){
+  const ctx=getCtx();lastCtx=ctx;buildChips();
+  const btn=document.getElementById('reco-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>Генерирую...';
+  ldTxt('reco-out','Анализирую стратегию...');
+  const pr=`Ты стратег по личному бренду. Данные:\n- Зачем: ${ctx.why||'не указано'}\n- Суперсила: ${ctx.sp||'не указано'}\n- Якоря: ${ctx.anchors||'не указано'}\n- Клиент: ${ctx.cl||'не указано'}\n- Боль: ${ctx.pain||'не указано'}\n- Позиционирование: ${ctx.pos||'не указано'}\n- Темы: ${ctx.topics||'не указано'}\n- Продукты: ${ctx.prods||'не указано'}\nДай 5-6 стратегических рекомендаций. ТОЛЬКО JSON:\n{"recommendations":[{"label":"название","text":"описание"}]}`;
+  try{const d=await callAI(pr);const o=document.getElementById('reco-out');if(o)o.innerHTML=d.recommendations.map(r=>`<div class="reco-item"><div class="reco-label">${r.label}</div><div class="reco-text">${r.text}</div></div>`).join('');}
+  catch(e){const o=document.getElementById('reco-out');if(o)o.innerHTML='<div class="ai-empty"><div class="ai-empty-text">Ошибка. Попробуйте ещё раз.</div></div>';}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i>Обновить';
+}
+
+// Ideas Bank
+function rIdeas(){return`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><div><div style="font-size:15px;font-weight:500;color:var(--color-text-primary);">Банк идей для контента</div><div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px;">Сохраняй идеи от AI и свои — планируй в календарь одним кликом</div></div><button class="ai-gen-btn" id="ideas-gen-btn" onclick="genIdeas()"><i class="ti ti-sparkles"></i>Сгенерировать AI</button></div>
+<div class="ideas-tabs-row"><button class="ideas-tab active" id="itab-expert" onclick="switchIdTab('expert')"><i class="ti ti-certificate"></i>Экспертные<span class="cnt" id="icnt-expert">0</span></button><button class="ideas-tab" id="itab-personal" onclick="switchIdTab('personal')"><i class="ti ti-user"></i>Личные<span class="cnt" id="icnt-personal">0</span></button><button class="ideas-tab" id="itab-fun" onclick="switchIdTab('fun')"><i class="ti ti-mood-happy"></i>Развлекательные<span class="cnt" id="icnt-fun">0</span></button></div>
+<div class="ideas-add-form"><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="ti ti-plus"></i>Добавить свою идею</div>
+<div class="iform-row"><div><div class="fl-sm">Формат</div><select id="nfmt"><option>Reels</option><option>Пост-карусель</option><option>Пост-фото</option><option>Сторис</option><option>Тред</option><option>Видео</option><option>Shorts</option></select></div><div><div class="fl-sm">Площадка</div><select id="nplt"><option>Instagram</option><option>Threads</option><option>YouTube</option><option>TikTok</option></select></div></div>
+<div class="fl-sm">Тема (заголовок)</div><input type="text" class="iform-input" id="nttl" placeholder="Например: Как я нашла свою нишу через 3 провала">
+<div class="fl-sm">Идея (подробнее)</div><textarea class="iform-ta" id="ndesc" placeholder="Опиши что снять или написать..."></textarea>
+<div style="display:flex;align-items:center;justify-content:space-between;"><div style="font-size:11px;color:var(--color-text-tertiary);">Вкладка: <strong id="itab-lbl">Экспертные</strong></div><button class="add-idea-btn" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--border-radius-md);background:var(--teal);color:white;border:none;font-size:12px;font-weight:500;cursor:pointer;" onclick="addIdea()"><i class="ti ti-plus"></i>Добавить</button></div></div>
+<div class="sort-row"><span class="sort-lbl">Показать:</span><button class="sort-btn active" id="sf-all" onclick="setIF('all')">Все</button><button class="sort-btn" id="sf-ai" onclick="setIF('ai')">От AI</button><button class="sort-btn" id="sf-user" onclick="setIF('user')">Мои</button></div>
+<div class="ideas-grid" id="ideas-grid"></div>`;}
+
+function initIdeas(){const s=ld('ideas2');if(s){ideas.expert=s.expert||[];ideas.personal=s.personal||[];ideas.fun=s.fun||[];}updIdCounts();renderIdeas();}
+function switchIdTab(t){activeIdTab=t;['expert','personal','fun'].forEach(x=>{const el=document.getElementById('itab-'+x);if(el)el.className='ideas-tab'+(x===t?' active':'');});const l=document.getElementById('itab-lbl');if(l)l.textContent=TAB_LABELS[t];renderIdeas();}
+function setIF(f){ideaFilter=f;['all','ai','user'].forEach(x=>{const el=document.getElementById('sf-'+x);if(el)el.className='sort-btn'+(x===f?' active':'');});renderIdeas();}
+function updIdCounts(){['expert','personal','fun'].forEach(t=>{const el=document.getElementById('icnt-'+t);if(el)el.textContent=ideas[t].length;});}
+function addIdea(){const fmt=document.getElementById('nfmt').value,plt=document.getElementById('nplt').value,ttl=document.getElementById('nttl').value.trim(),desc=document.getElementById('ndesc').value.trim();if(!ttl)return;ideas[activeIdTab].push({id:Date.now(),fmt,platform:plt,title:ttl,description:desc,source:'user',scheduledDate:null});document.getElementById('nttl').value='';document.getElementById('ndesc').value='';sv('ideas2',ideas);updIdCounts();renderIdeas();}
+function delIdea(tab,id){ideas[tab]=ideas[tab].filter(i=>i.id!==id);sv('ideas2',ideas);updIdCounts();renderIdeas();}
+
+function openDP(tab,id){
+  const idea=ideas[tab].find(i=>i.id===id);if(!idea)return;
+  dpIdea={tab,id};const now=new Date();dpY=now.getFullYear();dpM=now.getMonth();dpSelDate=idea.scheduledDate||null;dpPlt=PMAP[idea.platform]||'ig';
+  showDP(idea);
+}
+function showDP(idea){
+  const ex=document.querySelector('.modal-ov');if(ex)ex.remove();
+  const ov=document.createElement('div');ov.className='modal-ov';
+  ov.innerHTML=`<div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Выбери дату публикации</div><button class="modal-close" onclick="this.closest('.modal-ov').remove()">✕</button></div>
+    <div class="dp-card-prev"><div class="dp-card-fmt ${FMT[idea.fmt]||'p-post'}">${idea.fmt}</div><div class="dp-card-ttl">${idea.title}</div></div>
+    <div class="fl-sm" style="margin-bottom:6px;">Площадка в контент-плане</div>
+    <div class="dp-plt-row">
+      <button class="dp-plt-btn${dpPlt==='ig'?' a-ig':''}" onclick="dpSetPlt('ig',this)">Instagram</button>
+      <button class="dp-plt-btn${dpPlt==='th'?' a-th':''}" onclick="dpSetPlt('th',this)">Threads</button>
+      <button class="dp-plt-btn${dpPlt==='yt'?' a-yt':''}" onclick="dpSetPlt('yt',this)">YouTube</button>
+      <button class="dp-plt-btn${dpPlt==='tt'?' a-tt':''}" onclick="dpSetPlt('tt',this)">TikTok</button>
+    </div>
+    <div class="dp-nav"><button class="dp-nav-btn" onclick="dpPrev()">‹</button><div class="dp-month-lbl" id="dp-mlbl">${MONTHS_R[dpM]} ${dpY}</div><button class="dp-nav-btn" onclick="dpNext()">›</button></div>
+    <div class="dp-grid" id="dp-grid"></div>
+    <div class="dp-sel-lbl" id="dp-slbl">${dpSelDate?'Выбрано: '+fmtDate(dpSelDate):'Выберите дату'}</div>
+    <div class="dp-acts"><button class="dp-cancel" onclick="this.closest('.modal-ov').remove()">Отмена</button><button class="dp-confirm" id="dp-confirm" onclick="confirmDP()" ${dpSelDate?'':'disabled'}><i class="ti ti-calendar-plus"></i> Добавить в план</button></div>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);renderDPGrid();
+}
+function dpSetPlt(p,btn){dpPlt=p;document.querySelectorAll('.dp-plt-btn').forEach(b=>b.className='dp-plt-btn');btn.className=`dp-plt-btn a-${p}`;}
+function dpPrev(){dpM--;if(dpM<0){dpM=11;dpY--;}document.getElementById('dp-mlbl').textContent=MONTHS_R[dpM]+' '+dpY;renderDPGrid();}
+function dpNext(){dpM++;if(dpM>11){dpM=0;dpY++;}document.getElementById('dp-mlbl').textContent=MONTHS_R[dpM]+' '+dpY;renderDPGrid();}
+function getSchedDates(){try{const raw=localStorage.getItem('bm_calData3');const cd=raw?JSON.parse(raw):{ig:[],th:[],yt:[],tt:[]};return new Set(Object.values(cd).flat().filter(c=>c.day).map(c=>c.day));}catch(e){return new Set();}}
+function renderDPGrid(){
+  const grid=document.getElementById('dp-grid');if(!grid)return;
+  const first=new Date(dpY,dpM,1);let sd=first.getDay();if(sd===0)sd=7;
+  const dim=new Date(dpY,dpM+1,0).getDate(),dip=new Date(dpY,dpM,0).getDate();
+  const today=new Date(),sched=getSchedDates();
+  let h=DOWS.map(d=>`<div class="dp-dow">${d}</div>`).join('');
+  let cells=[];for(let i=sd-1;i>0;i--)cells.push({d:dip-i+1,c:false});for(let i=1;i<=dim;i++)cells.push({d:i,c:true});while(cells.length%7!==0)cells.push({d:cells.length-dim-sd+2,c:false});
+  cells.forEach(cell=>{
+    const dk=cell.c?`${dpY}-${String(dpM+1).padStart(2,'0')}-${String(cell.d).padStart(2,'0')}`:null;
+    const isTd=cell.c&&today.getFullYear()===dpY&&today.getMonth()===dpM&&today.getDate()===cell.d;
+    const isSel=dk&&dk===dpSelDate,hasCo=dk&&sched.has(dk);
+    const cls=['dp-day',!cell.c?'dp-other':'',isTd?'dp-today':'',isSel?'dp-sel':'',hasCo?'dp-has':''].filter(Boolean).join(' ');
+    h+=`<div class="${cls}" onclick="${cell.c?`dpPick('${dk}')`:''}">${cell.d}</div>`;
+  });
+  grid.innerHTML=h;
+}
+function dpPick(dk){dpSelDate=dk;const l=document.getElementById('dp-slbl');if(l)l.textContent='Выбрано: '+fmtDate(dk);const c=document.getElementById('dp-confirm');if(c)c.disabled=false;renderDPGrid();}
+function fmtDate(dk){const[y,m,d]=dk.split('-');const ms=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];return`${parseInt(d)} ${ms[parseInt(m)-1]} ${y}`;}
+function confirmDP(){
+  if(!dpSelDate||!dpIdea)return;
+  const idea=ideas[dpIdea.tab].find(i=>i.id===dpIdea.id);if(!idea)return;
+  try{const raw=localStorage.getItem('bm_calData3');const cd=raw?JSON.parse(raw):{ig:[],th:[],yt:[],tt:[]};cd[dpPlt].push({id:Date.now(),fmt:idea.fmt,title:idea.title,idea:idea.description||'',day:dpSelDate});localStorage.setItem('bm_calData3',JSON.stringify(cd));}catch(e){}
+  idea.scheduledDate=dpSelDate;sv('ideas2',ideas);
+  document.querySelector('.modal-ov').remove();renderIdeas();
+}
+function renderIdeas(){
+  const grid=document.getElementById('ideas-grid');if(!grid)return;
+  let list=ideas[activeIdTab];
+  if(ideaFilter==='ai')list=list.filter(i=>i.source==='ai');
+  if(ideaFilter==='user')list=list.filter(i=>i.source==='user');
+  if(!list.length){grid.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;padding:32px;text-align:center;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);grid-column:1/-1;"><div style="font-size:28px;color:var(--color-text-tertiary);margin-bottom:8px;"><i class="ti ti-bulb"></i></div><div style="font-size:13px;color:var(--color-text-tertiary);">${ideaFilter==='ai'?'Нажмите "Сгенерировать AI"':ideaFilter==='user'?'Добавьте свою первую идею выше':'Здесь появятся идеи — от AI и ваши'}</div></div>`;return;}
+  grid.innerHTML=list.map(idea=>`<div class="idea-card ${idea.source==='ai'?'ai-c':'user-c'}">
+    <div class="idea-top"><div class="idea-badges"><span class="idea-fmt ${FMT[idea.fmt]||'p-post'}">${idea.fmt}</span><span class="idea-plt">${idea.platform}</span></div><span class="idea-src ${idea.source==='ai'?'src-ai':'src-user'}">${idea.source==='ai'?'AI':'Моя'}</span></div>
+    <div class="idea-title">${idea.title}</div>
+    ${idea.description?`<div class="idea-desc">${idea.description}</div>`:''}
+    <div class="idea-acts">
+      <button class="idea-cal-btn" onclick="openDP('${activeIdTab}',${idea.id})"><i class="ti ti-calendar-plus"></i>${idea.scheduledDate?'Перенести':'В план'}</button>
+      ${idea.scheduledDate?`<span class="sched-badge"><i class="ti ti-check"></i>${fmtDate(idea.scheduledDate)}</span>`:''}
+      <button class="idea-del" onclick="delIdea('${activeIdTab}',${idea.id})"><i class="ti ti-trash"></i></button>
+    </div>
+  </div>`).join('');
+}
+async function genIdeas(){
+  const btn=document.getElementById('ideas-gen-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>Генерирую...';
+  const ctx=getCtx();
+  const bp=(type)=>{const base=`Ты стратег по личному бренду. Данные:\n- Суперсила: ${ctx.sp||'не указано'}\n- Позиционирование: ${ctx.pos||'не указано'}\n- Темы: ${ctx.topics||'не указано'}\n- Клиент: ${ctx.cl||'не указано'}\n`;const t={expert:'8 экспертных идей — кейсы, методология, знания.',personal:'8 личных идей — жизнь, путь, ценности.',fun:'8 развлекательных — трендовые форматы, юмор, интерактив.'};return base+`Предложи ${t[type]} ТОЛЬКО JSON:\n{"ideas":[{"fmt":"Reels или Пост-карусель или Пост-фото или Сторис или Тред","platform":"Instagram или Threads или YouTube или TikTok","title":"заголовок","description":"краткое описание"}]}`};
+  try{
+    const[ed,pd,fd]=await Promise.all([callAI(bp('expert')),callAI(bp('personal')),callAI(bp('fun'))]);
+    const mk=arr=>arr.map(i=>({id:Date.now()+Math.random(),fmt:i.fmt,platform:i.platform,title:i.title,description:i.description,source:'ai',scheduledDate:null}));
+    ideas.expert=[...ideas.expert,...mk(ed.ideas||[])];ideas.personal=[...ideas.personal,...mk(pd.ideas||[])];ideas.fun=[...ideas.fun,...mk(fd.ideas||[])];
+    sv('ideas2',ideas);updIdCounts();renderIdeas();
+  }catch(e){alert('Ошибка. Попробуйте ещё раз.');}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i>Сгенерировать AI';
+}
+
+// Calendar
+function rCal(){return`<div class="plt-tabs-row"><div style="display:flex;gap:6px;flex-wrap:wrap;"><div class="plt-tab p-ig" onclick="setCalPlt('ig')"><span class="plt-dot d-ig"></span>Instagram</div><div class="plt-tab" onclick="setCalPlt('th')"><span class="plt-dot d-th"></span>Threads</div><div class="plt-tab" onclick="setCalPlt('yt')"><span class="plt-dot d-yt"></span>YouTube</div><div class="plt-tab" onclick="setCalPlt('tt')"><span class="plt-dot d-tt"></span>TikTok</div></div><div class="view-toggle"><button class="view-btn active" id="vbtn-m" onclick="setCalView('month')"><i class="ti ti-calendar-month"></i>Месяц</button><button class="view-btn" id="vbtn-w" onclick="setCalView('week')"><i class="ti ti-calendar-week"></i>Неделя</button></div></div>
+<div class="cal-top-row"><div class="cal-panel"><div class="cal-panel-title">Новая единица контента</div><div class="cal-form"><select id="cal-fmt"></select><div><div class="cal-fl">Тема (заголовок)</div><input type="text" id="cal-ttl" placeholder="Например: Почему блог вызывает раздражение"></div><div><div class="cal-fl">Идея (кратко)</div><textarea id="cal-idea" placeholder="Опиши идею..."></textarea></div></div><button class="cal-create-btn" onclick="calCreate()"><i class="ti ti-plus"></i> Добавить в очередь</button></div>
+<div class="cal-panel"><div class="cal-stats"><div class="cs"><div class="cs-n" id="cs-t">0</div><div class="cs-l">всего</div></div><div class="cs"><div class="cs-n" id="cs-s">0</div><div class="cs-l">в плане</div></div><div class="cs"><div class="cs-n" id="cs-q">0</div><div class="cs-l">в очереди</div></div></div><div class="cal-panel-title">Очередь <span id="bl-cnt" style="color:var(--color-text-tertiary);font-size:11px;"></span></div><div class="queue-wrap" id="queue-wrap"></div><div class="drop-zone" id="drop-back">← Перетащи или нажми чтобы убрать из плана</div><div class="tap-hint" id="tap-hint">Выбери карточку и нажми на день</div></div></div>
+<div class="cal-sec"><div class="cal-nav-row"><button class="cal-nav-btn" onclick="calPrev()"><i class="ti ti-chevron-left"></i> Пред.</button><div class="cal-period" id="cal-period"></div><button class="cal-nav-btn" onclick="calNext()">След. <i class="ti ti-chevron-right"></i></button></div><div class="cal-scroll"><div id="cal-cont"></div></div></div>`;}
+function initCal(){const s=ld('calData3');if(s)calData=s;const d=new Date();d.setDate(d.getDate()-d.getDay()+1);weekStart=d;setCalPlt(calPlt);}
+function setCalPlt(p){calPlt=p;document.querySelectorAll('.plt-tab').forEach(t=>t.className='plt-tab');document.querySelectorAll('.plt-tab')[['ig','th','yt','tt'].indexOf(p)].classList.add('p-'+p);const sel=document.getElementById('cal-fmt');if(sel)sel.innerHTML=PLATS[p].formats.map(f=>`<option>${f}</option>`).join('');renderCalAll();}
+function setCalView(v){calView=v;document.getElementById('vbtn-m').className='view-btn'+(v==='month'?' active':'');document.getElementById('vbtn-w').className='view-btn'+(v==='week'?' active':'');renderCalGrid();}
+function calCreate(){const fmt=document.getElementById('cal-fmt').value,ttl=document.getElementById('cal-ttl').value.trim(),idea=document.getElementById('cal-idea').value.trim();if(!ttl)return;calData[calPlt].push({id:Date.now(),fmt,title:ttl,idea,day:null});document.getElementById('cal-ttl').value='';document.getElementById('cal-idea').value='';sv('calData3',calData);renderCalAll();}
+function calClearSel(){calSel=null;const th=document.getElementById('tap-hint');if(th)th.className='tap-hint';}
+function calSelectCard(id){if(calSel===id){calClearSel();return;}calSel=id;const th=document.getElementById('tap-hint');if(th)th.className='tap-hint vis';}
+function calAssign(dk){if(!dk||!calSel)return;const card=calData[calPlt].find(c=>c.id===calSel);if(card){card.day=dk;sv('calData3',calData);}calClearSel();renderCalAll();}
+function openCalModal(id){
+  const card=calData[calPlt].find(c=>c.id===id);if(!card)return;
+  const dl=card.day?card.day.split('-').reverse().join('.'):'Не запланировано';
+  const ov=document.createElement('div');ov.className='modal-ov';
+  ov.innerHTML=`<div class="modal"><div class="modal-hdr"><div class="modal-title">${card.title}</div><button class="modal-close" onclick="this.closest('.modal-ov').remove()">✕</button></div><span class="modal-fmt ${FMT[card.fmt]||'p-post'}">${card.fmt}</span><div style="font-size:12px;color:var(--color-text-secondary);margin:8px 0 12px;"><i class="ti ti-calendar"></i> ${dl}</div><div class="modal-field"><div class="modal-lbl">Тема</div><div class="modal-val">${card.title}</div></div><div class="modal-field"><div class="modal-lbl">Идея</div><div class="modal-val${card.idea?'':' emp'}">${card.idea||'Идея не добавлена'}</div></div><div class="modal-acts"><button class="modal-btn mb-del" onclick="calDelCard(${id});this.closest('.modal-ov').remove()"><i class="ti ti-trash"></i> Удалить</button><button class="modal-btn mb-ok" onclick="this.closest('.modal-ov').remove()">Закрыть</button></div></div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});document.body.appendChild(ov);
+}
+function calDelCard(id){if(calSel===id)calClearSel();calData[calPlt]=calData[calPlt].filter(c=>c.id!==id);sv('calData3',calData);renderCalAll();}
+function dda(dk){if(!dk)return'';return`ondragover="event.preventDefault();this.classList.add('drag-ov')" ondragleave="this.classList.remove('drag-ov')" ondrop="this.classList.remove('drag-ov');if(calDrag){const c=calData[calPlt].find(x=>x.id===calDrag);if(c)c.day='${dk}';sv('calData3',calData);renderCalAll();}" onclick="calAssign('${dk}')"`;} 
+function renderCalAll(){
+  const cards=calData[calPlt].filter(c=>c.day===null);
+  const tot=calData[calPlt].length,sch=calData[calPlt].filter(c=>c.day!==null).length;
+  ['cs-t','cs-s','cs-q'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=[tot,sch,tot-sch][i];});
+  const bc=document.getElementById('bl-cnt');if(bc)bc.textContent=cards.length?`(${cards.length})`:'';
+  const wrap=document.getElementById('queue-wrap');
+  if(wrap){
+    wrap.innerHTML=cards.length?cards.map(c=>`<div class="q-card${calSel===c.id?' sel':''}" draggable="true" ondragstart="calDrag=${c.id}" onclick="calSelectCard(${c.id})"><div class="q-fmt ${FMT[c.fmt]||'p-post'}">${c.fmt}</div><div class="q-ttl">${c.title}</div>${c.idea?`<div class="q-idea">${c.idea}</div>`:''}<div style="display:flex;justify-content:space-between;margin-top:3px;"><button style="background:none;border:none;font-size:10px;color:var(--teal);cursor:pointer;padding:0;" onclick="event.stopPropagation();openCalModal(${c.id})"><i class="ti ti-eye"></i></button><button style="background:none;border:none;font-size:10px;color:var(--color-text-tertiary);cursor:pointer;padding:0;" onclick="event.stopPropagation();calDelCard(${c.id})"><i class="ti ti-x"></i></button></div></div>`).join(''):'<div style="font-size:12px;color:var(--color-text-tertiary);font-style:italic;padding:10px 0;">Все запланированы</div>';
+    const db=document.getElementById('drop-back');
+    if(db){db.ondragover=e=>{e.preventDefault();db.style.borderColor='var(--teal)';};db.ondragleave=()=>{db.style.borderColor='';};db.ondrop=e=>{e.preventDefault();db.style.borderColor='';if(!calDrag)return;const c=calData[calPlt].find(x=>x.id===calDrag);if(c)c.day=null;sv('calData3',calData);renderCalAll();};db.onclick=()=>{if(calSel){const c=calData[calPlt].find(x=>x.id===calSel);if(c)c.day=null;sv('calData3',calData);calClearSel();renderCalAll();}};}
+  }
+  renderCalGrid();
+}
+function renderCalGrid(){
+  const cont=document.getElementById('cal-cont');if(!cont)return;
+  if(calView==='month'){
+    const first=new Date(calY,calM,1);let sd=first.getDay();if(sd===0)sd=7;
+    const dim=new Date(calY,calM+1,0).getDate(),dip=new Date(calY,calM,0).getDate();
+    const today=new Date();document.getElementById('cal-period').textContent=MONTHS_R[calM]+' '+calY;
+    let h=`<div class="cal-grid-m">`;h+=DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+    let cells=[];for(let i=sd-1;i>0;i--)cells.push({d:dip-i+1,c:false});for(let i=1;i<=dim;i++)cells.push({d:i,c:true});while(cells.length%7!==0)cells.push({d:cells.length-dim-sd+2,c:false});
+    cells.forEach(cell=>{const dk=cell.c?`${calY}-${String(calM+1).padStart(2,'0')}-${String(cell.d).padStart(2,'0')}`:null;const isTd=cell.c&&today.getFullYear()===calY&&today.getMonth()===calM&&today.getDate()===cell.d;const dayCards=dk?calData[calPlt].filter(c=>c.day===dk):[];const isTap=calSel&&dk;h+=`<div class="cal-day${!cell.c?' other-m':''}${isTd?' today-d':''}${isTap?' tap-tgt':''}" ${dda(dk||'')}><div class="day-num">${cell.d}</div>${dayCards.map(c=>`<div class="day-pill ${FMT[c.fmt]||'p-post'}" draggable="true" ondragstart="calDrag=${c.id}" onclick="event.stopPropagation();openCalModal(${c.id})" title="${c.title}">${c.title}</div>`).join('')}</div>`;});
+    cont.innerHTML=h+'</div>';
+  } else {
+    const days=[];for(let i=0;i<7;i++){const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);days.push(d);}
+    const today=new Date(),fmt=dt=>dt.toLocaleDateString('ru',{day:'numeric',month:'short'});
+    document.getElementById('cal-period').textContent=`${fmt(days[0])} — ${fmt(days[6])}`;
+    let h=`<div class="cal-grid-w">`;
+    days.forEach(d=>{const dk=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const isTd=d.toDateString()===today.toDateString();const dayCards=calData[calPlt].filter(c=>c.day===dk);const dow=DOWS[d.getDay()===0?6:d.getDay()-1];const isTap=!!calSel;h+=`<div class="week-day${isTd?' today-d':''}${isTap?' tap-tgt':''}" ${dda(dk)}><div class="w-dow">${dow}</div><div class="w-num">${d.getDate()}</div>${dayCards.map(c=>`<div class="week-pill ${FMT[c.fmt]||'p-post'}" draggable="true" ondragstart="calDrag=${c.id}" onclick="event.stopPropagation();openCalModal(${c.id})">${c.fmt}: ${c.title}</div>`).join('')}</div>`;});
+    cont.innerHTML=h+'</div>';
+  }
+}
+function calPrev(){if(calView==='month'){calM--;if(calM<0){calM=11;calY--;}}else{weekStart=new Date(weekStart);weekStart.setDate(weekStart.getDate()-7);}renderCalGrid();}
+function calNext(){if(calView==='month'){calM++;if(calM>11){calM=0;calY++;}}else{weekStart=new Date(weekStart);weekStart.setDate(weekStart.getDate()+7);}renderCalGrid();}
+
+// ===== CRM: База клиентов =====
+let _clFilter='all';
+let _clSearch='';
+const CL_STATUS = {
+  lead:{label:'Лид', color:'lead'},
+  inProgress:{label:'В работе', color:'inProgress'},
+  customer:{label:'Клиент', color:'customer'},
+  done:{label:'Завершён', color:'done'}
+};
+function _clLoad(){ return ld('clients')||[]; }
+function _clSave(arr){ sv('clients', arr); }
+function _clProducts(){
+  const ps = ld('products')||[];
+  return ps.map(p=>p.name||'Без названия').filter(n=>n.trim());
+}
+function _clFmtDate(iso){
+  if(!iso) return '';
+  try{
+    const d=new Date(iso); if(isNaN(d.getTime())) return iso;
+    const m=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+    return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+  }catch(e){return iso;}
+}
+function _clEsc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+function rClients(){
+  return `<div id="cl-page">
+    <div class="cl-stats" id="cl-stats"></div>
+    <div class="cl-controls">
+      <div class="cl-filters" id="cl-filters"></div>
+      <div class="cl-search-wrap">
+        <input class="cl-search" id="cl-search" placeholder="Поиск по имени или контактам..." />
+        <button class="cl-add-btn" onclick="clOpenAdd()"><i class="ti ti-plus"></i>Добавить клиента</button>
+      </div>
+    </div>
+    <div id="cl-list"></div>
+  </div>`;
+}
+
+function initClients(){
+  document.getElementById('cl-search').addEventListener('input',(e)=>{
+    _clSearch = e.target.value.toLowerCase();
+    renderClientsList();
+  });
+  renderClientsStats();
+  renderClientsFilters();
+  renderClientsList();
+}
+
+function renderClientsStats(){
+  const all = _clLoad();
+  const inWork = all.filter(c=>c.status==='inProgress').length;
+  const cust = all.filter(c=>c.status==='customer');
+  const now = new Date(); const ym = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const sumPipe = all.filter(c=>c.status==='inProgress').reduce((s,c)=>s+(parseFloat(String(c.amount).replace(/[^0-9.-]/g,''))||0),0);
+  const sumClosed = cust.filter(c=>(c.updatedAt||'').startsWith(ym)).reduce((s,c)=>s+(parseFloat(String(c.amount).replace(/[^0-9.-]/g,''))||0),0);
+  const fmt = n => n>=1000 ? (n/1000).toFixed(n%1000?1:0)+'k' : String(n);
+  document.getElementById('cl-stats').innerHTML = `
+    <div class="cl-stat"><div class="cl-stat-n">${all.length}</div><div class="cl-stat-l">Всего</div></div>
+    <div class="cl-stat"><div class="cl-stat-n">${inWork}</div><div class="cl-stat-l">В работе</div></div>
+    <div class="cl-stat"><div class="cl-stat-n">${fmt(sumPipe)}</div><div class="cl-stat-l">Прогноз</div><div class="cl-stat-sub">по «В работе»</div></div>
+    <div class="cl-stat"><div class="cl-stat-n">${fmt(sumClosed)}</div><div class="cl-stat-l">Закрыто</div><div class="cl-stat-sub">за ${now.toLocaleString('ru',{month:'long'})}</div></div>
+  `;
+}
+
+function renderClientsFilters(){
+  const all = _clLoad();
+  const counts = {all: all.length};
+  Object.keys(CL_STATUS).forEach(k => { counts[k] = all.filter(c=>c.status===k).length; });
+  const filters = [
+    {k:'all', label:'Все'},
+    {k:'lead', label:'Лиды'},
+    {k:'inProgress', label:'В работе'},
+    {k:'customer', label:'Клиенты'},
+    {k:'done', label:'Завершён'}
+  ];
+  document.getElementById('cl-filters').innerHTML = filters.map(f=>
+    `<button class="cl-filter${_clFilter===f.k?' active':''}" onclick="clSetFilter('${f.k}')">${f.label} <span class="cnt">${counts[f.k]||0}</span></button>`
+  ).join('');
+}
+
+function clSetFilter(k){ _clFilter=k; renderClientsFilters(); renderClientsList(); }
+
+function renderClientsList(){
+  let list = _clLoad();
+  if(_clFilter!=='all') list = list.filter(c=>c.status===_clFilter);
+  if(_clSearch){
+    list = list.filter(c=>{
+      const t = (c.name||'')+' '+(c.contacts||'')+' '+(c.product||'')+' '+(c.source||'');
+      return t.toLowerCase().includes(_clSearch);
+    });
+  }
+  // сортировка: сначала с ближайшей датой касания, потом по дате обновления
+  list.sort((a,b)=>{
+    const an=a.nextDate||''; const bn=b.nextDate||'';
+    if(an && bn) return an.localeCompare(bn);
+    if(an && !bn) return -1;
+    if(!an && bn) return 1;
+    return (b.updatedAt||'').localeCompare(a.updatedAt||'');
+  });
+  const c = document.getElementById('cl-list');
+  if(!list.length){
+    c.innerHTML = `<div class="cl-table"><div class="cl-empty">
+      <div class="cl-empty-icon"><i class="ti ti-users-group"></i></div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;">${_clLoad().length===0?'Здесь будут ваши клиенты':'Ничего не найдено'}</div>
+      <div style="font-size:13px;margin-bottom:18px;">${_clLoad().length===0?'Добавьте первого клиента, чтобы начать вести базу.':'Попробуйте изменить фильтр или поиск.'}</div>
+      ${_clLoad().length===0?'<button class="cl-add-btn" onclick="clOpenAdd()"><i class="ti ti-plus"></i>Добавить первого клиента</button>':''}
+    </div></div>`;
+    return;
+  }
+  c.innerHTML = `<div class="cl-table">
+    <div class="cl-row cl-row-head"><div>Имя</div><div>Статус</div><div>Продукт</div><div>Сумма</div><div>След. касание</div><div></div></div>
+    ${list.map(cl=>{
+      const st = CL_STATUS[cl.status]||CL_STATUS.lead;
+      return `<div class="cl-row" onclick="clOpenEdit('${cl.id}')">
+        <div><div class="cl-name">${_clEsc(cl.name||'Без имени')}</div>${cl.contacts?'<div class="cl-name-sub">'+_clEsc(cl.contacts)+'</div>':''}</div>
+        <div><span class="cl-status ${st.color}">${st.label}</span></div>
+        <div>${_clEsc(cl.product||'—')}</div>
+        <div>${cl.amount?_clEsc(cl.amount):'—'}</div>
+        <div>${cl.nextDate?_clFmtDate(cl.nextDate):'—'}</div>
+        <div class="cl-row-acts">
+          <button class="cl-icon-btn" onclick="event.stopPropagation();clOpenEdit('${cl.id}')" title="Редактировать"><i class="ti ti-edit"></i></button>
+          <button class="cl-icon-btn del" onclick="event.stopPropagation();clDelete('${cl.id}')" title="Удалить"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function clOpenAdd(){
+  clOpenModal({
+    id:'c_'+Math.random().toString(36).slice(2,9),
+    name:'',contacts:'',source:'',status:'lead',product:'',amount:'',nextDate:'',
+    notes:[], createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
+  }, true);
+}
+function clOpenEdit(id){
+  const c = _clLoad().find(x=>x.id===id); if(!c) return;
+  clOpenModal(JSON.parse(JSON.stringify(c)), false);
+}
+function clDelete(id){
+  if(!confirm('Удалить этого клиента из базы?')) return;
+  _clSave(_clLoad().filter(c=>c.id!==id));
+  renderClientsStats(); renderClientsFilters(); renderClientsList();
+}
+
+function clOpenModal(client, isNew){
+  const products = _clProducts();
+  const productOpts = ['<option value="">— Не указан —</option>'].concat(products.map(p=>`<option value="${_clEsc(p)}" ${p===client.product?'selected':''}>${_clEsc(p)}</option>`)).join('');
+  if(!products.length){
+    productOpts;
+  }
+  const ov = document.createElement('div'); ov.className='modal-ov'; ov.id='cl-modal-ov';
+  ov.innerHTML = `<div class="cl-modal" onclick="event.stopPropagation()">
+    <div class="cl-modal-hdr">
+      <div class="cl-modal-ttl">${isNew?'Новый клиент':'Карточка клиента'}</div>
+      <button class="cl-modal-close" onclick="document.getElementById('cl-modal-ov').remove()">×</button>
+    </div>
+    <input type="hidden" id="cl-id" value="${_clEsc(client.id)}" />
+    <div class="cl-form-grid">
+      <div class="cl-fld full"><label class="cl-fld-lbl">Имя клиента</label><input id="cl-name" placeholder="Например: Анна Иванова" value="${_clEsc(client.name)}" /></div>
+      <div class="cl-fld full"><label class="cl-fld-lbl">Контакты</label><input id="cl-contacts" placeholder="@instagram · +7... · email" value="${_clEsc(client.contacts)}" /></div>
+      <div class="cl-fld"><label class="cl-fld-lbl">Статус</label><select id="cl-status">${Object.keys(CL_STATUS).map(k=>`<option value="${k}" ${client.status===k?'selected':''}>${CL_STATUS[k].label}</option>`).join('')}</select></div>
+      <div class="cl-fld"><label class="cl-fld-lbl">Источник</label><input id="cl-source" placeholder="Instagram / рекомендация / реклама" value="${_clEsc(client.source)}" /></div>
+      <div class="cl-fld"><label class="cl-fld-lbl">Продукт ${products.length?'(из ваших)':''}</label>
+        ${products.length?`<select id="cl-product">${productOpts}</select>`:`<input id="cl-product" placeholder="Например: Brand Sprint" value="${_clEsc(client.product)}" />`}
+      </div>
+      <div class="cl-fld"><label class="cl-fld-lbl">Сумма</label><input id="cl-amount" placeholder="50 000 ₽" value="${_clEsc(client.amount)}" /></div>
+      <div class="cl-fld full"><label class="cl-fld-lbl">Дата следующего касания</label><input type="date" id="cl-nextDate" value="${_clEsc(client.nextDate)}" /></div>
+    </div>
+    ${isNew?'':`<div class="cl-notes-section">
+      <div class="cl-notes-hdr">
+        <div class="cl-notes-ttl">Заметки и встречи</div>
+      </div>
+      <div class="cl-notes-list" id="cl-notes-list"></div>
+      <div class="cl-note-form">
+        <div class="cl-note-form-row">
+          <input type="date" id="cl-new-note-date" value="${new Date().toISOString().slice(0,10)}" />
+          <select id="cl-new-note-type">
+            <option value="meeting">Встреча</option>
+            <option value="note">Заметка</option>
+          </select>
+        </div>
+        <textarea id="cl-new-note-text" placeholder="Что обсудили / договорились / следующий шаг..."></textarea>
+        <div class="cl-note-form-acts">
+          <button class="cl-add-btn" onclick="clAddNote()"><i class="ti ti-plus"></i>Добавить</button>
+        </div>
+      </div>
+    </div>`}
+    <div class="cl-modal-acts">
+      ${isNew?'':'<button class="cl-icon-btn del left" onclick="clDeleteFromModal()" style="padding:8px 14px;font-size:13px;"><i class="ti ti-trash"></i> Удалить</button>'}
+      <button class="cl-icon-btn" onclick="document.getElementById('cl-modal-ov').remove()" style="padding:8px 14px;font-size:13px;">Отмена</button>
+      <button class="cl-add-btn" onclick="clSaveFromModal(${isNew})"><i class="ti ti-check"></i>${isNew?'Создать':'Сохранить'}</button>
+    </div>
+  </div>`;
+  ov.onclick = (e)=>{ if(e.target===ov) ov.remove(); };
+  document.body.appendChild(ov);
+  // если редактирование — сохраним черновик клиента в DOM для заметок
+  if(!isNew){
+    ov._client = client;
+    renderClientNotes(client);
+  }
+}
+
+function renderClientNotes(client){
+  const list = document.getElementById('cl-notes-list'); if(!list) return;
+  const notes = (client.notes||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if(!notes.length){
+    list.innerHTML = `<div style="font-size:13px;color:var(--color-text-tertiary);font-style:italic;padding:10px;text-align:center;">Заметок пока нет. Добавь первую — встреча, договорённость или важный момент.</div>`;
+    return;
+  }
+  list.innerHTML = notes.map((n,i)=>`<div class="cl-note ${n.type==='meeting'?'meeting':''}">
+    <div class="cl-note-hdr">
+      <div class="cl-note-meta">
+        <i class="ti ti-${n.type==='meeting'?'calendar-event':'note'}"></i>
+        <strong>${_clFmtDate(n.date)}</strong>
+        <span class="cl-note-type ${n.type==='meeting'?'meeting':''}">${n.type==='meeting'?'Встреча':'Заметка'}</span>
+      </div>
+      <button class="cl-note-del" onclick="clRemoveNote(${i})" title="Удалить"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="cl-note-txt">${_clEsc(n.text)}</div>
+  </div>`).join('');
+}
+
+function clAddNote(){
+  const ov = document.getElementById('cl-modal-ov'); if(!ov) return;
+  const client = ov._client; if(!client) return;
+  const date = document.getElementById('cl-new-note-date').value || new Date().toISOString().slice(0,10);
+  const type = document.getElementById('cl-new-note-type').value || 'note';
+  const text = (document.getElementById('cl-new-note-text').value||'').trim();
+  if(!text){ alert('Напишите текст заметки'); return; }
+  client.notes = client.notes||[];
+  client.notes.push({date, type, text, createdAt:new Date().toISOString()});
+  document.getElementById('cl-new-note-text').value = '';
+  renderClientNotes(client);
+}
+function clRemoveNote(visualIdx){
+  const ov = document.getElementById('cl-modal-ov'); if(!ov) return;
+  const client = ov._client; if(!client) return;
+  // visualIdx — индекс в отсортированном по убыванию даты массиве. Найдём оригинальный.
+  const sorted = (client.notes||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const target = sorted[visualIdx]; if(!target) return;
+  client.notes = client.notes.filter(n=>n!==target);
+  renderClientNotes(client);
+}
+function clSaveFromModal(isNew){
+  const ov = document.getElementById('cl-modal-ov'); if(!ov) return;
+  const get = (id)=>document.getElementById(id)?.value||'';
+  const data = {
+    id: get('cl-id'),
+    name: get('cl-name').trim(),
+    contacts: get('cl-contacts').trim(),
+    status: get('cl-status'),
+    source: get('cl-source').trim(),
+    product: get('cl-product').trim(),
+    amount: get('cl-amount').trim(),
+    nextDate: get('cl-nextDate'),
+    updatedAt: new Date().toISOString()
+  };
+  if(!data.name){ alert('Укажите имя клиента'); return; }
+  let arr = _clLoad();
+  if(isNew){
+    data.createdAt = new Date().toISOString();
+    data.notes = [];
+    arr.push(data);
+  } else {
+    const idx = arr.findIndex(c=>c.id===data.id);
+    if(idx<0){ alert('Клиент не найден'); return; }
+    // сохраняем заметки из черновика модалки
+    data.notes = (ov._client && ov._client.notes) ? ov._client.notes : (arr[idx].notes||[]);
+    data.createdAt = arr[idx].createdAt;
+    arr[idx] = Object.assign(arr[idx], data);
+  }
+  _clSave(arr);
+  ov.remove();
+  renderClientsStats(); renderClientsFilters(); renderClientsList();
+}
+function clDeleteFromModal(){
+  const ov = document.getElementById('cl-modal-ov'); if(!ov) return;
+  const id = document.getElementById('cl-id')?.value;
+  if(!id) return;
+  if(!confirm('Удалить этого клиента из базы?')) return;
+  _clSave(_clLoad().filter(c=>c.id!==id));
+  ov.remove();
+  renderClientsStats(); renderClientsFilters(); renderClientsList();
+}
+
+// ===== Документ «Моя стратегия» — структурированный отчёт в стиле презентации =====
+function _list(key){ const v=ld(key+'_list'); return Array.isArray(v)?v.filter(x=>x&&String(x).trim()):[]; }
+function _val(key){ const v=ld(key); return v&&String(v).trim()?String(v).trim():''; }
+function _esc(s){ return (s||'').toString().replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function _ul(arr){ if(!arr||!arr.length) return ''; return '<ul>'+arr.map(x=>`<li>${_esc(x)}</li>`).join('')+'</ul>'; }
+function _block(label, body, emptyTxt){
+  const hasBody = body && body.trim() && !/^—$/.test(body.trim());
+  return `<div class="doc2-block">
+    <div class="doc2-block-label">${label}</div>
+    <div class="doc2-block-body">${hasBody?body:'<span class="doc2-block-empty">'+(emptyTxt||'Не заполнено')+'</span>'}</div>
+  </div>`;
+}
+function _page(num, title, tagline, contentHtml){
+  return `<div class="doc2-page">
+    <div class="doc2-num">${num}</div>
+    <div class="doc2-heading">${title}</div>
+    ${tagline?`<div class="doc2-tagline">${tagline}</div>`:''}
+    <div class="doc2-content">${contentHtml}</div>
+  </div>`;
+}
+
+function _collectData(){
+  return {
+    b0: {
+      blog: _val('b0_q1'), followers: _val('b0_q2'), monetize: _val('b0_q3'),
+      income: _val('b0_q4'), task: _val('b0_q5')
+    },
+    b1: {
+      why: _val('b1_q1'), goals: _list('b1_q2'),
+      success: _val('b1_q3'), blockers: _val('b1_q4')
+    },
+    b2: {
+      facts: _list('b2_q1'),
+      values: (ld('b2_values')||[]).filter(v=>v && (v.n||v.b)),
+      principles: _list('b2_q3'), askAdvice: _list('b2_q4'),
+      path: _val('b2_q5'), achievements: _list('b2_q6'),
+      results: _list('b2_q7'), superpower: _val('b2_q8'),
+      anchors: _list('b2_q9'), different: _val('b2_q10')
+    },
+    b3: {
+      client: _val('b3_q1'), pain: _list('b3_q2'),
+      manifest: _list('b3_q3'), dream: _list('b3_q4'),
+      tried: _val('b3_q5'), words: _list('b3_q6')
+    },
+    b4: {
+      simple: _val('b4_pup1'), surprise: _val('b4_pup2'), useful: _val('b4_pup3'),
+      different: _val('b4_q2'), position: _val('b4_q3')
+    },
+    products: ld('products') || [],
+    b6: {
+      topics: _list('b6_q1'), formats: _val('b6_q2'),
+      platforms: _val('b6_q3'), impression: _val('b6_q4'),
+      time: _val('b6_q5'), visuals: _val('b6_q6')
+    }
+  };
+}
+
+function _aiBrief(){
+  const d = _collectData();
+  const lines = [];
+  lines.push('Ты — мой персональный контент-стратег и копирайтер. Используй этот профиль каждый раз когда я прошу написать пост, рилс, сторис или подпись.');
+  lines.push('');
+  lines.push('═══ КТО Я ═══');
+  if(d.b1.why) lines.push('Зачем я в блоге: '+d.b1.why);
+  if(d.b2.superpower) lines.push('Моя суперсила: '+d.b2.superpower);
+  if(d.b2.anchors.length) lines.push('Якоря-ассоциации со мной: '+d.b2.anchors.join(', '));
+  if(d.b2.different) lines.push('Чем мой подход отличается от других: '+d.b2.different);
+  if(d.b0.task) lines.push('Моя ближайшая задача: '+d.b0.task);
+  if(d.b2.values.length){
+    const vv = d.b2.values.filter(v=>v.n).map(v=>v.n+(v.b?' ('+v.b+')':'')).join('; ');
+    if(vv) lines.push('Мои ценности: '+vv);
+  }
+  if(d.b2.path) lines.push('Мой путь: '+d.b2.path);
+  lines.push('');
+  lines.push('═══ ДЛЯ КОГО Я ПИШУ ═══');
+  if(d.b3.client) lines.push('Идеальный клиент: '+d.b3.client);
+  if(d.b3.pain.length) lines.push('Главная боль: '+d.b3.pain.join('; '));
+  if(d.b3.manifest.length) lines.push('Как проявляется в жизни: '+d.b3.manifest.join('; '));
+  if(d.b3.dream.length) lines.push('О чём мечтают: '+d.b3.dream.join('; '));
+  if(d.b3.words.length){
+    lines.push('Точные слова клиента (используй их в постах вместо моих формулировок):');
+    d.b3.words.forEach(w=>lines.push('  «'+w+'»'));
+  }
+  lines.push('');
+  lines.push('═══ ПОЗИЦИОНИРОВАНИЕ ═══');
+  if(d.b4.position) lines.push(d.b4.position);
+  if(d.b2.different) lines.push('Уникальность подхода (опирается на суперсилу и путь): '+d.b2.different);
+  lines.push('');
+  lines.push('═══ КОНТЕНТ ═══');
+  if(d.b6.topics.length) lines.push('Темы блога: '+d.b6.topics.join(' / '));
+  if(d.b6.formats) lines.push('Форматы: '+d.b6.formats);
+  if(d.b6.platforms) lines.push('Площадки: '+d.b6.platforms);
+  if(d.b6.impression) lines.push('Впечатление, которое нужно оставлять: '+d.b6.impression);
+  if(d.b6.visuals) lines.push('Визуальный стиль: '+d.b6.visuals);
+  if(d.b1.goals.length){
+    lines.push('Цели на 6 месяцев (помни о них в каждом посте):');
+    d.b1.goals.forEach(g=>lines.push('  • '+g));
+  }
+  lines.push('');
+  lines.push('═══ КАК ПИСАТЬ ═══');
+  lines.push('1. Открывай посты словами клиента (см. цитаты выше), не отраслевым жаргоном.');
+  lines.push('2. Каждый пост — на стыке моей суперсилы и боли клиента.');
+  lines.push('3. Тон — '+(d.b6.impression || 'честный, без пафоса')+'.');
+  lines.push('4. В конце — мягкий призыв к действию: сохранить, переслать, ответить.');
+  lines.push('');
+  lines.push('Когда я прошу контент — спроси формат (Reels/карусель/пост), затем напиши драфт на основе этого профиля.');
+  return lines.join('\n');
+}
+
+function _analysis(){
+  const d = _collectData();
+  const out = [];
+  // Strongest signals
+  out.push({label:'Самое сильное в вашем бренде', body: (()=>{
+    const items = [];
+    if(d.b4.position) items.push('Чёткое позиционирование: <strong>'+_esc(d.b4.position)+'</strong>');
+    if(d.b2.superpower) items.push('Ясная суперсила: <strong>'+_esc(d.b2.superpower)+'</strong>');
+    if(d.b3.words.length) items.push('Есть «голос клиента» — это самый ценный материал для постов: <em>«'+_esc(d.b3.words[0])+'»</em>');
+    if(d.b6.topics.length>=3) items.push('Три темы определены — это основа для контент-плана');
+    if(d.b1.goals.length>=2) items.push('Несколько целей одновременно — фокус нужно сузить до одной главной');
+    if(!items.length) items.push('Заполните блоки 2 и 4 — без суперсилы и позиционирования AI не сможет писать контент в вашем голосе.');
+    return '<ul>'+items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  })()});
+
+  // Gaps
+  out.push({label:'Что нужно достроить в первую очередь', body: (()=>{
+    const gaps = [];
+    if(!d.b4.position) gaps.push('Сформулировать позиционирование одной фразой (Блок 5, вопрос 3) — это основа всех текстов.');
+    if(!d.b2.superpower) gaps.push('Назвать суперсилу одной фразой (Блок 2, вопрос 8) — без неё контент будет универсальным.');
+    if(!d.b3.client) gaps.push('Прописать портрет идеального клиента (Блок 3, вопрос 1).');
+    if(!d.b3.words.length) gaps.push('Собрать минимум 5 точных фраз клиента (Блок 3, вопрос 6) — это золото для хуков.');
+    if(!d.b6.topics.length) gaps.push('Выбрать 3 главные темы блога (Блок 6, вопрос 1).');
+    if(!d.b6.visuals) gaps.push('Описать визуальный стиль (Блок 6, вопрос 6) — он определит шапку и ленту.');
+    if(!gaps.length) gaps.push('Все ключевые блоки заполнены. Возвращайтесь раз в квартал и обновляйте.');
+    return '<ul>'+gaps.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
+  })()});
+
+  // Practical next step
+  out.push({label:'Что сделать на этой неделе', body: (()=>{
+    const steps = [];
+    if(d.b4.position) steps.push('Вставить позиционирование в шапку профиля (на основе ответа Блок 5).');
+    if(d.b3.pain.length && d.b2.superpower) steps.push('Записать первый опорный пост на стыке боли «'+_esc(d.b3.pain[0])+'» и суперсилы «'+_esc(d.b2.superpower)+'».');
+    if(d.b6.topics.length) steps.push('Распланировать 9 постов: по 3 на каждую из трёх тем — '+d.b6.topics.slice(0,3).map(t=>'«'+_esc(t)+'»').join(', ')+'.');
+    if(d.b3.words.length) steps.push('Использовать фразу клиента «'+_esc(d.b3.words[0])+'» как заголовок одного поста.');
+    if(!steps.length) steps.push('Закончите Блок 1–4 и вернитесь к этой странице — здесь появятся конкретные шаги.');
+    return '<ol>'+steps.map(i=>'<li>'+i+'</li>').join('')+'</ol>';
+  })()});
+
+  return out.map(s=>_block(s.label, s.body)).join('');
+}
+
+function rDoc(){
+  const d = _collectData();
+  const today = new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+
+  let pages = '';
+
+  // Обложка
+  pages += `<div class="doc2-page cover">
+    <div class="doc2-cover-title">Стратегия<br>личного бренда</div>
+    <div class="doc2-cover-sub">который работает на вас</div>
+    <div class="doc2-cover-meta">brandmaster · ${today}</div>
+  </div>`;
+
+  // 01 Текущая ситуация
+  if(d.b0.blog||d.b0.followers||d.b0.monetize||d.b0.income||d.b0.task){
+    let c='';
+    if(d.b0.blog) c+=_block('Ведёшь ли блог сейчас', _esc(d.b0.blog));
+    if(d.b0.followers) c+=_block('Подписчиков', _esc(d.b0.followers));
+    if(d.b0.monetize) c+=_block('Как зарабатываешь с блога', _esc(d.b0.monetize));
+    if(d.b0.income) c+=_block('Доход с блога', _esc(d.b0.income));
+    if(d.b0.task) c+=_block('Задача на ближайшее время', _esc(d.b0.task));
+    pages += _page('01','Точка отсчёта','Где я сейчас', c);
+  }
+
+  // 02 Цели и видение
+  pages += _page('02','Цели и видение','Зачем мне это нужно',
+    _block('Глубинное зачем', _esc(d.b1.why), 'Сформулируйте в Блоке 1 вопрос 1')+
+    _block('3 цели на 6 месяцев', _ul(d.b1.goals)||(d.b1.goals.length?'':'Запишите в Блоке 1 вопрос 2'))+
+    _block('Как я пойму что бренд работает', _esc(d.b1.success), 'Опишите в Блоке 1 вопрос 3')+
+    _block('Что останавливало раньше', _esc(d.b1.blockers), '')
+  );
+
+  // 03 Распаковка
+  let valuesHtml = '';
+  if(d.b2.values.length){
+    valuesHtml = '<ul>'+d.b2.values.map(v=>'<li><strong>'+_esc(v.n||'—')+'</strong>'+(v.b?' — '+_esc(v.b):'')+'</li>').join('')+'</ul>';
+  }
+  pages += _page('03','Распаковка личности','Что делает меня собой',
+    _block('Моя суперсила', _esc(d.b2.superpower),'Запишите в Блоке 2 вопрос 8')+
+    _block('Якоря-ассоциации со мной', _ul(d.b2.anchors), 'Опишите в Блоке 2 вопрос 9')+
+    _block('Мои ценности', valuesHtml, 'Опишите в Блоке 2 вопрос 2')+
+    _block('Факты, которые меня характеризуют', _ul(d.b2.facts), '')+
+    _block('Принципы, по которым я живу', _ul(d.b2.principles), '')+
+    _block('Мой путь', _esc(d.b2.path), '')+
+    _block('Достижения и кейсы', _ul(d.b2.achievements), '')+
+    _block('Результат, который я даю клиентам', _ul(d.b2.results), '')+
+    _block('За какими советами обращаются друзья', _ul(d.b2.askAdvice), '')
+  );
+
+  // 04 Аудитория
+  pages += _page('04','Идеальный клиент','Для кого я работаю',
+    _block('Портрет', _esc(d.b3.client), 'Опишите в Блоке 3 вопрос 1')+
+    _block('Главная боль клиента', _ul(d.b3.pain), 'Опишите в Блоке 3 вопрос 2')+
+    _block('Как боль проявляется в жизни', _ul(d.b3.manifest), '')+
+    _block('О чём они мечтают', _ul(d.b3.dream), '')+
+    _block('Что пробовали до вас', _esc(d.b3.tried), '')+
+    _block('Прямые слова клиента', _ul(d.b3.words), 'Это «золото» для заголовков постов')
+  );
+
+  // 05 Позиционирование
+  const pupHtml = (d.b4.simple||d.b4.surprise||d.b4.useful)
+    ? '<ul>'+(d.b4.simple?'<li><strong>Простой:</strong> '+_esc(d.b4.simple)+'</li>':'')+
+            (d.b4.surprise?'<li><strong>Удивительный:</strong> '+_esc(d.b4.surprise)+'</li>':'')+
+            (d.b4.useful?'<li><strong>Полезный:</strong> '+_esc(d.b4.useful)+'</li>':'')+'</ul>'
+    : '';
+  // 05 Продукты (был блок 5, теперь блок 4 — но в документе сначала продукты)
+  let prodHtml='';
+  d.products.forEach((p,i)=>{
+    const mks = (p.marketing_items && p.marketing_items.length) ? p.marketing_items : (p.marketing?[p.marketing]:[]);
+    prodHtml += `<div class="doc2-prod">
+      <div class="doc2-prod-name">${_esc(p.name||'Продукт '+(i+1))}</div>
+      ${p.concept?_block('Концепция', _esc(p.concept)):''}
+      ${p.unique?_block('Уникальность', _esc(p.unique)):''}
+      ${(p.tasks&&p.tasks.filter(x=>x).length)?_block('Задачи продукта', _ul(p.tasks.filter(x=>x))):''}
+      ${p.audience?_block('Для какой аудитории', _esc(p.audience)):''}
+      ${mks.filter(x=>x).length?_block('Для чего человеку ваш продукт?', _ul(mks.filter(x=>x))):''}
+    </div>`;
+  });
+  if(!prodHtml) prodHtml = '<div class="doc2-block-empty">Добавьте продукты в Блоке 4</div>';
+  pages += _page('05','Продукты','Что я продаю', prodHtml);
+
+  // 06 Позиционирование
+  pages += _page('06','Позиционирование','Моё место на рынке',
+    (d.b4.position?`<div class="doc2-position">«${_esc(d.b4.position)}»</div>`:'')+
+    _block('Презентация по ПУП', pupHtml, 'Заполните в Блоке 5 вопрос 1')+
+    _block('Чем мой подход отличается (из Распаковки)', _esc(d.b2.different), 'Запишите в Блоке 2 вопрос 10')
+  );
+
+  // 07 Контент-стратегия
+  pages += _page('07','Контент-стратегия','Что и где я говорю',
+    _block('3 главные темы блога', _ul(d.b6.topics), 'Запишите в Блоке 6 вопрос 1')+
+    _block('Форматы контента', _esc(d.b6.formats), '')+
+    _block('Площадки', _esc(d.b6.platforms), '')+
+    _block('Впечатление, которое блог должен оставлять', _esc(d.b6.impression), '')+
+    _block('Время на контент в неделю', _esc(d.b6.time), '')+
+    _block('Визуальный стиль', _esc(d.b6.visuals), '')
+  );
+
+  // 08 Анализ
+  pages += _page('08','Анализ стратегии','Что сильно, что достроить',
+    _analysis()
+  );
+
+  // 09 AI-бриф
+  const brief = _aiBrief();
+  pages += `<div class="doc2-page">
+    <div class="doc2-num">09</div>
+    <div class="doc2-heading">AI-бриф</div>
+    <div class="doc2-tagline">Готовый промпт для ChatGPT и Claude</div>
+    <div class="doc2-content">
+      <div class="doc2-block-body" style="margin-bottom:14px">Скопируйте текст ниже и вставьте в начало любого диалога с AI. После этого AI начнёт писать контент в вашем стиле — с вашими ценностями, словами клиента и темами.</div>
+      <div class="doc2-brief-bar">
+        <div class="doc2-block-label">Промпт ${brief.length} символов</div>
+        <button class="doc2-btn primary" onclick="copyBrief()"><i class="ti ti-copy"></i> Скопировать</button>
+      </div>
+      <div class="doc2-brief" id="doc2-brief-text">${_esc(brief)}</div>
+    </div>
+  </div>`;
+
+  // Финал
+  pages += `<div class="doc2-page cover">
+    <div class="doc2-final-title">В результате</div>
+    <div class="doc2-final-text">вы получили готовую стратегию,<br>которая работает на вас.<br><br>Возвращайтесь к этому документу каждый квартал — обновляйте, переписывайте, дорабатывайте.</div>
+    <div class="doc2-cover-meta" style="margin-top:60px">brandmaster · ${today}</div>
+  </div>`;
+
+  return `<div class="doc2-actions">
+    <button class="doc2-btn primary" onclick="downloadStrategyPDF()"><i class="ti ti-download"></i> Скачать PDF</button>
+    <button class="doc2-btn" onclick="copyBrief()"><i class="ti ti-copy"></i> Скопировать AI-бриф</button>
+  </div>
+  <div class="doc2">${pages}</div>`;
+}
+
+function downloadStrategyPDF(){
+  // браузер откроет диалог печати → пользователь выбирает "Сохранить как PDF"
+  window.print();
+}
+async function copyBrief(){
+  const txt = _aiBrief();
+  try{
+    await navigator.clipboard.writeText(txt);
+    alert('AI-бриф скопирован. Вставьте его в начало диалога с ChatGPT или Claude.');
+  }catch(e){
+    // fallback — выделяем
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); alert('AI-бриф скопирован.'); }catch(_){ alert('Не удалось скопировать. Вот текст:\n\n'+txt.slice(0,500)+'…'); }
+    document.body.removeChild(ta);
+  }
+}
+
+function addVal(){const g=document.getElementById('vg');if(!g)return;const idx=g.children.length;const div=document.createElement('div');div.className='val-item';div.innerHTML=`<input class="val-inp" placeholder="Ценность..." data-key="b2_val${idx}_n"><textarea class="val-ta" placeholder="Как проявляется..." data-key="b2_val${idx}_b"></textarea>`;g.appendChild(div);setupAS();}
+function toggleChk(el,key){el.classList.toggle('checked');const on=el.classList.contains('checked');sv(key,on);el.querySelector('.chk-box').innerHTML=on?'<i class="ti ti-check" style="font-size:11px"></i>':'';}
+function restoreTA(){setTimeout(()=>{document.querySelectorAll('[data-key]').forEach(el=>{const v=ld(el.dataset.key);if(v!=null&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT'))el.value=v;});const vg=document.getElementById('vg');if(vg){const vals=ld('b2_values')||[];vg.innerHTML='';const src=vals.length>0?vals:[{n:'',b:''},{n:'',b:''}];src.forEach((v,i)=>{const div=document.createElement('div');div.className='val-item';div.innerHTML=`<input class="val-inp" placeholder="Ценность..." data-key="b2_val${i}_n" value="${v.n||''}"><textarea class="val-ta" placeholder="Как проявляется..." data-key="b2_val${i}_b">${v.b||''}</textarea>`;vg.appendChild(div);});}},50);}
+function setupAS(){setTimeout(()=>{document.querySelectorAll('[data-key]').forEach(el=>{el.addEventListener('input',()=>sv(el.dataset.key,el.value));});addCounters();},100);}
+// Счётчики «50 слов / 350 символов» для развёрнутых ответов в блоках 1-7
+function addCounters(){
+  document.querySelectorAll('.qcard textarea[data-key]').forEach(ta=>{
+    if(ta.closest('.mi-list')) return;
+    if(ta.classList.contains('pup-ta')) return;
+    const key=ta.dataset.key||'';
+    if(key.startsWith('b0_')) return;
+    if(ta.parentNode.querySelector('.char-counter')) return;
+    const counter=document.createElement('div');
+    counter.className='char-counter';
+    ta.insertAdjacentElement('afterend', counter);
+    const upd=()=>{
+      const txt=ta.value||'';
+      const words=txt.trim()?txt.trim().split(/\s+/).filter(w=>w.length>0).length:0;
+      const chars=txt.length;
+      const ok = words>=50 || chars>=350;
+      counter.textContent = ok
+        ? `Достаточно подробно · ${words} слов · ${chars} символов`
+        : `${words}/50 слов · ${chars}/350 символов — нужен более подробный ответ`;
+      counter.classList.toggle('ok', ok);
+    };
+    ta.addEventListener('input', upd);
+    upd();
+  });
+}
+function saveProd(){if(!prods[activeProd])return;const p=prods[activeProd];const ne=document.getElementById('pname');if(ne)p.name=ne.value;['concept','unique','audience'].forEach(f=>{const el=document.getElementById('p_'+f);if(el)p[f]=el.value;});p.tasks=Array.from(document.querySelectorAll('.task-inp2')).map(e=>e.value);const mks=Array.from(document.querySelectorAll('.mk-inp2'));if(mks.length){p.marketing_items=mks.map(e=>e.value);p.marketing=p.marketing_items.join('\n');}saveCats();sv('products',prods);}
+function saveCats(){if(!prods[activeProd])return;const cats=[];document.querySelectorAll('.deliv-cat').forEach(ce=>{const sel=ce.querySelector('.cat-sel');cats.push({type:sel?sel.value:'другое',items:Array.from(ce.querySelectorAll('.deliv-ta')).map(t=>t.value)});});prods[activeProd].cats=cats;}
+function renderProdArea(){const s=ld('products');if(s&&s.length>0)prods=s;document.getElementById('prod-count').textContent='Продуктов: '+prods.length;document.getElementById('ptabs').innerHTML=prods.map((p,i)=>`<div class="ptab${i===activeProd?' active':''}" onclick="switchP(${i})">${p.name}</div>`).join('');if(!prods.length){document.getElementById('parea').innerHTML=`<div class="empty-st"><div class="empty-icon"><i class="ti ti-box"></i></div><div class="empty-title">Продукты ещё не добавлены</div><div class="empty-sub">Добавьте свой первый продукт</div><button class="btn-primary" onclick="addProd()"><i class="ti ti-plus"></i>Добавить первый продукт</button></div>`;}else renderProd();}
+function addProd(){saveProd();prods.push({name:'Продукт '+(prods.length+1),concept:'',unique:'',tasks:[''],audience:'',marketing:'',cats:[{type:'знания',items:['']},{type:'навыки',items:['']},{type:'материалы',items:['']},{type:'результаты',items:['']}]});activeProd=prods.length-1;sv('products',prods);renderProdArea();}
+function switchP(i){saveProd();activeProd=i;renderProdArea();}
+function delP(i){prods.splice(i,1);if(activeProd>=prods.length)activeProd=prods.length-1;sv('products',prods);renderProdArea();}
+function addTP(){saveProd();prods[activeProd].tasks.push('');renderProd();}
+function rmTP(i){saveProd();prods[activeProd].tasks.splice(i,1);if(!prods[activeProd].tasks.length)prods[activeProd].tasks=[''];renderProd();}
+function addMK(){saveProd();const p=prods[activeProd];if(!p.marketing_items||!p.marketing_items.length)p.marketing_items=[p.marketing||''];p.marketing_items.push('');renderProd();}
+function rmMK(i){saveProd();const p=prods[activeProd];if(!p.marketing_items)p.marketing_items=[p.marketing||''];p.marketing_items.splice(i,1);if(!p.marketing_items.length)p.marketing_items=[''];renderProd();}
+function addCat(){saveCats();prods[activeProd].cats.push({type:'другое',items:['']});renderProd();}
+function rmCat(i){saveCats();prods[activeProd].cats.splice(i,1);renderProd();}
+function addCI(ci){saveCats();prods[activeProd].cats[ci].items.push('');renderProd();}
+function rmCI(ci,ii){saveCats();prods[activeProd].cats[ci].items.splice(ii,1);if(!prods[activeProd].cats[ci].items.length)prods[activeProd].cats[ci].items=[''];renderProd();}
+function renderProd(){const p=prods[activeProd];const cats=p.cats||[{type:'знания',items:['']},{type:'навыки',items:['']},{type:'материалы',items:['']},{type:'результаты',items:['']}];const ch=cats.map((cat,ci)=>`<div class="deliv-cat"><div class="deliv-hdr"><div style="display:flex;align-items:center;gap:8px;"><span class="cat-badge cat-${cat.type}">${cat.type}</span><select class="cat-sel" onchange="saveCats();prods[activeProd].cats[${ci}].type=this.value;renderProd()">${CATS.map(c=>`<option value="${c}"${c===cat.type?' selected':''}>${c}</option>`).join('')}</select></div><button class="del-btn" onclick="rmCat(${ci})"><i class="ti ti-trash"></i></button></div><div class="deliv-items">${cat.items.map((item,ii)=>`<div class="di"><textarea class="deliv-ta" placeholder="Напишите...">${item}</textarea><button class="rm-btn" onclick="rmCI(${ci},${ii})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addCI(${ci})"><i class="ti ti-plus"></i>Добавить пункт</button></div>`).join('');
+document.getElementById('parea').innerHTML=`<div class="prod-card"><div class="prod-name-row"><div class="prod-num">${activeProd+1}</div><input class="prod-name-inp" id="pname" value="${p.name}" placeholder="Название продукта..."><button class="del-btn" onclick="delP(${activeProd})"><i class="ti ti-trash"></i></button></div><div class="fg"><div class="fl"><i class="ti ti-file-description"></i>Концепция</div><textarea id="p_concept" placeholder="Опишите концепцию...">${p.concept}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-star"></i>Уникальность</div><textarea id="p_unique" placeholder="В чём уникальность...">${p.unique}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-list-check"></i>Задачи продукта</div><div class="ml">${p.tasks.map((t,i)=>`<div class="mi"><textarea class="task-inp2" placeholder="Задача...">${t}</textarea><button class="rm-btn" onclick="rmTP(${i})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addTP()"><i class="ti ti-plus"></i>Добавить задачу</button></div><div class="fg"><div class="sec-div"><i class="ti ti-certificate"></i>Что получат клиенты</div><div class="delivs">${ch}</div><button class="add-cat-btn" onclick="addCat()"><i class="ti ti-plus"></i>Добавить категорию</button></div><div class="fg"><div class="fl"><i class="ti ti-users"></i>Для какой аудитории</div><textarea id="p_audience" placeholder="Опишите аудиторию...">${p.audience}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-chart-bar"></i>Для чего человеку ваш продукт?</div><div class="ml">${(p.marketing_items&&p.marketing_items.length?p.marketing_items:[p.marketing||'']).map((t,i)=>`<div class="mi"><textarea class="mk-inp2" placeholder="Какую цель или глубинную потребность вы решите...">${t}</textarea><button class="rm-btn" onclick="rmMK(${i})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addMK()"><i class="ti ti-plus"></i>Добавить результат</button></div></div>`;
+document.getElementById('ptabs').innerHTML=prods.map((pr,i)=>`<div class="ptab${i===activeProd?' active':''}" onclick="switchP(${i})">${pr.name}</div>`).join('');
+document.getElementById('prod-count').textContent='Продуктов: '+prods.length;}
+
+function markDone(){saveAllVisible();if(cur===4)saveProd();done[cur]=true;sv('done',done);updateNav();const btn=document.getElementById('btn-done');btn.innerHTML='<i class="ti ti-check"></i>Готово!';btn.style.background='var(--teal-dark)';setTimeout(()=>{btn.innerHTML='<i class="ti ti-check"></i>Блок готов';btn.style.background='var(--teal)';if(cur<7)show(cur+1);},1200);}
+const AI_P={1:'Проанализируй мои ответы про цели',2:'Выдели 4–5 ключевых якорей моего личного бренда',3:'Сформулируй портрет идеального клиента',4:'Проанализируй мои продукты',5:'Предложи 3 варианта позиционирования. Опирайся не только на инструменты, но и на мою суперсилу, ценности, якорные ассоциации, путь и другие уникальные черты из блока Распаковка.',6:'Предложи темы для первых 5 постов',7:'Дай приоритеты по чек-листу упаковки страницы'};
+function aiSum(){sendPrompt(AI_P[cur]||'Помоги проанализировать мою стратегию');}
+
+done=ld('done')||{};
+// активируем правильные кнопки языка
+document.querySelectorAll('[data-lang-btn]').forEach(b=>{
+  b.classList.toggle('active', b.dataset.langBtn===lang);
+});
+// === Режим воркшопа: без логина, всё хранится в браузере ===
+// Чтобы включить авторизацию обратно — раскомментируй initSupabase ниже.
+const REQUIRE_AUTH = true;
+if(REQUIRE_AUTH){
+  show(1);
+  initSupabase().then(()=>{ updateAuthLabels(); renderUserBadge(); });
+} else {
+  // экран входа спрятан, бейдж пользователя пустой, синхронизация не работает
+  document.getElementById('auth-screen').classList.add('hidden');
+  show(1);
+}
+</script>
+
+<script>
+// Stub for Claude.ai's sendPrompt() — when this file is opened standalone there's no chat to send to.
+if (typeof window !== "undefined" && typeof window.sendPrompt !== "function"){
+  window.sendPrompt = function(text){
+    try{ console.log("[sendPrompt mock]", text); }catch(e){}
+    alert("AI-промпт (демо):\n\n" + text);
+  };
+}
+</script>
+
+</body>
+</html>
