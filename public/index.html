@@ -210,6 +210,48 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 .empty-title{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;}
 .empty-sub{font-size:13px;color:var(--color-text-tertiary);margin-bottom:20px;line-height:1.5;}
 .doc-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:18px;margin-bottom:12px;}
+/* ===== Создать контент — сторителлинг ===== */
+.cc-hero{background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:22px 26px;margin-bottom:22px;}
+.cc-hero-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:400;color:var(--teal-dark);line-height:1.3;margin-bottom:6px;}
+.cc-hero-sub{font-size:13px;color:var(--teal-dark);line-height:1.6;}
+.cc-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:26px;}
+.cc-tile{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:20px;cursor:pointer;transition:all 0.15s;position:relative;}
+.cc-tile:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 20px rgba(29,158,117,0.08);}
+.cc-tile-icon{width:44px;height:44px;border-radius:12px;background:var(--teal-light);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:12px;}
+.cc-tile-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:500;color:var(--color-text-primary);line-height:1.3;margin-bottom:6px;}
+.cc-tile-sub{font-size:12px;color:var(--color-text-tertiary);line-height:1.5;}
+.cc-tile.publication .cc-tile-icon{background:#FDF2E2;color:#A86918;}
+.cc-tile.insight .cc-tile-icon{background:var(--teal-light);color:var(--teal);}
+.cc-tile.product .cc-tile-icon{background:#E6F1FB;color:#0C447C;}
+.cc-tile.method .cc-tile-icon{background:#EEEDFE;color:#3C3489;}
+.cc-tile.personality .cc-tile-icon{background:#FCE7EE;color:#9B1F49;}
+.cc-drafts-hdr{font-size:13px;font-weight:500;color:var(--color-text-primary);margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
+.cc-draft{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.cc-draft:hover{background:var(--color-background-secondary);}
+.cc-draft-meta{display:flex;align-items:center;gap:10px;flex:1;}
+.cc-draft-type{font-size:11px;font-weight:500;padding:2px 8px;border-radius:10px;background:var(--teal-light);color:var(--teal-dark);}
+.cc-draft-title{font-size:13px;color:var(--color-text-primary);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px;}
+.cc-draft-date{font-size:11px;color:var(--color-text-tertiary);}
+.cc-draft-del{background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:14px;padding:4px;}
+.cc-draft-del:hover{color:#E24B4A;}
+/* Опросник */
+.cc-form-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.cc-form-back{background:none;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 12px;font-size:12px;color:var(--color-text-secondary);cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+.cc-form-back:hover{border-color:var(--teal);color:var(--teal);}
+.cc-form-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;font-weight:400;color:var(--color-text-primary);line-height:1.3;}
+.cc-q{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:18px 20px;margin-bottom:12px;}
+.cc-q-num{font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.cc-q-text{font-size:14px;font-weight:500;color:var(--color-text-primary);line-height:1.5;margin-bottom:10px;}
+.cc-q-hint{font-size:12px;color:var(--color-text-tertiary);font-style:italic;margin-bottom:10px;line-height:1.5;}
+.cc-q textarea{width:100%;min-height:80px;padding:11px 13px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);font-size:13px;line-height:1.6;resize:vertical;}
+.cc-q textarea:focus{outline:none;border-color:var(--teal);background:var(--color-background-primary);}
+.cc-q select{width:100%;padding:9px 11px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);font-family:var(--font-sans);font-size:13px;}
+.cc-actions{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:16px;border-top:0.5px solid var(--color-border-tertiary);}
+.cc-actions-left{font-size:12px;color:var(--color-text-tertiary);}
+.cc-actions-right{display:flex;gap:8px;}
+.cc-ai-placeholder{background:var(--teal-light);border:0.5px dashed var(--teal-mid);border-radius:var(--border-radius-lg);padding:20px 22px;margin-top:18px;text-align:center;}
+.cc-ai-placeholder .icon{font-size:28px;color:var(--teal);margin-bottom:8px;}
+.cc-ai-placeholder .txt{font-size:13px;color:var(--teal-dark);line-height:1.6;font-style:italic;}
 /* ===== CRM «База клиентов» ===== */
 .cl-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
 .cl-stat{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;}
@@ -565,6 +607,7 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
     <div class="nav-section">Действия</div>
     <div class="nav-item" onclick="show(8)" id="nav8"><i class="ti ti-checkbox" aria-hidden="true"></i>Задачи на неделю</div>
     <div class="nav-section">Контент</div>
+    <div class="nav-item" onclick="show(15)" id="nav15"><i class="ti ti-wand" aria-hidden="true"></i>Создать контент</div>
     <div class="nav-item" onclick="show(9)" id="nav9"><i class="ti ti-sparkles" aria-hidden="true"></i>Рекомендации AI</div>
     <div class="nav-item" onclick="show(10)" id="nav10"><i class="ti ti-bulb" aria-hidden="true"></i>Банк идей</div>
     <div class="nav-item" onclick="show(11)" id="nav11"><i class="ti ti-calendar" aria-hidden="true"></i>Контент-план</div>
@@ -612,7 +655,7 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 </div>
 
 <script>
-const META={0:{title:'Текущая ситуация',sub:'Расскажите коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто вы — ваш путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого вы работаете и какую боль закрываете',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опишите каждый ваш продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Ваше место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности вашей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые вы делаете прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе вашей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируйте контент по площадкам и перетаскивайте в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляйте клиентами, заметками и встречами в одном месте',time:''},14:{title:'Все участники',sub:'Админ-панель: список всех зарегистрированных, их прогресс и ответы',time:''}};
+const META={0:{title:'Текущая ситуация',sub:'Расскажите коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто вы — ваш путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого вы работаете и какую боль закрываете',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опишите каждый ваш продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Ваше место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности вашей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые вы делаете прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе вашей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируйте контент по площадкам и перетаскивайте в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляйте клиентами, заметками и встречами в одном месте',time:''},14:{title:'Все участники',sub:'Админ-панель: список всех зарегистрированных, их прогресс и ответы',time:''},15:{title:'Создать контент',sub:'Пять сценариев сторителлинга — платформа задаст вопросы и соберёт основу для поста',time:''}};
 const CATS=['знания','навыки','материалы','результаты','другое'];
 const PLATS={ig:{formats:['Reels','Пост-карусель','Пост-фото','Сторис','Прямой эфир']},th:{formats:['Тред','Пост','Цитата','Опрос']},yt:{formats:['Видео','Shorts','Прямой эфир','Пост']},tt:{formats:['Короткое видео','Дуэт','Прямой эфир','Фото-слайды']}};
 const FMT={Reels:'p-reel','Пост-карусель':'p-post','Пост-фото':'p-post','Сторис':'p-story','Прямой эфир':'p-post','Тред':'p-thread','Пост':'p-post','Цитата':'p-thread','Опрос':'p-thread','Видео':'p-video','Shorts':'p-short','Дуэт':'p-short','Фото-слайды':'p-short','Короткое видео':'p-short'};
@@ -1239,7 +1282,7 @@ function updateNav(){
       cnt++;
     } else if(n) n.textContent=i;
   }
-  [8,9,10,11,12,13,14].forEach(i=>{
+  [8,9,10,11,12,13,14,15].forEach(i=>{
     const el=document.getElementById('nav'+i);
     if(!el) return;
     el.classList.remove('active','locked');
@@ -1277,8 +1320,9 @@ function show(n){
   else if(n===12)c.innerHTML=rDoc();
   else if(n===13){c.innerHTML=rClients();initClients();}
   else if(n===14){c.innerHTML=rAdmin();initAdmin();}
+  else if(n===15){c.innerHTML=rContentCreator();initContentCreator();}
   if(n===0){restoreTA();setupAS();setupB0();}
-  else if(![5,8,9,10,11,13,14].includes(n)){restoreTA();setupAS();restoreAllMI();}
+  else if(![5,8,9,10,11,13,14,15].includes(n)){restoreTA();setupAS();restoreAllMI();}
   setTimeout(applyTranslations, 0);
 }
 
@@ -2082,6 +2126,240 @@ function clDeleteFromModal(){
   _clSave(_clLoad().filter(c=>c.id!==id));
   ov.remove();
   renderClientsStats(); renderClientsFilters(); renderClientsList();
+}
+
+// ===== СОЗДАТЬ КОНТЕНТ — сторителлинг движок =====
+const CC_TYPES = {
+  publication: {
+    icon: 'megaphone',
+    title: 'Публикация: продажа или анонс',
+    sub: 'Пост о запуске, скидке, вебинаре или анонсе',
+    questions: [
+      { key: 'q1', text: 'Какой продукт или акцию ты анонсируешь?', hint: 'Название и короткая суть' },
+      { key: 'q2', text: 'Кому именно он предназначен?', hint: 'Портрет клиента максимально конкретно' },
+      { key: 'q3', text: 'Какая главная выгода для клиента одной фразой?', hint: 'Не «мы делаем всё хорошо» — а конкретный измеримый результат' },
+      { key: 'q4', text: 'Какой сейчас лучший повод об этом рассказать?', hint: 'Сезон / событие / открытие продаж / момент в жизни клиента' },
+      { key: 'q5', text: 'Какие сомнения обычно возникают — их надо развеять?', hint: 'Дорого / не для меня / не сработает — что и как отвечать' },
+      { key: 'q6', text: 'Что читатель должен сделать после поста?', hint: 'Сохранить / оставить заявку / записаться / прийти' }
+    ]
+  },
+  insight: {
+    icon: 'bulb',
+    title: 'Сторителлинг: поделиться инсайтом',
+    sub: 'История с открытием, которое изменило твоё мышление',
+    questions: [
+      { key: 'q1', text: 'Каким инсайтом ты хочешь поделиться?', hint: 'Одной фразой — сам вывод' },
+      { key: 'q2', text: 'Чем ты занималась, когда к тебе пришла эта мысль?', hint: 'Конкретное действие / место / момент' },
+      { key: 'q3', text: 'Почему именно эта ситуация оказалась для тебя значимой? Что ты поняла такого, чего раньше не замечала?', hint: 'Что было до — и что стало после' },
+      { key: 'q4', text: 'Какие предыдущие события твоей жизни подтверждают этот инсайт?', hint: '1–3 эпизода из прошлого, связанные общей нитью' },
+      { key: 'q5', text: 'Какие инструменты твоей экспертности или твоего профессионального пути подтверждают сказанное?', hint: 'Методики, курсы, результаты клиентов' },
+      { key: 'q6', text: 'Что после этой истории должен почувствовать или понять читатель?', hint: 'Эмоция + инсайт для него' }
+    ]
+  },
+  product: {
+    icon: 'package',
+    title: 'Сторителлинг: рассказать про продукт',
+    sub: 'История, которая раскрывает суть твоего продукта',
+    questions: [
+      { key: 'q1', text: 'О каком твоём продукте пойдёт речь?', hint: 'Выбери из своей стратегии', productPicker: true },
+      { key: 'q2', text: 'Какая история из твоей жизни или практики лучше всего показывает, почему этот продукт нужен?', hint: 'Реальный кейс — свой или клиента' },
+      { key: 'q3', text: 'С какой болью клиента она перекликается?', hint: 'Прямо словами клиента, а не «маркетинговым языком»' },
+      { key: 'q4', text: 'Как этот продукт решил похожую боль у прошлого клиента (или у тебя самой)?', hint: 'Конкретные шаги / инсайты / результат' },
+      { key: 'q5', text: 'Какой один осязаемый результат должен «показать» продукт в этой истории?', hint: 'Цифра / до-после / эмоция' },
+      { key: 'q6', text: 'Что читатель должен захотеть сделать в конце?', hint: 'Пойти на сайт / оставить заявку / посмотреть подробнее' }
+    ]
+  },
+  method: {
+    icon: 'route',
+    title: 'Сторителлинг: рассказать про метод',
+    sub: 'Как ты работаешь и почему это работает',
+    questions: [
+      { key: 'q1', text: 'Как называется твой метод / подход?', hint: 'Твоё авторское название или рабочая формулировка' },
+      { key: 'q2', text: 'В чём его главная суть в одном предложении?', hint: 'Кому + от чего + через что' },
+      { key: 'q3', text: 'Как ты пришла к этому методу — какая ситуация вынудила его сформулировать?', hint: 'Момент, когда «старое» перестало работать' },
+      { key: 'q4', text: 'Чем он отличается от того, что делают другие в нише?', hint: 'Конкретно — что ты делаешь по-другому' },
+      { key: 'q5', text: 'Расскажи случай, когда метод сработал наглядно', hint: 'Одна история клиента с явным до/после' },
+      { key: 'q6', text: 'Что должно произойти в голове читателя после этой истории?', hint: 'Осознание / мотивация / решение' }
+    ]
+  },
+  personality: {
+    icon: 'user-heart',
+    title: 'Сторителлинг: личность',
+    sub: 'История о тебе — которая делает тебя настоящим',
+    questions: [
+      { key: 'q1', text: 'Какая черта твоей личности сегодня в центре истории?', hint: 'Одно слово или короткая фраза' },
+      { key: 'q2', text: 'Какое конкретное событие / момент отражает эту черту?', hint: 'Сцена — где, когда, что произошло' },
+      { key: 'q3', text: 'Как это связано с тем, чем ты занимаешься профессионально?', hint: 'Мостик от личного к экспертному' },
+      { key: 'q4', text: 'Что об этом обычно не рассказывают другие эксперты в твоей нише?', hint: 'То, что делает тебя тобой' },
+      { key: 'q5', text: 'Какую эмоцию читатель должен унести из истории?', hint: 'Понимание / тепло / вдохновение / серьёзность' }
+    ]
+  }
+};
+
+let _ccState = { view: 'tiles', type: null, unitId: null };
+let _ccUnits = [];
+
+function _ccLoad() { return ld('content_units_v1') || []; }
+function _ccSave(units) { _ccUnits = units; sv('content_units_v1', units); }
+
+function rContentCreator() { return `<div id="cc-page"></div>`; }
+
+function initContentCreator() {
+  _ccUnits = _ccLoad();
+  _ccState = { view: 'tiles', type: null, unitId: null };
+  renderCC();
+}
+
+function renderCC() {
+  const el = document.getElementById('cc-page');
+  if (!el) return;
+  if (_ccState.view === 'tiles') el.innerHTML = renderCCTiles();
+  else if (_ccState.view === 'form') { el.innerHTML = renderCCForm(); setTimeout(wireCCForm, 30); }
+}
+
+function renderCCTiles() {
+  const tiles = Object.entries(CC_TYPES).map(([key, t]) => `
+    <div class="cc-tile ${key}" onclick="ccStart('${key}')">
+      <div class="cc-tile-icon"><i class="ti ti-${t.icon}"></i></div>
+      <div class="cc-tile-title">${t.title}</div>
+      <div class="cc-tile-sub">${t.sub}</div>
+    </div>`).join('');
+
+  const drafts = _ccUnits.slice().sort((a,b) => (b.updated_at||b.created_at||'').localeCompare(a.updated_at||a.created_at||''));
+  const draftsHtml = drafts.length ? `
+    <div class="cc-drafts-hdr"><i class="ti ti-history"></i> Твои черновики (${drafts.length})</div>
+    ${drafts.map(u => {
+      const t = CC_TYPES[u.type] || { title: u.type };
+      const d = new Date(u.updated_at || u.created_at);
+      const dStr = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}`;
+      const title = u.title || '(без названия)';
+      const shortType = t.title.replace(/^(Сторителлинг|Публикация):\s*/, '');
+      return `<div class="cc-draft" onclick="ccOpen('${u.id}')">
+        <div class="cc-draft-meta">
+          <span class="cc-draft-type">${_clEsc(shortType)}</span>
+          <span class="cc-draft-title">${_clEsc(title)}</span>
+          ${u.status === 'ready' ? '<span class="cl-status customer" style="font-size:10px;">Готов</span>' : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="cc-draft-date">${dStr}</span>
+          <button class="cc-draft-del" onclick="event.stopPropagation();ccDelete('${u.id}')" title="Удалить"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>`;
+    }).join('')}
+  ` : '';
+
+  return `
+    <div class="cc-hero">
+      <div class="cc-hero-title">Выбери сценарий сторителлинга</div>
+      <div class="cc-hero-sub">Каждый сценарий — не просто «пост», а способ раскрыть смысл. Отвечай подробно — платформа собирает основу для будущей карты твоих смыслов и связей между историями.</div>
+    </div>
+    <div class="cc-tiles">${tiles}</div>
+    ${draftsHtml}
+  `;
+}
+
+function ccStart(type) {
+  const unitId = 'cu_' + Math.random().toString(36).slice(2, 11);
+  _ccUnits.push({
+    id: unitId, type: type, title: '', answers: {}, status: 'draft',
+    created_at: new Date().toISOString(), updated_at: new Date().toISOString()
+  });
+  _ccSave(_ccUnits);
+  _ccState = { view: 'form', type: type, unitId: unitId };
+  renderCC();
+}
+
+function ccOpen(unitId) {
+  const unit = _ccUnits.find(u => u.id === unitId);
+  if (!unit) return;
+  _ccState = { view: 'form', type: unit.type, unitId: unitId };
+  renderCC();
+}
+
+function ccDelete(unitId) {
+  if (!confirm('Удалить этот черновик?')) return;
+  _ccSave(_ccUnits.filter(u => u.id !== unitId));
+  renderCC();
+}
+
+function ccBackToTiles() {
+  _ccState = { view: 'tiles', type: null, unitId: null };
+  renderCC();
+}
+
+function renderCCForm() {
+  const t = CC_TYPES[_ccState.type];
+  if (!t) return '';
+  const unit = _ccUnits.find(u => u.id === _ccState.unitId);
+  if (!unit) return '';
+  const products = ld('products') || [];
+
+  const questionsHtml = t.questions.map((q, i) => {
+    const val = unit.answers[q.key] || '';
+    let field = '';
+    if (q.productPicker) {
+      const opts = ['<option value="">— Выбери из своих продуктов —</option>'].concat(
+        products.map(p => `<option value="${_clEsc(p.name)}"${val === p.name ? ' selected' : ''}>${_clEsc(p.name)}</option>`)
+      ).join('');
+      field = `<select data-cc-key="${q.key}">${opts}</select>`;
+      if (!products.length) field += `<div style="font-size:11px;color:#A86918;margin-top:6px;">Добавь хотя бы один продукт в Блоке 4, чтобы выбрать здесь.</div>`;
+    } else {
+      field = `<textarea data-cc-key="${q.key}" placeholder="Напиши подробно...">${_clEsc(val)}</textarea>`;
+    }
+    return `<div class="cc-q">
+      <div class="cc-q-num">Вопрос ${i+1}</div>
+      <div class="cc-q-text">${q.text}</div>
+      ${q.hint ? `<div class="cc-q-hint">${q.hint}</div>` : ''}
+      ${field}
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="cc-form-hdr">
+      <button class="cc-form-back" onclick="ccBackToTiles()"><i class="ti ti-arrow-left"></i>К выбору сценария</button>
+      <div style="font-size:12px;color:var(--color-text-tertiary);">Автосохранение</div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div class="cc-form-title">${t.title}</div>
+      <div style="font-size:13px;color:var(--color-text-tertiary);margin-top:4px;">${t.sub}</div>
+    </div>
+    ${questionsHtml}
+    <div class="cc-ai-placeholder">
+      <div class="icon"><i class="ti ti-sparkles"></i></div>
+      <div class="txt">Когда всё заполнишь — здесь появится журналист-AI: задаст 1–3 углубляющих вопроса, найдёт связи с твоими прошлыми историями и предложит готовый пост в твоём голосе. Пока это заглушка — в следующей итерации подключим настоящий Claude.</div>
+    </div>
+    <div class="cc-actions">
+      <div class="cc-actions-left">Черновик сохраняется автоматически по мере набора</div>
+      <div class="cc-actions-right">
+        <button class="cl-icon-btn" onclick="ccBackToTiles()" style="padding:8px 14px;font-size:13px;">Закрыть</button>
+        <button class="cl-add-btn" onclick="ccMarkReady()"><i class="ti ti-check"></i>Отметить как готовый</button>
+      </div>
+    </div>
+  `;
+}
+
+function wireCCForm() {
+  document.querySelectorAll('#cc-page [data-cc-key]').forEach(el => {
+    el.addEventListener('input', () => {
+      const unit = _ccUnits.find(u => u.id === _ccState.unitId);
+      if (!unit) return;
+      unit.answers[el.dataset.ccKey] = el.value;
+      const firstQ = CC_TYPES[unit.type].questions[0];
+      if (firstQ && unit.answers[firstQ.key]) unit.title = String(unit.answers[firstQ.key]).slice(0, 80);
+      unit.updated_at = new Date().toISOString();
+      _ccSave(_ccUnits);
+    });
+  });
+}
+
+function ccMarkReady() {
+  const unit = _ccUnits.find(u => u.id === _ccState.unitId);
+  if (!unit) return;
+  unit.status = 'ready';
+  unit.updated_at = new Date().toISOString();
+  _ccSave(_ccUnits);
+  alert('Черновик отмечен как готовый. В следующей версии здесь запустится AI-журналист и генерация поста в твоём голосе.');
+  ccBackToTiles();
 }
 
 // ===== АДМИН-ПАНЕЛЬ: все участники =====
