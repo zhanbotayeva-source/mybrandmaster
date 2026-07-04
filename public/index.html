@@ -570,6 +570,10 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
     <div class="nav-item" onclick="show(11)" id="nav11"><i class="ti ti-calendar" aria-hidden="true"></i>Контент-план</div>
     <div class="nav-section">Клиенты</div>
     <div class="nav-item" onclick="show(13)" id="nav13"><i class="ti ti-users-group" aria-hidden="true"></i>База клиентов</div>
+    <div id="admin-section" style="display:none;">
+      <div class="nav-section">Админ</div>
+      <div class="nav-item" onclick="show(14)" id="nav14"><i class="ti ti-shield-check" aria-hidden="true"></i>Все участники</div>
+    </div>
     <div class="nav-section">Итог</div>
     <div class="nav-item" onclick="show(12)" id="nav12"><i class="ti ti-file-text" aria-hidden="true"></i>Моя стратегия</div>
   </div>
@@ -608,7 +612,7 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 </div>
 
 <script>
-const META={0:{title:'Текущая ситуация',sub:'Расскажите коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто вы — ваш путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого вы работаете и какую боль закрываете',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опишите каждый ваш продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Ваше место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности вашей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые вы делаете прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе вашей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируйте контент по площадкам и перетаскивайте в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляйте клиентами, заметками и встречами в одном месте',time:''}};
+const META={0:{title:'Текущая ситуация',sub:'Расскажите коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто вы — ваш путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого вы работаете и какую боль закрываете',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опишите каждый ваш продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Ваше место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности вашей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые вы делаете прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе вашей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируйте контент по площадкам и перетаскивайте в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляйте клиентами, заметками и встречами в одном месте',time:''},14:{title:'Все участники',sub:'Админ-панель: список всех зарегистрированных, их прогресс и ответы',time:''}};
 const CATS=['знания','навыки','материалы','результаты','другое'];
 const PLATS={ig:{formats:['Reels','Пост-карусель','Пост-фото','Сторис','Прямой эфир']},th:{formats:['Тред','Пост','Цитата','Опрос']},yt:{formats:['Видео','Shorts','Прямой эфир','Пост']},tt:{formats:['Короткое видео','Дуэт','Прямой эфир','Фото-слайды']}};
 const FMT={Reels:'p-reel','Пост-карусель':'p-post','Пост-фото':'p-post','Сторис':'p-story','Прямой эфир':'p-post','Тред':'p-thread','Пост':'p-post','Цитата':'p-thread','Опрос':'p-thread','Видео':'p-video','Shorts':'p-short','Дуэт':'p-short','Фото-слайды':'p-short','Короткое видео':'p-short'};
@@ -1000,10 +1004,23 @@ if (typeof window!=='undefined' && location && location.protocol==='file:'){
   console.warn('Brandmaster: file:// origin блокирует Supabase. Запустите через http://localhost');
 }
 
+let isAdmin = false;
+async function fetchUserRole(){
+  if(!sb || !currentUser) return 'user';
+  try{
+    const {data} = await sb.from('profiles').select('role').eq('id', currentUser.id).maybeSingle();
+    return (data && data.role) || 'user';
+  }catch(e){ console.warn('[fetchUserRole]', e); return 'user'; }
+}
+
 async function onLogin(){
   hideAuth();
+  const role = await fetchUserRole();
+  isAdmin = (role === 'admin');
+  // показать / скрыть админ-секцию в сайдбаре
+  const adminSection = document.getElementById('admin-section');
+  if(adminSection) adminSection.style.display = isAdmin ? 'block' : 'none';
   await syncFromCloud();
-  // подтянем done из обновлённого localStorage
   done = ld('done') || {};
   renderUserBadge();
   if(typeof show==='function' && typeof cur!=='undefined') show(isB0Complete()?Math.max(cur,1):0);
@@ -1222,7 +1239,7 @@ function updateNav(){
       cnt++;
     } else if(n) n.textContent=i;
   }
-  [8,9,10,11,12,13].forEach(i=>{
+  [8,9,10,11,12,13,14].forEach(i=>{
     const el=document.getElementById('nav'+i);
     if(!el) return;
     el.classList.remove('active','locked');
@@ -1259,8 +1276,9 @@ function show(n){
   else if(n===11){c.innerHTML=rCal();initCal();}
   else if(n===12)c.innerHTML=rDoc();
   else if(n===13){c.innerHTML=rClients();initClients();}
+  else if(n===14){c.innerHTML=rAdmin();initAdmin();}
   if(n===0){restoreTA();setupAS();setupB0();}
-  else if(![5,8,9,10,11,13].includes(n)){restoreTA();setupAS();restoreAllMI();}
+  else if(![5,8,9,10,11,13,14].includes(n)){restoreTA();setupAS();restoreAllMI();}
   setTimeout(applyTranslations, 0);
 }
 
@@ -2064,6 +2082,205 @@ function clDeleteFromModal(){
   _clSave(_clLoad().filter(c=>c.id!==id));
   ov.remove();
   renderClientsStats(); renderClientsFilters(); renderClientsList();
+}
+
+// ===== АДМИН-ПАНЕЛЬ: все участники =====
+const AD_BLOCK_NAMES = {b0_q1:'Ведёт блог',b0_q2:'Подписчиков',b0_q3:'Как зарабатывает',b0_q4:'Доход',b0_q5:'Задача',
+  b1_q1:'Зачем ЛБ',b1_q3:'Что значит работает',b1_q4:'Что останавливало',
+  b2_q1:'Факты о себе',b2_q3:'Принципы',b2_q4:'За советами',b2_q5:'Путь через боли',
+  b2_q6:'Достижения',b2_q7:'Результат',b2_q8:'Суперсила',b2_q9:'Якоря',b2_q10:'Чем отличается',
+  b3_q1:'Идеальный клиент',b3_q2:'Как боли',b3_q3:'Как проявляется',b3_q4:'Мечты',b3_q5:'Что пробовали',b3_q6:'Слова клиента',
+  b4_pup1:'ПУП простой',b4_pup2:'ПУП удивительный',b4_pup3:'ПУП полезный',b4_q3:'Позиционирование',
+  b6_q1:'Темы',b6_q2:'Форматы',b6_q3:'Площадки',b6_q4:'Впечатление',b6_q5:'Время',b6_q6:'Визуал'};
+
+function rAdmin(){
+  return `<div id="ad-page">
+    <div class="cl-controls" style="margin-bottom:14px;">
+      <div class="cl-filters" id="ad-filters"></div>
+      <div class="cl-search-wrap">
+        <input class="cl-search" id="ad-search" placeholder="Поиск по email или имени..." />
+        <button class="cl-add-btn" onclick="adRefresh()"><i class="ti ti-refresh"></i>Обновить</button>
+      </div>
+    </div>
+    <div class="cl-stats" id="ad-stats"></div>
+    <div id="ad-list">
+      <div class="cl-empty" style="padding:40px 20px;text-align:center;color:var(--color-text-tertiary);">
+        <i class="ti ti-loader" style="font-size:32px"></i>
+        <div style="margin-top:10px">Загружаю участников...</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+let _adUsers = [];
+let _adFilter = 'all';
+let _adSearch = '';
+
+function initAdmin(){
+  if(!isAdmin){
+    document.getElementById('ad-list').innerHTML = '<div class="cl-empty" style="padding:40px;text-align:center;color:#E24B4A;"><i class="ti ti-shield-x" style="font-size:32px"></i><div style="margin-top:10px">Нет прав доступа</div></div>';
+    return;
+  }
+  const s = document.getElementById('ad-search');
+  if(s) s.addEventListener('input', e=>{ _adSearch = e.target.value.toLowerCase(); renderAdminList(); });
+  adRefresh();
+}
+
+async function adRefresh(){
+  if(!sb || !isAdmin) return;
+  try{
+    // 1) Все профили
+    const {data: profiles, error: e1} = await sb.from('profiles').select('id,email,role,created_at').order('created_at',{ascending:false});
+    if(e1){ console.warn('[admin profiles]', e1); alert('Ошибка: '+e1.message); return; }
+    // 2) Все ответы стратегии для подсчёта прогресса
+    const {data: answers, error: e2} = await sb.from('strategy_answers').select('user_id,block_key,value');
+    if(e2){ console.warn('[admin answers]', e2); }
+    // 3) Все клиенты + продукты (для сводки)
+    const {data: clients} = await sb.from('clients').select('user_id');
+    const {data: products} = await sb.from('products').select('user_id');
+    // Собираем по каждому пользователю
+    const byUser = {};
+    (profiles||[]).forEach(p => { byUser[p.id] = {...p, answers:[], clients:0, products:0}; });
+    (answers||[]).forEach(a => { if(byUser[a.user_id]) byUser[a.user_id].answers.push(a); });
+    (clients||[]).forEach(c => { if(byUser[c.user_id]) byUser[c.user_id].clients++; });
+    (products||[]).forEach(p => { if(byUser[p.user_id]) byUser[p.user_id].products++; });
+    _adUsers = Object.values(byUser);
+    renderAdminStats();
+    renderAdminFilters();
+    renderAdminList();
+  }catch(e){ console.warn('[adRefresh]', e); alert('Ошибка: '+e.message); }
+}
+
+function _adProgress(user){
+  // Считаем сколько блоков (1-7) хотя бы частично заполнены
+  const blocks = new Set();
+  (user.answers||[]).forEach(a => {
+    const m = (a.block_key||'').match(/^b(\d+)_/);
+    if(m){
+      const n = parseInt(m[1],10);
+      if(n>=1 && n<=7 && a.value && a.value.trim() && a.value.trim() !== '""' && a.value.trim() !== '[]') blocks.add(n);
+    }
+  });
+  return blocks.size;
+}
+
+function _adLastActive(user){
+  const dates = (user.answers||[]).map(a => a.value).filter(Boolean);
+  return dates.length;
+}
+
+function renderAdminStats(){
+  const total = _adUsers.length;
+  const active = _adUsers.filter(u => _adProgress(u) > 0).length;
+  const finished = _adUsers.filter(u => _adProgress(u) >= 7).length;
+  const admins = _adUsers.filter(u => u.role === 'admin').length;
+  document.getElementById('ad-stats').innerHTML = `
+    <div class="cl-stat"><div class="cl-stat-n">${total}</div><div class="cl-stat-l">Всего</div></div>
+    <div class="cl-stat"><div class="cl-stat-n">${active}</div><div class="cl-stat-l">Начали</div><div class="cl-stat-sub">хотя бы 1 блок</div></div>
+    <div class="cl-stat"><div class="cl-stat-n">${finished}</div><div class="cl-stat-l">Прошли</div><div class="cl-stat-sub">все 7 блоков</div></div>
+    <div class="cl-stat"><div class="cl-stat-n">${admins}</div><div class="cl-stat-l">Админов</div></div>
+  `;
+}
+
+function renderAdminFilters(){
+  const filters = [
+    {k:'all', label:'Все', n:_adUsers.length},
+    {k:'active', label:'Начали', n:_adUsers.filter(u=>_adProgress(u)>0).length},
+    {k:'finished', label:'Прошли всё', n:_adUsers.filter(u=>_adProgress(u)>=7).length},
+    {k:'empty', label:'Пусто', n:_adUsers.filter(u=>_adProgress(u)===0).length},
+  ];
+  document.getElementById('ad-filters').innerHTML = filters.map(f=>
+    `<button class="cl-filter${_adFilter===f.k?' active':''}" onclick="adSetFilter('${f.k}')">${f.label} <span class="cnt">${f.n}</span></button>`
+  ).join('');
+}
+
+function adSetFilter(k){ _adFilter = k; renderAdminFilters(); renderAdminList(); }
+
+function renderAdminList(){
+  let list = _adUsers.slice();
+  if(_adFilter === 'active') list = list.filter(u => _adProgress(u) > 0);
+  else if(_adFilter === 'finished') list = list.filter(u => _adProgress(u) >= 7);
+  else if(_adFilter === 'empty') list = list.filter(u => _adProgress(u) === 0);
+  if(_adSearch){
+    list = list.filter(u => (u.email||'').toLowerCase().includes(_adSearch));
+  }
+  list.sort((a,b) => (b.created_at||'').localeCompare(a.created_at||''));
+  const c = document.getElementById('ad-list');
+  if(!list.length){
+    c.innerHTML = `<div class="cl-table"><div class="cl-empty">
+      <div class="cl-empty-icon"><i class="ti ti-users"></i></div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;">Никого нет</div>
+      <div style="font-size:13px;">${_adUsers.length===0?'Пока никто не зарегистрировался.':'По этому фильтру ничего не найдено.'}</div>
+    </div></div>`;
+    return;
+  }
+  c.innerHTML = `<div class="cl-table">
+    <div class="cl-row cl-row-head" style="grid-template-columns:2fr 1fr 0.8fr 0.8fr 0.8fr 0.8fr;">
+      <div>Email</div><div>Роль</div><div>Прогресс</div><div>Клиентов</div><div>Продуктов</div><div>Регистрация</div>
+    </div>
+    ${list.map(u=>{
+      const prog = _adProgress(u);
+      const progColor = prog===7?'var(--teal-dark)':(prog>0?'var(--teal)':'var(--color-text-tertiary)');
+      const d = u.created_at ? new Date(u.created_at) : null;
+      const dStr = d ? `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()}` : '—';
+      return `<div class="cl-row" style="grid-template-columns:2fr 1fr 0.8fr 0.8fr 0.8fr 0.8fr;" onclick="adOpenUser('${u.id}')">
+        <div><div class="cl-name">${_clEsc(u.email||'—')}</div></div>
+        <div><span class="cl-status ${u.role==='admin'?'customer':'lead'}">${u.role==='admin'?'Админ':'Участник'}</span></div>
+        <div style="color:${progColor};font-weight:500;">${prog}/7</div>
+        <div>${u.clients||0}</div>
+        <div>${u.products||0}</div>
+        <div style="font-size:12px;color:var(--color-text-tertiary);">${dStr}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+async function adOpenUser(userId){
+  const user = _adUsers.find(u => u.id === userId);
+  if(!user) return;
+  // Загрузим полные ответы если ещё не загружены
+  const answersMap = {};
+  (user.answers||[]).forEach(a => { answersMap[a.block_key] = a.value; });
+
+  const parseVal = (v) => { try{ return JSON.parse(v); }catch(e){ return v; } };
+  const rowsHtml = Object.keys(AD_BLOCK_NAMES).map(k => {
+    const label = AD_BLOCK_NAMES[k];
+    let val = answersMap[k];
+    if(val == null){
+      // проверим ключ с _list (multi-item)
+      val = answersMap[k+'_list'];
+      if(val){
+        try{ const arr = JSON.parse(val); if(Array.isArray(arr)) val = arr.filter(x=>x&&x.trim()).join(' • '); }catch(e){}
+      }
+    } else {
+      val = parseVal(val);
+      if(typeof val === 'object') val = JSON.stringify(val);
+    }
+    if(!val || !String(val).trim()) return '';
+    return `<div style="margin-bottom:12px;padding:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:3px solid var(--teal-mid);">
+      <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${_clEsc(label)} · ${k}</div>
+      <div style="font-size:13px;color:var(--color-text-primary);white-space:pre-wrap;">${_clEsc(String(val))}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+
+  const ov = document.createElement('div'); ov.className='modal-ov'; ov.id='ad-user-ov';
+  ov.innerHTML = `<div class="cl-modal" onclick="event.stopPropagation()" style="width:720px;">
+    <div class="cl-modal-hdr">
+      <div>
+        <div class="cl-modal-ttl">${_clEsc(user.email||'—')}</div>
+        <div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px;">
+          Роль: ${user.role||'user'} · Заполнено блоков: ${_adProgress(user)}/7 · Клиентов: ${user.clients||0} · Продуктов: ${user.products||0}
+        </div>
+      </div>
+      <button class="cl-modal-close" onclick="document.getElementById('ad-user-ov').remove()">×</button>
+    </div>
+    ${rowsHtml || '<div style="padding:40px;text-align:center;color:var(--color-text-tertiary);font-style:italic;">Этот участник ещё не заполнил ни одного блока стратегии.</div>'}
+    <div class="cl-modal-acts">
+      <button class="cl-add-btn" onclick="document.getElementById('ad-user-ov').remove()"><i class="ti ti-check"></i>Закрыть</button>
+    </div>
+  </div>`;
+  ov.onclick = (e)=>{ if(e.target===ov) ov.remove(); };
+  document.body.appendChild(ov);
 }
 
 // ===== Документ «Моя стратегия» — структурированный отчёт в стиле презентации =====
