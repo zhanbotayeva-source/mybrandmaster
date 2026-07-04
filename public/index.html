@@ -210,6 +210,34 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 .empty-title{font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;}
 .empty-sub{font-size:13px;color:var(--color-text-tertiary);margin-bottom:20px;line-height:1.5;}
 .doc-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:18px;margin-bottom:12px;}
+/* ===== Карта смыслов — созвездия ===== */
+.mm-wrap{background:linear-gradient(180deg, #0F1729 0%, #182444 55%, #1F2D52 100%);border-radius:var(--border-radius-lg);padding:0;position:relative;overflow:hidden;margin-bottom:14px;box-shadow:0 4px 30px rgba(15,23,41,0.2);}
+.mm-wrap::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 30%, rgba(255,255,255,0.03) 1px, transparent 1px), radial-gradient(circle at 70% 60%, rgba(255,255,255,0.025) 1px, transparent 1px), radial-gradient(circle at 45% 80%, rgba(255,255,255,0.03) 1px, transparent 1px), radial-gradient(circle at 85% 20%, rgba(255,255,255,0.02) 1px, transparent 1px);background-size:150px 200px, 200px 250px, 180px 220px, 220px 180px;pointer-events:none;}
+.mm-svg{width:100%;height:auto;display:block;position:relative;z-index:1;}
+.mm-node{cursor:pointer;transition:transform 0.2s;}
+.mm-node:hover{transform:translateY(0);}
+.mm-node:hover .mm-star-main{opacity:1;}
+.mm-const-label{pointer-events:none;}
+.mm-tooltip{position:absolute;background:rgba(255,255,255,0.97);border-radius:10px;padding:11px 14px;max-width:260px;box-shadow:0 6px 24px rgba(0,0,0,0.25);pointer-events:none;z-index:100;font-family:var(--font-sans);}
+.mm-tt-const{font-size:10px;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;font-weight:600;}
+.mm-tt-text{font-size:13px;color:#1A1A1A;line-height:1.5;margin-bottom:4px;font-weight:500;}
+.mm-tt-desc{font-size:11px;color:#6B6660;font-style:italic;margin-top:4px;line-height:1.4;}
+.mm-tt-hint{font-size:10px;color:#8B8A83;margin-top:6px;padding-top:6px;border-top:0.5px solid #E6E2D8;}
+.mm-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:12px 14px;font-size:12px;color:var(--color-text-secondary);background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);margin-bottom:14px;}
+.mm-legend-item{display:inline-flex;align-items:center;gap:6px;}
+.mm-legend-dot{width:11px;height:11px;border-radius:50%;display:inline-block;box-shadow:0 0 8px currentColor;}
+.mm-empty{padding:80px 20px;text-align:center;color:#8B95AA;}
+.mm-empty-icon{font-size:48px;color:rgba(255,255,255,0.15);margin-bottom:16px;}
+.mm-empty-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:24px;color:rgba(255,255,255,0.7);margin-bottom:8px;}
+.mm-empty-sub{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.6;max-width:400px;margin:0 auto;}
+.mm-ai-note{background:var(--teal-light);border:0.5px dashed var(--teal-mid);border-radius:var(--border-radius-lg);padding:16px 20px;color:var(--teal-dark);font-size:13px;display:flex;align-items:flex-start;gap:12px;line-height:1.6;margin-top:14px;}
+.mm-ai-note .mm-ai-icon{font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;}
+.mm-ai-note .mm-ai-txt{flex:1;}
+.mm-ai-note .mm-ai-txt strong{display:block;font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-weight:400;color:var(--teal-dark);margin-bottom:6px;font-style:normal;}
+.mm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px;}
+.mm-stat{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 14px;text-align:center;}
+.mm-stat-n{font-size:22px;font-weight:500;color:var(--teal);line-height:1;margin-bottom:3px;}
+.mm-stat-l{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.5px;}
 /* ===== Создать контент — сторителлинг ===== */
 .cc-hero{background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:22px 26px;margin-bottom:22px;}
 .cc-hero-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:400;color:var(--teal-dark);line-height:1.3;margin-bottom:6px;}
@@ -618,6 +646,7 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
       <div class="nav-item" onclick="show(14)" id="nav14"><i class="ti ti-shield-check" aria-hidden="true"></i>Все участники</div>
     </div>
     <div class="nav-section">Итог</div>
+    <div class="nav-item" onclick="show(16)" id="nav16"><i class="ti ti-star" aria-hidden="true"></i>Карта смыслов</div>
     <div class="nav-item" onclick="show(12)" id="nav12"><i class="ti ti-file-text" aria-hidden="true"></i>Моя стратегия</div>
   </div>
   <div id="user-badge" class="user-badge"></div>
@@ -655,7 +684,7 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 </div>
 
 <script>
-const META={0:{title:'Текущая ситуация',sub:'Расскажите коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто вы — ваш путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого вы работаете и какую боль закрываете',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опишите каждый ваш продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Ваше место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности вашей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые вы делаете прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе вашей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируйте контент по площадкам и перетаскивайте в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляйте клиентами, заметками и встречами в одном месте',time:''},14:{title:'Все участники',sub:'Админ-панель: список всех зарегистрированных, их прогресс и ответы',time:''},15:{title:'Создать контент',sub:'Пять сценариев сторителлинга — платформа задаст вопросы и соберёт основу для поста',time:''}};
+const META={0:{title:'Текущая ситуация',sub:'Расскажите коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто вы — ваш путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого вы работаете и какую боль закрываете',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опишите каждый ваш продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Ваше место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности вашей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые вы делаете прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе вашей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируйте контент по площадкам и перетаскивайте в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляйте клиентами, заметками и встречами в одном месте',time:''},14:{title:'Все участники',sub:'Админ-панель: список всех зарегистрированных, их прогресс и ответы',time:''},15:{title:'Создать контент',sub:'Пять сценариев сторителлинга — платформа задаст вопросы и соберёт основу для поста',time:''},16:{title:'Карта смыслов',sub:'Твоя личность как созвездие — то что уже накопилось в платформе, отражённое в звёздах и связях',time:''}};
 const CATS=['знания','навыки','материалы','результаты','другое'];
 const PLATS={ig:{formats:['Reels','Пост-карусель','Пост-фото','Сторис','Прямой эфир']},th:{formats:['Тред','Пост','Цитата','Опрос']},yt:{formats:['Видео','Shorts','Прямой эфир','Пост']},tt:{formats:['Короткое видео','Дуэт','Прямой эфир','Фото-слайды']}};
 const FMT={Reels:'p-reel','Пост-карусель':'p-post','Пост-фото':'p-post','Сторис':'p-story','Прямой эфир':'p-post','Тред':'p-thread','Пост':'p-post','Цитата':'p-thread','Опрос':'p-thread','Видео':'p-video','Shorts':'p-short','Дуэт':'p-short','Фото-слайды':'p-short','Короткое видео':'p-short'};
@@ -1282,7 +1311,7 @@ function updateNav(){
       cnt++;
     } else if(n) n.textContent=i;
   }
-  [8,9,10,11,12,13,14,15].forEach(i=>{
+  [8,9,10,11,12,13,14,15,16].forEach(i=>{
     const el=document.getElementById('nav'+i);
     if(!el) return;
     el.classList.remove('active','locked');
@@ -1321,8 +1350,9 @@ function show(n){
   else if(n===13){c.innerHTML=rClients();initClients();}
   else if(n===14){c.innerHTML=rAdmin();initAdmin();}
   else if(n===15){c.innerHTML=rContentCreator();initContentCreator();}
+  else if(n===16){c.innerHTML=rMindmap();initMindmap();}
   if(n===0){restoreTA();setupAS();setupB0();}
-  else if(![5,8,9,10,11,13,14,15].includes(n)){restoreTA();setupAS();restoreAllMI();}
+  else if(![5,8,9,10,11,13,14,15,16].includes(n)){restoreTA();setupAS();restoreAllMI();}
   setTimeout(applyTranslations, 0);
 }
 
@@ -2126,6 +2156,223 @@ function clDeleteFromModal(){
   _clSave(_clLoad().filter(c=>c.id!==id));
   ov.remove();
   renderClientsStats(); renderClientsFilters(); renderClientsList();
+}
+
+// ===== КАРТА СМЫСЛОВ — созвездия =====
+const MM_CONSTELLATIONS = {
+  core:        { name: 'Ядро',        color: '#F5D77D', angle: null, distance: 0   },
+  personality: { name: 'Личность',    color: '#E8AFC1', angle: 270,  distance: 220 },
+  expertise:   { name: 'Экспертность',color: '#7DC1A6', angle: 330,  distance: 220 },
+  voice:       { name: 'Голос',       color: '#DBBB70', angle: 30,   distance: 220 },
+  audience:    { name: 'Аудитория',   color: '#E88B7A', angle: 90,   distance: 220 },
+  products:    { name: 'Продукты',    color: '#B49DC1', angle: 150,  distance: 220 },
+  stories:     { name: 'Истории',     color: '#7DAFC1', angle: 210,  distance: 220 }
+};
+const MM_CENTER = { x: 450, y: 335 };
+
+function _mmConstPos(cName) {
+  const c = MM_CONSTELLATIONS[cName];
+  if (!c || c.distance === 0) return {...MM_CENTER};
+  const rad = (c.angle * Math.PI) / 180;
+  return { x: MM_CENTER.x + c.distance * Math.cos(rad), y: MM_CENTER.y + c.distance * Math.sin(rad) };
+}
+
+function _mmCollectNodes() {
+  const nodes = [];
+  const links = [];
+  const p = ld('b4_q3');
+  if (p) nodes.push({ id: 'core', constellation: 'core', text: p, description: 'Позиционирование', size: 44, meta: 'Твой центр — то, вокруг чего строится бренд' });
+  const sp = ld('b2_q8');
+  if (sp) { nodes.push({ id: 'sp', constellation: 'expertise', text: sp, description: 'Суперсила', size: 34, meta: 'Что ты делаешь легко, а другим сложно' }); if (p) links.push({from:'sp', to:'core'}); }
+  const values = (ld('b2_values') || []).filter(v => v && v.n);
+  values.forEach((v, i) => { nodes.push({ id: 'val_'+i, constellation: 'personality', text: v.n, description: v.b, size: 26, meta: 'Ценность' }); if (p) links.push({from:'val_'+i, to:'core'}); });
+  (ld('b2_q3_list') || []).filter(x => x && x.trim()).forEach((pr, i) => { nodes.push({ id: 'pri_'+i, constellation: 'personality', text: pr, size: 20, meta: 'Принцип' }); });
+  (ld('b2_q1_list') || []).filter(x => x && x.trim()).slice(0, 7).forEach((f, i) => { nodes.push({ id: 'fact_'+i, constellation: 'personality', text: f, size: 16, meta: 'Факт о себе' }); });
+  (ld('b2_q6_list') || []).filter(x => x && x.trim()).slice(0, 5).forEach((a, i) => { nodes.push({ id: 'ach_'+i, constellation: 'expertise', text: a, size: 20, meta: 'Достижение' }); });
+  (ld('b2_q7_list') || []).filter(x => x && x.trim()).slice(0, 4).forEach((r, i) => { nodes.push({ id: 'res_'+i, constellation: 'expertise', text: r, size: 22, meta: 'Результат для клиентов' }); });
+  (ld('b2_q9_list') || []).filter(x => x && x.trim()).forEach((an, i) => { nodes.push({ id: 'anc_'+i, constellation: 'voice', text: an, size: 24, meta: 'Якорь-ассоциация' }); if (p) links.push({from:'anc_'+i, to:'core'}); });
+  const client = ld('b3_q1');
+  if (client) { nodes.push({ id: 'client', constellation: 'audience', text: client, size: 32, meta: 'Идеальный клиент' }); if (p) links.push({from:'client', to:'core'}); }
+  (ld('b3_q2_list') || []).filter(x => x && x.trim()).slice(0, 5).forEach((pain, i) => { nodes.push({ id: 'pain_'+i, constellation: 'audience', text: pain, size: 18, meta: 'Боль клиента' }); if (client) links.push({from:'pain_'+i, to:'client'}); });
+  (ld('b3_q4_list') || []).filter(x => x && x.trim()).slice(0, 4).forEach((dr, i) => { nodes.push({ id: 'dream_'+i, constellation: 'audience', text: dr, size: 18, meta: 'Мечта клиента' }); });
+  (ld('b3_q6_list') || []).filter(x => x && x.trim()).slice(0, 4).forEach((w, i) => { nodes.push({ id: 'word_'+i, constellation: 'voice', text: '«'+w+'»', size: 16, meta: 'Слова клиента' }); });
+  const products = ld('products') || [];
+  products.forEach((prod, i) => { const size = 30 + Math.min(10, (prod.name || '').length / 3); nodes.push({ id: 'prod_'+i, constellation: 'products', text: prod.name || 'Без имени', description: prod.concept, size, meta: 'Твой продукт' }); if (p) links.push({from:'prod_'+i, to:'core'}); });
+  const units = ld('content_units_v1') || [];
+  units.forEach((u, i) => { const typeMap = { publication: 'Публикация', insight: 'Инсайт', product: 'Про продукт', method: 'Про метод', personality: 'Про личность' }; nodes.push({ id: 'sty_'+i, constellation: 'stories', text: u.title || '(без названия)', description: typeMap[u.type] || u.type, size: 22, meta: 'Сторителлинг' }); if (u.type === 'product' && u.answers && u.answers.q1) { const pi = products.findIndex(pr => pr.name === u.answers.q1); if (pi >= 0) links.push({from:'sty_'+i, to:'prod_'+pi}); } });
+  return { nodes, links };
+}
+
+function _mmPositionNodes(nodes) {
+  const byConst = {};
+  nodes.forEach(n => { (byConst[n.constellation] = byConst[n.constellation] || []).push(n); });
+  Object.keys(byConst).forEach(cName => {
+    const arr = byConst[cName];
+    const center = _mmConstPos(cName);
+    if (cName === 'core' || arr.length === 1) {
+      arr.forEach(n => { n.x = center.x; n.y = center.y; });
+    } else {
+      // Спираль: чем дальше от центра созвездия, тем дальше от центра
+      arr.forEach((n, i) => {
+        const total = arr.length;
+        const angleStep = (Math.PI * 2) / Math.max(total, 5);
+        const angle = i * angleStep + (cName.charCodeAt(0) * 0.11);
+        const layer = Math.floor(i / 6);
+        const radius = 45 + layer * 28 + ((i * 7) % 15);
+        n.x = center.x + radius * Math.cos(angle);
+        n.y = center.y + radius * Math.sin(angle);
+      });
+    }
+  });
+  return nodes;
+}
+
+function rMindmap() {
+  return `<div id="mm-page">
+    <div id="mm-stats" class="mm-stats"></div>
+    <div class="mm-wrap" id="mm-wrap">
+      <svg viewBox="0 0 900 670" class="mm-svg" id="mm-svg" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="mm-tooltip" id="mm-tooltip" style="display:none"></div>
+    </div>
+    <div class="mm-legend" id="mm-legend"></div>
+    <div class="mm-ai-note">
+      <i class="ti ti-sparkles mm-ai-icon"></i>
+      <div class="mm-ai-txt">
+        <strong>Что тут скоро появится</strong>
+        AI будет читать твою карту и говорить: «твоя центральная тема — Х, ты уже трижды раскрыла её через истории про Y, но не хватает связки с продуктом Z». Пока это зеркало — показывает то, что уже накопилось. Заполняй стратегию и сторителлинги — созвездия будут разрастаться.
+      </div>
+    </div>
+  </div>`;
+}
+
+function initMindmap() {
+  const { nodes, links } = _mmCollectNodes();
+  _mmPositionNodes(nodes);
+  const stats = document.getElementById('mm-stats');
+  const cCount = c => nodes.filter(n => n.constellation === c).length;
+  if (stats) stats.innerHTML = `
+    <div class="mm-stat"><div class="mm-stat-n">${nodes.length}</div><div class="mm-stat-l">Всего звёзд</div></div>
+    <div class="mm-stat"><div class="mm-stat-n">${links.length}</div><div class="mm-stat-l">Связей</div></div>
+    <div class="mm-stat"><div class="mm-stat-n">${cCount('stories')}</div><div class="mm-stat-l">Историй</div></div>
+    <div class="mm-stat"><div class="mm-stat-n">${cCount('products')}</div><div class="mm-stat-l">Продуктов</div></div>
+    <div class="mm-stat"><div class="mm-stat-n">${cCount('personality') + cCount('voice')}</div><div class="mm-stat-l">Смыслов</div></div>
+  `;
+  renderMindmap(nodes, links);
+}
+
+function renderMindmap(nodes, links) {
+  const svg = document.getElementById('mm-svg');
+  if (!svg) return;
+  if (nodes.length === 0) {
+    svg.innerHTML = `<foreignObject x="0" y="0" width="900" height="670"><div xmlns="http://www.w3.org/1999/xhtml" class="mm-empty">
+      <div class="mm-empty-icon"><i class="ti ti-star"></i></div>
+      <div class="mm-empty-title">Небо пока пустое</div>
+      <div class="mm-empty-sub">Заполни хотя бы один блок стратегии — и здесь появятся первые звёзды твоей идентичности.</div>
+    </div></foreignObject>`;
+    return;
+  }
+  // Декоративные фоновые звёзды (мелкие точки)
+  let bgStars = '';
+  for (let i = 0; i < 60; i++) {
+    const x = (Math.sin(i * 12.9898) * 43758.5453) % 1;
+    const y = (Math.sin(i * 78.233) * 43758.5453) % 1;
+    const cx = Math.abs(x) * 900;
+    const cy = Math.abs(y) * 670;
+    const r = 0.5 + (Math.abs(x + y) * 2 % 1.5);
+    bgStars += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#ffffff" opacity="${(0.15 + Math.abs(x) * 0.3).toFixed(2)}"/>`;
+  }
+  // Метки созвездий
+  const cLabels = Object.entries(MM_CONSTELLATIONS).filter(([k, c]) => c.distance > 0).map(([k, c]) => {
+    const rad = (c.angle * Math.PI) / 180;
+    const lx = MM_CENTER.x + (c.distance + 105) * Math.cos(rad);
+    const ly = MM_CENTER.y + (c.distance + 105) * Math.sin(rad);
+    const n = nodes.filter(nd => nd.constellation === k).length;
+    const op = n > 0 ? 0.85 : 0.3;
+    return `<g class="mm-const-label"><text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" fill="${c.color}" font-family="Cormorant Garamond, Georgia, serif" font-size="17" opacity="${op}">${c.name}</text><text x="${lx.toFixed(1)}" y="${(ly + 16).toFixed(1)}" text-anchor="middle" fill="#8B95AA" font-size="9" opacity="${op * 0.7}">${n}</text></g>`;
+  }).join('');
+  // Связи
+  const linksHtml = links.map(l => {
+    const from = nodes.find(n => n.id === l.from);
+    const to = nodes.find(n => n.id === l.to);
+    if (!from || !to) return '';
+    return `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${to.x.toFixed(1)}" y2="${to.y.toFixed(1)}" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>`;
+  }).join('');
+  // Звёзды
+  const stars = nodes.map(n => {
+    const c = MM_CONSTELLATIONS[n.constellation] || MM_CONSTELLATIONS.personality;
+    const r = Math.max(5, Math.min(20, n.size / 2.5));
+    const glowR = r + 8;
+    return `<g class="mm-node" data-node-id="${n.id}" transform="translate(${n.x.toFixed(1)},${n.y.toFixed(1)})">
+      <circle r="${glowR}" fill="${c.color}" opacity="0.12"/>
+      <circle r="${(r + 3).toFixed(1)}" fill="${c.color}" opacity="0.25"/>
+      <circle class="mm-star-main" r="${r.toFixed(1)}" fill="${c.color}" opacity="0.9"/>
+      <circle r="${(r * 0.35).toFixed(1)}" fill="#ffffff" opacity="0.7"/>
+    </g>`;
+  }).join('');
+  svg.innerHTML = bgStars + linksHtml + cLabels + stars;
+  // Интерактив
+  svg.querySelectorAll('.mm-node').forEach(g => {
+    const id = g.getAttribute('data-node-id');
+    const node = nodes.find(n => n.id === id);
+    g.addEventListener('mouseenter', e => mmShowTip(e, node));
+    g.addEventListener('mousemove', e => mmMoveTip(e));
+    g.addEventListener('mouseleave', mmHideTip);
+    g.addEventListener('click', () => mmOpenDetail(node, links, nodes));
+  });
+  // Легенда
+  document.getElementById('mm-legend').innerHTML = Object.entries(MM_CONSTELLATIONS).filter(([k, c]) => c.distance > 0).map(([k, c]) => {
+    const n = nodes.filter(nd => nd.constellation === k).length;
+    return `<span class="mm-legend-item"><span class="mm-legend-dot" style="background:${c.color};color:${c.color}"></span>${c.name} <span style="color:var(--color-text-tertiary);font-size:11px;">${n}</span></span>`;
+  }).join('');
+}
+
+function mmShowTip(e, node) {
+  const tt = document.getElementById('mm-tooltip');
+  if (!tt || !node) return;
+  const c = MM_CONSTELLATIONS[node.constellation] || MM_CONSTELLATIONS.personality;
+  tt.innerHTML = `<div class="mm-tt-const" style="color:${c.color}">${c.name} · ${node.meta || ''}</div>
+    <div class="mm-tt-text">${_clEsc(node.text)}</div>
+    ${node.description ? '<div class="mm-tt-desc">' + _clEsc(node.description) + '</div>' : ''}
+    <div class="mm-tt-hint">Клик — подробнее</div>`;
+  tt.style.display = 'block';
+  mmMoveTip(e);
+}
+
+function mmMoveTip(e) {
+  const tt = document.getElementById('mm-tooltip');
+  const wrap = document.getElementById('mm-wrap');
+  if (!tt || !wrap) return;
+  const rect = wrap.getBoundingClientRect();
+  let x = e.clientX - rect.left + 15;
+  let y = e.clientY - rect.top + 15;
+  if (x + 270 > rect.width) x = e.clientX - rect.left - 285;
+  tt.style.left = Math.max(10, x) + 'px';
+  tt.style.top = Math.max(10, y) + 'px';
+}
+
+function mmHideTip() { const tt = document.getElementById('mm-tooltip'); if (tt) tt.style.display = 'none'; }
+
+function mmOpenDetail(node, links, nodes) {
+  const c = MM_CONSTELLATIONS[node.constellation] || MM_CONSTELLATIONS.personality;
+  const relatedIds = new Set();
+  links.forEach(l => { if (l.from === node.id) relatedIds.add(l.to); if (l.to === node.id) relatedIds.add(l.from); });
+  const related = Array.from(relatedIds).map(id => nodes.find(n => n.id === id)).filter(Boolean);
+  const relHtml = related.length ? `<div style="margin-top:14px;padding-top:12px;border-top:0.5px solid var(--color-border-tertiary);"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--color-text-tertiary);margin-bottom:8px;">Связано с</div>${related.map(r => { const rc = MM_CONSTELLATIONS[r.constellation]; return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;"><span style="width:8px;height:8px;border-radius:50%;background:${rc.color};box-shadow:0 0 6px ${rc.color};"></span><span style="color:var(--color-text-tertiary);font-size:11px;">${rc.name}</span><span>${_clEsc(r.text)}</span></div>`; }).join('')}</div>` : '';
+  const ov = document.createElement('div'); ov.className = 'modal-ov'; ov.id = 'mm-detail-ov';
+  ov.innerHTML = `<div class="cl-modal" onclick="event.stopPropagation()" style="width:560px;">
+    <div class="cl-modal-hdr">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="width:12px;height:12px;border-radius:50%;background:${c.color};box-shadow:0 0 10px ${c.color};"></span><span style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:${c.color};font-weight:600;">${c.name} · ${node.meta || ''}</span></div>
+        <div class="cl-modal-ttl" style="font-size:22px;">${_clEsc(node.text)}</div>
+      </div>
+      <button class="cl-modal-close" onclick="document.getElementById('mm-detail-ov').remove()">×</button>
+    </div>
+    ${node.description ? '<div style="font-size:13px;color:var(--color-text-secondary);line-height:1.6;font-style:italic;">' + _clEsc(node.description) + '</div>' : ''}
+    ${relHtml}
+    <div class="cl-modal-acts"><button class="cl-add-btn" onclick="document.getElementById('mm-detail-ov').remove()"><i class="ti ti-check"></i>Закрыть</button></div>
+  </div>`;
+  ov.onclick = (e) => { if (e.target === ov) ov.remove(); };
+  document.body.appendChild(ov);
 }
 
 // ===== СОЗДАТЬ КОНТЕНТ — сторителлинг движок =====
