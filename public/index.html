@@ -668,14 +668,8 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
     <div class="time-hint" id="save-state">
       <i class="ti ti-clock" aria-hidden="true"></i><span class="save-text">Сохраняется автоматически</span>
       <span style="margin:0 10px;color:var(--color-border-tertiary);">|</span>
-      <button onclick="downloadBackup()" title="Скачать резервную копию всех ответов" style="background:none;border:none;color:var(--teal);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:0;">
-        <i class="ti ti-download" aria-hidden="true"></i>Скачать копию
-      </button>
-      <button onclick="importBackup()" title="Восстановить из ранее сохранённой копии" style="background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:0;margin-left:10px;">
-        <i class="ti ti-upload" aria-hidden="true"></i>Загрузить копию
-      </button>
-      <button onclick="showSaved()" title="Показать всё что реально сохранено" style="background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:0;margin-left:10px;">
-        <i class="ti ti-eye" aria-hidden="true"></i>Что сохранено?
+      <button onclick="openSettings()" title="Настройки и данные" style="background:none;border:none;color:var(--color-text-tertiary);cursor:pointer;font-size:12px;display:inline-flex;align-items:center;gap:4px;padding:0;">
+        <i class="ti ti-settings" aria-hidden="true"></i>Настройки
       </button>
     </div>
     <div style="display:flex;gap:8px;">
@@ -687,7 +681,7 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 </div>
 
 <script>
-const META={0:{title:'Текущая ситуация',sub:'Расскажите коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто вы — ваш путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого вы работаете и какую боль закрываете',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опишите каждый ваш продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Ваше место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности вашей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые вы делаете прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе вашей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируйте контент по площадкам и перетаскивайте в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляйте клиентами, заметками и встречами в одном месте',time:''},14:{title:'Все участники',sub:'Админ-панель: список всех зарегистрированных, их прогресс и ответы',time:''},15:{title:'Создать контент',sub:'Пять сценариев сторителлинга — платформа задаст вопросы и соберёт основу для поста',time:''},16:{title:'Карта смыслов',sub:'Твоя личность как созвездие — то что уже накопилось в платформе, отражённое в звёздах и связях',time:''}};
+const META={0:{title:'Текущая ситуация',sub:'Расскажи коротко о точке отсчёта — это нужно до начала стратегии',time:'~5 мин'},1:{title:'Блок 1 — Цели и планы',sub:'С чего начинается любой сильный бренд — с ясного зачем',time:'~15 мин'},2:{title:'Блок 2 — Распаковка',sub:'Кто ты — твой путь, сила и уникальность',time:'~60–70 мин'},3:{title:'Блок 3 — Аудитория',sub:'Для кого ты работаешь и какую боль закрываешь',time:'~30 мин'},4:{title:'Блок 4 — Продукты',sub:'Опиши каждый твой продукт',time:'~25 мин'},5:{title:'Блок 5 — Позиционирование',sub:'Твоё место на рынке и ключевое отличие',time:'~20 мин'},6:{title:'Блок 6 — Контент-стратегия',sub:'О чём говорить, где и в каком формате',time:'~20 мин'},7:{title:'Блок 7 — Упаковка страницы',sub:'Чек-лист готовности твоей страницы',time:'~15 мин'},8:{title:'Задачи на неделю',sub:'Конкретные действия которые ты делаешь прямо сейчас',time:''},9:{title:'Рекомендации AI',sub:'Стратегический анализ на основе твоей стратегии',time:''},10:{title:'Банк идей',sub:'Сохраняй идеи от AI и свои — планируй в календарь одним кликом',time:''},11:{title:'Контент-план',sub:'Планируй контент по площадкам и перетаскивай в календарь',time:''},12:{title:'Моя стратегия',sub:'Итоговый документ личного бренда',time:''},13:{title:'База клиентов',sub:'Управляй клиентами, заметками и встречами в одном месте',time:''},14:{title:'Все участники',sub:'Админ-панель: список всех зарегистрированных, их прогресс и ответы',time:''},15:{title:'Создать контент',sub:'Пять сценариев сторителлинга — платформа задаст вопросы и соберёт основу для поста',time:''},16:{title:'Карта смыслов',sub:'Твоя личность как созвездие — то что уже накопилось в платформе, отражённое в звёздах и связях',time:''}};
 const CATS=['знания','навыки','материалы','результаты','другое'];
 const PLATS={ig:{formats:['Reels','Пост-карусель','Пост-фото','Сторис','Прямой эфир']},th:{formats:['Тред','Пост','Цитата','Опрос']},yt:{formats:['Видео','Shorts','Прямой эфир','Пост']},tt:{formats:['Короткое видео','Дуэт','Прямой эфир','Фото-слайды']}};
 const FMT={Reels:'p-reel','Пост-карусель':'p-post','Пост-фото':'p-post','Сторис':'p-story','Прямой эфир':'p-post','Тред':'p-thread','Пост':'p-post','Цитата':'p-thread','Опрос':'p-thread','Видео':'p-video','Shorts':'p-short','Дуэт':'p-short','Фото-слайды':'p-short','Короткое видео':'p-short'};
@@ -697,12 +691,12 @@ const PMAP={Instagram:'ig',Threads:'th',YouTube:'yt',TikTok:'tt'};
 const TAB_LABELS={expert:'Экспертные',personal:'Личные',fun:'Развлекательные'};
 
 let done={},cur=1,prods=[],activeProd=0;
-let calPlt='ig',calData={ig:[],th:[],yt:[],tt:[]},calY=2026,calM=4,calView='month',calDrag=null,calSel=null;
+let calPlt='ig',calData={ig:[],th:[],yt:[],tt:[]},calY=(new Date()).getFullYear(),calM=(new Date()).getMonth(),calView='month',calDrag=null,calSel=null;
 let weeks={},curWKey='',wOff=0;
 let ideas={expert:[],personal:[],fun:[]},activeIdTab='expert',ideaFilter='all';
 let dpIdea=null,dpY=2026,dpM=4,dpSelDate=null,dpPlt='ig';
 let lastCtx=null;
-let weekStart=new Date(2026,4,11);
+let weekStart=(function(){const d=new Date();const day=d.getDay()||7;d.setDate(d.getDate()-(day-1));return new Date(d.getFullYear(),d.getMonth(),d.getDate());})();
 
 function sv(k,v){const j=JSON.stringify(v);try{localStorage.setItem('bm_'+k,j);flashSaved();}catch(e){console.warn('[save failed]',k,e);}syncToCloud(k,j);}
 function ld(k){try{return JSON.parse(localStorage.getItem('bm_'+k)||'null');}catch(e){return null;}}
@@ -736,18 +730,18 @@ const EN_MAP = {
   'Блок 5 — Позиционирование':'Block 5 — Positioning','Блок 6 — Контент-стратегия':'Block 6 — Content strategy',
   'Блок 7 — Упаковка страницы':'Block 7 — Profile packaging',
   'С чего начинается любой сильный бренд — с ясного зачем':'Every strong brand starts with a clear why',
-  'Кто вы — ваш путь, сила и уникальность':'Who you are — your path, strength and uniqueness',
-  'Для кого вы работаете и какую боль закрываете':'Who you work for and what pain you solve',
-  'Ваше место на рынке и ключевое отличие':'Your place in the market and your key differentiator',
-  'Опишите каждый ваш продукт':'Describe each of your products',
+  'Кто ты — твой путь, сила и уникальность':'Who you are — your path, strength and uniqueness',
+  'Для кого ты работаешь и какую боль закрываешь':'Who you work for and what pain you solve',
+  'Твоё место на рынке и ключевое отличие':'Your place in the market and your key differentiator',
+  'Опиши каждый твой продукт':'Describe each of your products',
   'О чём говорить, где и в каком формате':'What to talk about, where, and in what format',
-  'Чек-лист готовности вашей страницы':'Checklist for your profile readiness',
-  'Конкретные действия которые вы делаете прямо сейчас':'Concrete actions you do right now',
-  'Стратегический анализ на основе вашей стратегии':'Strategic analysis based on your strategy',
+  'Чек-лист готовности твоей страницы':'Checklist for your profile readiness',
+  'Конкретные действия которые ты делаешь прямо сейчас':'Concrete actions you do right now',
+  'Стратегический анализ на основе твоей стратегии':'Strategic analysis based on your strategy',
   'Сохраняй идеи от AI и свои — планируй в календарь одним кликом':'Save AI and your own ideas — plan them in one click',
-  'Планируйте контент по площадкам и перетаскивайте в календарь':'Plan content by platform and drag onto the calendar',
+  'Планируй контент по площадкам и перетаскивай в календарь':'Plan content by platform and drag onto the calendar',
   'Итоговый документ личного бренда':'Final personal brand document',
-  'Расскажите коротко о точке отсчёта — это нужно до начала стратегии':'Briefly share your starting point — needed before strategy',
+  'Расскажи коротко о точке отсчёта — это нужно до начала стратегии':'Briefly share your starting point — needed before strategy',
   // Times
   '~5 мин':'~5 min','~15 мин':'~15 min','~20 мин':'~20 min','~25 мин':'~25 min','~30 мин':'~30 min','~60–70 мин':'~60–70 min',
   // Welcome / b0
@@ -788,41 +782,41 @@ const EN_MAP = {
   'Что останавливало раньше?':'What stopped you before?',
   'Например: боялся осуждения, не знал о чём говорить.':"Example: feared judgement, didn't know what to talk about.",
   // Block 2
-  '5–7 фактов о себе, которые по-настоящему вас характеризуют':'5–7 facts about you that truly define who you are',
-  'То что удивляет людей когда узнают впервые. Это могут быть интересные опыты, которые вы проходили, необычные путешествия, особые умения и др.':
+  '5–7 фактов о себе, которые по-настоящему тебя характеризуют':'5–7 facts about you that truly define who you are',
+  'То что удивляет людей когда узнают впервые. Это могут быть интересные опыты, которые ты проходила, необычные путешествия, особые умения и др.':
     'What surprises people when they hear it first time — unusual experiences, travels, special skills, etc.',
   'Например: жила полгода в монастыре в Тибете':'Example: spent six months in a monastery in Tibet',
-  'Ваши ценности 5–7 — как каждая проявляется в жизни?':'Your 5–7 values — how does each show up in life?',
+  'Твои ценности 5–7 — как каждая проявляется в жизни?':'Your 5–7 values — how does each show up in life?',
   'Конкретные примеры, не просто слова.':'Specific examples, not just words.',
   'Добавить ценность':'Add value',
-  'Принципы и идеи которые хотите транслировать миру?':'Principles and ideas you want to broadcast to the world?',
+  'Принципы и идеи которые хочешь транслировать миру?':'Principles and ideas you want to broadcast to the world?',
   'По одной идее в строке.':'One idea per line.',
   'Например: верю что каждый может зарабатывать на любимом деле':
     'Example: I believe everyone can make a living from what they love',
   'За какими советами обращаются друзья и знакомые?':'What advice do friends and acquaintances ask you for?',
-  'В каких темах вы для них авторитет.':"Topics where you're an authority for them.",
+  'В каких темах ты для них авторитет.':"Topics where you're an authority for them.",
   'Например: как договориться о повышении зарплаты':'Example: how to negotiate a raise',
-  'Через какие переломные моменты и боли вы пришли к делу, которым занимаетесь сейчас?':
+  'Через какие переломные моменты и боли ты пришла к делу, которым занимаешься сейчас?':
     'Through which turning points and pains did you come to the work you do now?',
-  'Это ваша история — самый ценный контент.':'This is your story — the most valuable content.',
+  'Это твоя история — самый ценный контент.':'This is your story — the most valuable content.',
   '5 профессиональных достижений и кейсы клиентов в цифрах':'5 professional achievements and client case studies in numbers',
-  'По одному достижению в строке. Не скромничайте — это ваша сила.':'One achievement per line. Don\'t be modest — this is your strength.',
+  'По одному достижению в строке. Не скромничай — это твоя сила.':'One achievement per line. Don\'t be modest — this is your strength.',
   'Например: за 3 месяца увеличил доход клиента в 2 раза':"Example: doubled a client's income in 3 months",
-  'Какой конечный результат вы даёте людям?':'What is the final result you give people?',
+  'Какой конечный результат ты даёшь людям?':'What is the final result you give people?',
   'По одному пункту в строке.':'One point per line.',
   'Например: человек понимает, как работает личный бренд, как и что делать в блоге, начинает получать результаты':
     'Example: the person understands how personal brand works, what to do in their blog, starts seeing results',
-  'В чём ваша суперсила как эксперта?':'What is your superpower as an expert?',
-  'Что вы делаете легко, а другим даётся с трудом?':'What comes easy to you that others struggle with?',
-  '3–5 якорей-ассоциаций с вами':'3–5 anchor associations with you',
+  'В чём твоя суперсила как эксперта?':'What is your superpower as an expert?',
+  'Что ты делаешь легко, а другим даётся с трудом?':'What comes easy to you that others struggle with?',
+  '3–5 якорей-ассоциаций с тобой':'3–5 anchor associations with you',
   'По одной ассоциации в строке.':'One association per line.',
   'Например: личный бренд + Бали + духовное развитие':'Example: personal brand + Bali + spiritual growth',
   // Block 3
-  'Кто ваш идеальный клиент?':'Who is your ideal client?',
+  'Кто твой идеальный клиент?':'Who is your ideal client?',
   'Например: эксперт с продуктом, который потерял себя в блоге.':
     'Example: an expert with a product who has lost themselves in their blog.',
-  'Как проблемы возникают у ваших клиентов по вашей теме?':'How do problems arise for your clients in your topic?',
-  'По одной ситуации в строке. Опишите контекст и триггеры.':'One situation per line. Describe the context and triggers.',
+  'Как проблемы возникают у твоих клиентов по твоей теме?':'How do problems arise for your clients in your topic?',
+  'По одной ситуации в строке. Опиши контекст и триггеры.':'One situation per line. Describe the context and triggers.',
   'Например: пишу посты регулярно, но охваты падают, а продажи стоят':
     'Example: I post regularly but reach is dropping and sales are stuck',
   'Как эта проблема конкретно проявляется в жизни?':'How does this problem manifest specifically in life?',
@@ -833,7 +827,7 @@ const EN_MAP = {
   'По одной мечте в строке.':'One dream per line.',
   'Например: ясность что делать каждый день, клиенты приходят сами через контент':
     'Example: clarity about what to do daily, clients coming in through content',
-  'Что пробовали до вас?':'What did they try before coming to you?',
+  'Что пробовали до тебя?':'What did they try before coming to you?',
   'Например: курсы по SMM — дали техники но не понимание.':'Example: SMM courses — gave techniques but no understanding.',
   'Какими словами говорят о проблеме?':'In what words do they talk about the problem?',
   'Прямые цитаты клиентов — по одной в строке.':'Direct client quotes — one per line.',
@@ -849,7 +843,7 @@ const EN_MAP = {
   'Чем ваш подход отличается от других?':'How is your approach different from others?',
   'Например: я не учу делать вирусные рилсы — я строю фундамент.':"Example: I don't teach viral reels — I build the foundation.",
   'Позиционирование в одном предложении':'Positioning in one sentence',
-  'Для [целевая аудитория], чьей главной потребностью является [потребность/боль], наш продукт — это [категория/название продукта], который обеспечивает [основная выгода/главное отличие].':
+  'Я помогаю [кому] прийти к [результат] через [подход] — в отличие от [привычная альтернатива]. Например: «Я помогаю экспертам с продуктом собрать сильный личный бренд через глубинную распаковку смыслов — в отличие от курсов по «вирусному» контенту».':
     'For [target audience], whose main need is [need/pain], our product is a [category/product name] that provides [main benefit/key difference].',
   // Block 5
   'Продуктов: 0':'Products: 0',
@@ -860,7 +854,7 @@ const EN_MAP = {
   'Что получат клиенты':'What clients will receive',
   'Добавить категорию':'Add category',
   'Для какой аудитории':'For which audience','Опишите аудиторию...':'Describe the audience...',
-  'Для чего человеку ваш продукт?':'What is your product for the person?','Какую цель или глубинную потребность вы решите...':'What goal or deep need will you address...',
+  'Для чего человеку твой продукт?':'What is your product for the person?','Какую цель или глубинную потребность ты решишь...':'What goal or deep need will you address...',
   'Добавить результат':'Add result',
   'знания':'knowledge','навыки':'skills','материалы':'materials','результаты':'results','другое':'other',
   'Напишите...':'Write here...','Добавить пункт':'Add item',
@@ -869,18 +863,18 @@ const EN_MAP = {
   '3 основные темы блога':'3 main blog topics','По одной теме в строке.':'One topic per line.',
   'Например: личный бренд / жизнь на Бали / духовное развитие':'Example: personal brand / life on Bali / spiritual growth',
   'Форматы контента':'Content formats',
-  'Какие именно форматы рилсов / каруселей / др. вам нравятся и вы готовы делать. Например: говорящая голова с субтитрами, экспертные карусели, раскрывающие вашу тему, и др.':
+  'Какие именно форматы рилсов / каруселей / др. тебе нравятся и ты готова делать. Например: говорящая голова с субтитрами, экспертные карусели, раскрывающие твою тему, и др.':
     'Which specific reel / carousel / other formats do you like and are willing to make. Example: talking head with subtitles, expert carousels expanding your topic, etc.',
-  'Советую сделать отдельную папочку в «Сохранённые» в Instagram, куда вы будете складывать все понравившиеся форматы контента.':
+  'Советую сделать отдельную папочку в «Сохранённые» в Instagram, куда будешь складывать все понравившиеся форматы контента.':
     'I recommend creating a separate folder in Instagram "Saved" where you collect every content format you like.',
   'Площадки':'Platforms',
   'Например: основная — Instagram, дополнительные — Threads, YouTube.':'Example: main — Instagram, secondary — Threads, YouTube.',
-  'Какое впечатление хотите оставлять?':'What impression do you want to leave?',
+  'Какое впечатление хочешь оставлять?':'What impression do you want to leave?',
   'Например: эксперт своего дела, интересная насыщенная жизнь, щедро делюсь полезной информацией.':
     'Example: an expert in their field, an interesting full life, generously sharing useful information.',
   'Сколько времени в неделю на контент?':'How much time per week for content?',
   'Например: 2 часа в день, рилсы по вторникам и пятницам.':'Example: 2 hours per day, reels on Tuesdays and Fridays.',
-  'Какой визуал вам нравится?':'What kind of visuals do you like?',
+  'Какой визуал тебе нравится?':'What kind of visuals do you like?',
   'Например: основные цвета — белый, чёрный, бирюзовый. Спокойные тона, чёткие линии, живые «непостановочные» фото и видео, эстетично.':
     'Example: main colors — white, black, teal. Calm tones, clean lines, candid (un-staged) photos and videos, aesthetic.',
   // Block 7
@@ -905,7 +899,7 @@ const EN_MAP = {
   'Опиши что снять или написать...':'Describe what to film or write...',
   'Например: Как я нашла свою нишу через 3 провала':'Example: How I found my niche through 3 failures',
   'Вкладка:':'Tab:',
-  'Здесь появятся идеи — от AI и ваши':'Ideas will appear here — from AI and yours',
+  'Здесь появятся идеи — от AI и твои':'Ideas will appear here — from AI and yours',
   'Новая единица контента':'New content unit',
   'Идея (кратко)':'Idea (brief)','Опиши идею рилса, карусели или поста...':'Describe the idea of the reel, carousel or post...',
   'Например: Почему блог вызывает раздражение':'Example: Why blogging feels irritating',
@@ -1210,6 +1204,36 @@ function saveCardBtn(btn){
 }
 
 // Скачать резервную копию всех ответов в JSON
+// Настройки → Данные: модалка с бэкапами (перенесены из подвала)
+function openSettings(){
+  const ov = document.createElement('div');
+  ov.className = 'modal-ov';
+  ov.id = 'settings-ov';
+  ov.innerHTML = `<div class="cl-modal" onclick="event.stopPropagation()" style="width:520px;">
+    <div class="cl-modal-hdr">
+      <div class="cl-modal-ttl">Настройки</div>
+      <button class="cl-modal-close" onclick="document.getElementById('settings-ov').remove()">×</button>
+    </div>
+    <div style="font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;font-weight:500;">Данные и резервные копии</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:16px;">Все твои ответы автоматически сохраняются в облаке. Резервные копии — на случай если захочешь забрать всё с собой в файл.</div>
+    <button class="cl-add-btn" onclick="downloadBackup()" style="width:100%;margin-bottom:8px;justify-content:center;"><i class="ti ti-download"></i> Скачать резервную копию (JSON)</button>
+    <button class="cl-icon-btn" onclick="importBackup()" style="width:100%;padding:10px;margin-bottom:8px;font-size:13px;justify-content:center;display:flex;align-items:center;gap:6px;"><i class="ti ti-upload"></i> Загрузить копию из файла</button>
+    <button class="cl-icon-btn" onclick="showSaved()" style="width:100%;padding:10px;font-size:13px;justify-content:center;display:flex;align-items:center;gap:6px;"><i class="ti ti-eye"></i> Показать что сейчас сохранено</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:0.5px solid var(--color-border-tertiary);">
+      <div style="font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;font-weight:500;">Язык интерфейса</div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="setLang('ru')" style="flex:1;padding:10px;border-radius:8px;border:0.5px solid var(--color-border-tertiary);background:${(typeof lang!=='undefined'&&lang==='ru')?'var(--teal-light)':'var(--color-background-primary)'};color:${(typeof lang!=='undefined'&&lang==='ru')?'var(--teal-dark)':'var(--color-text-primary)'};font-size:13px;cursor:pointer;font-weight:500;">Русский</button>
+        <button onclick="setLang('en')" style="flex:1;padding:10px;border-radius:8px;border:0.5px solid var(--color-border-tertiary);background:${(typeof lang!=='undefined'&&lang==='en')?'var(--teal-light)':'var(--color-background-primary)'};color:${(typeof lang!=='undefined'&&lang==='en')?'var(--teal-dark)':'var(--color-text-primary)'};font-size:13px;cursor:pointer;font-weight:500;">English</button>
+      </div>
+    </div>
+    <div class="cl-modal-acts">
+      <button class="cl-icon-btn" onclick="document.getElementById('settings-ov').remove()" style="padding:8px 14px;font-size:13px;">Закрыть</button>
+    </div>
+  </div>`;
+  ov.onclick = (e) => { if(e.target === ov) ov.remove(); };
+  document.body.appendChild(ov);
+}
+
 function downloadBackup(){
   saveAllVisible();
   const data={};
@@ -1328,6 +1352,8 @@ function updateNav(){
 function show(n){
   saveAllVisible();
   if(cur===4)saveProd();if(cur===8)saveWk();
+  // Гейтинг: админ-раздел (n=14) закрыт для не-админов, редирект на «Моя стратегия»
+  if(n===14 && !isAdmin){ n=12; }
   cur=n;const m=META[n];
   document.getElementById('ttitle').textContent=m.title;
   document.getElementById('tsub').textContent=m.sub;
@@ -1532,8 +1558,8 @@ function rB1(){return`<div class="welcome-card" style="background:var(--teal-lig
 function rB2(){return `<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:24px 28px;margin-bottom:18px;text-align:center;">
   <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:400;color:var(--teal-dark);line-height:1.4;letter-spacing:0.3px;margin-bottom:8px;">Сильный личный бренд — это правильно рассказанная история.</div>
   <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:#6B6660;">Давайте напишем вашу.</div>
-</div>`+qList(1,'sparkles','5–7 фактов о себе, которые по-настоящему вас характеризуют','То что удивляет людей когда узнают впервые. Это могут быть интересные опыты, которые вы проходили, необычные путешествия, особые умения и др.','Например: жила полгода в монастыре в Тибете')+q(2,'heart','Ваши ценности 5–7 — как каждая проявляется в жизни?','Конкретные примеры, не просто слова.',`<div class="vals-grid" id="vg"></div><button class="add-btn" onclick="addVal()"><i class="ti ti-plus"></i>Добавить ценность</button>`)+qList(3,'bulb','Принципы и идеи которые хотите транслировать миру?','По одной идее в строке.','Например: верю что каждый может зарабатывать на любимом деле')+qList(4,'users','За какими советами обращаются друзья и знакомые?','В каких темах вы для них авторитет.','Например: как договориться о повышении зарплаты')+q(5,'route','Через какие переломные моменты и боли вы пришли к делу, которым занимаетесь сейчас?','Это ваша история — самый ценный контент.')+qList(6,'trophy','5 профессиональных достижений и кейсы клиентов в цифрах','По одному достижению в строке. Не скромничайте — это ваша сила.','Например: за 3 месяца увеличил доход клиента в 2 раза')+qList(7,'star','Какой конечный результат вы даёте людям?','По одному пункту в строке.','Например: человек понимает, как работает личный бренд, как и что делать в блоге, начинает получать результаты')+q(8,'bolt','В чём ваша суперсила как эксперта?','Что вы делаете легко, а другим даётся с трудом?')+qList(9,'anchor','3–5 якорей-ассоциаций с вами','По одной ассоциации в строке.','Например: личный бренд + Бали + духовное развитие')+q(10,'compass','Чем твой подход отличается от других?','Например: я не учу делать вирусные рилсы — я строю фундамент. Опирайся на свою суперсилу и личный опыт, а не только на инструменты.');}
-function rB3(){return q(1,'user','Кто ваш идеальный клиент?','Например: эксперт с продуктом, который потерял себя в блоге.')+qList(2,'moon','Как проблемы возникают у ваших клиентов по вашей теме?','По одной ситуации в строке. Опишите контекст и триггеры.','Например: пишу посты регулярно, но охваты падают, а продажи стоят')+qList(3,'activity','Как эта проблема конкретно проявляется в жизни?','По одному проявлению в строке.','Например: открывает Instagram и закрывает, не написав ни одного поста')+qList(4,'heart','О чём они мечтают?','По одной мечте в строке.','Например: ясность что делать каждый день, клиенты приходят сами через контент')+q(5,'x','Что пробовали до вас?','Например: курсы по SMM — дали техники но не понимание.')+qList(6,'message','Какими словами говорят о проблеме?','Прямые цитаты клиентов — по одной в строке.','Например: «не знаю о чём писать», «всё уже было сказано до меня»');}
+</div>`+qList(1,'sparkles','5–7 фактов о себе, которые по-настоящему тебя характеризуют','То что удивляет людей когда узнают впервые. Это могут быть интересные опыты, которые ты проходила, необычные путешествия, особые умения и др.','Например: жила полгода в монастыре в Тибете')+q(2,'heart','Твои ценности 5–7 — как каждая проявляется в жизни?','Конкретные примеры, не просто слова.',`<div class="vals-grid" id="vg"></div><button class="add-btn" onclick="addVal()"><i class="ti ti-plus"></i>Добавить ценность</button>`)+qList(3,'bulb','Принципы и идеи которые хочешь транслировать миру?','По одной идее в строке.','Например: верю что каждый может зарабатывать на любимом деле')+qList(4,'users','За какими советами обращаются друзья и знакомые?','В каких темах ты для них авторитет.','Например: как договориться о повышении зарплаты')+q(5,'route','Через какие переломные моменты и боли ты пришла к делу, которым занимаешься сейчас?','Это твоя история — самый ценный контент.')+qList(6,'trophy','5 профессиональных достижений и кейсы клиентов в цифрах','По одному достижению в строке. Не скромничай — это твоя сила.','Например: за 3 месяца увеличил доход клиента в 2 раза')+qList(7,'star','Какой конечный результат ты даёшь людям?','По одному пункту в строке.','Например: человек понимает, как работает личный бренд, как и что делать в блоге, начинает получать результаты')+q(8,'bolt','В чём твоя суперсила как эксперта?','Что ты делаешь легко, а другим даётся с трудом?')+qList(9,'anchor','3–5 якорей-ассоциаций с тобой','По одной ассоциации в строке.','Например: личный бренд + Бали + духовное развитие')+q(10,'compass','Чем твой подход отличается от других?','Например: я не учу делать вирусные рилсы — я строю фундамент. Опирайся на свою суперсилу и личный опыт, а не только на инструменты.');}
+function rB3(){return q(1,'user','Кто твой идеальный клиент?','Например: эксперт с продуктом, который потерял себя в блоге.')+qList(2,'moon','Как проблемы возникают у твоих клиентов по твоей теме?','По одной ситуации в строке. Опиши контекст и триггеры.','Например: пишу посты регулярно, но охваты падают, а продажи стоят')+qList(3,'activity','Как эта проблема конкретно проявляется в жизни?','По одному проявлению в строке.','Например: открывает Instagram и закрывает, не написав ни одного поста')+qList(4,'heart','О чём они мечтают?','По одной мечте в строке.','Например: ясность что делать каждый день, клиенты приходят сами через контент')+q(5,'x','Что пробовали до тебя?','Например: курсы по SMM — дали техники но не понимание.')+qList(6,'message','Какими словами говорят о проблеме?','Прямые цитаты клиентов — по одной в строке.','Например: «не знаю о чём писать», «всё уже было сказано до меня»');}
 function rB4(){
   // Авто-сверка: формируем варианты ПУП и позиционирования из ответов в Б2 и Б3
   const sp=ld('b2_q8')||''; const ach=ld('b2_q9_list')||[]; const facts=ld('b2_q1_list')||[];
@@ -1571,8 +1597,8 @@ function rB4(){
   </div>` : '';
 
   return sverka + `<div class="qcard"><button class="card-save" onclick="saveCardBtn(this)" title="Сохранить ответ" type="button"><i class="ti ti-device-floppy"></i></button><div class="q-label"><i class="ti ti-speakerphone"></i> Вопрос 1</div><div class="q-text">Презентация по технике ПУП</div><div class="q-hint">Три элемента первого впечатления</div><div class="pup-grid"><div class="pup-item"><div class="pup-label">Простой</div><textarea class="pup-ta" data-key="b4_pup1" placeholder="Кто вы профессионально"></textarea></div><div class="pup-item"><div class="pup-label">Удивительный</div><textarea class="pup-ta" data-key="b4_pup2" placeholder="Факт который удивляет"></textarea></div><div class="pup-item"><div class="pup-label">Полезный</div><textarea class="pup-ta" data-key="b4_pup3" placeholder="Что вы даёте людям"></textarea></div></div></div>
-<div class="qcard"><button class="card-save" onclick="saveCardBtn(this)" title="Сохранить ответ" type="button"><i class="ti ti-device-floppy"></i></button><div class="q-label"><i class="ti ti-target"></i> Вопрос 2</div><div class="q-text">Позиционирование в одном предложении</div><div class="q-hint">Для [целевая аудитория], чьей главной потребностью является [потребность/боль], наш продукт — это [категория/название продукта], который обеспечивает [основная выгода/главное отличие].</div><textarea data-key="b4_q3" placeholder="Напишите здесь..."></textarea></div>`;}
-function rB5(){return`<div class="prod-header"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary)" id="prod-count">Продуктов: 0</div><button class="btn-teal-out" onclick="addProd()"><i class="ti ti-plus"></i>Добавить продукт</button></div><div class="prod-tabs" id="ptabs"></div><div id="parea"></div>
+<div class="qcard"><button class="card-save" onclick="saveCardBtn(this)" title="Сохранить ответ" type="button"><i class="ti ti-device-floppy"></i></button><div class="q-label"><i class="ti ti-target"></i> Вопрос 2</div><div class="q-text">Позиционирование в одном предложении</div><div class="q-hint">Я помогаю [кому] прийти к [результат] через [подход] — в отличие от [привычная альтернатива]. Например: «Я помогаю экспертам с продуктом собрать сильный личный бренд через глубинную распаковку смыслов — в отличие от курсов по «вирусному» контенту».</div><textarea data-key="b4_q3" placeholder="Напишите здесь..."></textarea></div>`;}
+function rB5(){return`<div class="prod-header"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary)" id="prod-count">Продуктов: 0</div><button class="btn-teal-out" id="prod-add-header" onclick="addProd()" style="display:none"><i class="ti ti-plus"></i>Добавить продукт</button></div><div class="prod-tabs" id="ptabs"></div><div id="parea"></div>
 <div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:18px 22px;margin-top:20px;display:flex;gap:14px;align-items:flex-start;">
   <div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-confetti"></i></div>
   <div style="font-size:13px;color:var(--teal-dark);line-height:1.7;">
@@ -1580,7 +1606,7 @@ function rB5(){return`<div class="prod-header"><div style="font-size:14px;font-w
     Мы почти закончили со сбором информации. Дальше я сама подскажу варианты позиционирования и упаковки на основе твоих ответов — тебе останется только сверить и подкорректировать. Активно отвечать нужно ещё в Контент-стратегии.
   </div>
 </div>`;}
-function rB6(){return qList(1,'layout','3 основные темы блога','По одной теме в строке.','Например: личный бренд / жизнь на Бали / духовное развитие')+q(2,'video','Форматы контента','Какие именно форматы рилсов / каруселей / др. вам нравятся и вы готовы делать. Например: говорящая голова с субтитрами, экспертные карусели, раскрывающие вашу тему, и др.',`<textarea data-key="b${cur}_q2" placeholder="Напишите здесь..."></textarea><div class="mi-note"><i class="ti ti-bookmark"></i> Советую сделать отдельную папочку в «Сохранённые» в Instagram, куда вы будете складывать все понравившиеся форматы контента.</div>`)+q(3,'brand-instagram','Площадки','Например: основная — Instagram, дополнительные — Threads, YouTube.')+q(4,'eye','Какое впечатление хотите оставлять?','Например: эксперт своего дела, интересная насыщенная жизнь, щедро делюсь полезной информацией.')+q(5,'clock','Сколько времени в неделю на контент?','Например: 2 часа в день, рилсы по вторникам и пятницам.')+q(6,'palette','Какой визуал вам нравится?','Например: основные цвета — белый, чёрный, бирюзовый. Спокойные тона, чёткие линии, живые «непостановочные» фото и видео, эстетично.')+`<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:20px 24px;margin-top:20px;">
+function rB6(){return qList(1,'layout','3 основные темы блога','По одной теме в строке.','Например: личный бренд / жизнь на Бали / духовное развитие')+q(2,'video','Форматы контента','Какие именно форматы рилсов / каруселей / др. тебе нравятся и ты готова делать. Например: говорящая голова с субтитрами, экспертные карусели, раскрывающие твою тему, и др.',`<textarea data-key="b${cur}_q2" placeholder="Напишите здесь..."></textarea><div class="mi-note"><i class="ti ti-bookmark"></i> Советую сделать отдельную папочку в «Сохранённые» в Instagram, куда будешь складывать все понравившиеся форматы контента.</div>`)+q(3,'brand-instagram','Площадки','Например: основная — Instagram, дополнительные — Threads, YouTube.')+q(4,'eye','Какое впечатление хочешь оставлять?','Например: эксперт своего дела, интересная насыщенная жизнь, щедро делюсь полезной информацией.')+q(5,'clock','Сколько времени в неделю на контент?','Например: 2 часа в день, рилсы по вторникам и пятницам.')+q(6,'palette','Какой визуал тебе нравится?','Например: основные цвета — белый, чёрный, бирюзовый. Спокойные тона, чёткие линии, живые «непостановочные» фото и видео, эстетично.')+`<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:20px 24px;margin-top:20px;">
   <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;">
     <div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-calendar-event"></i></div>
     <div style="flex:1;">
@@ -1665,7 +1691,7 @@ function rB7(){
       <div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;border-left:3px solid var(--teal);">
         <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Хочешь, чтобы я разобрала твою шапку прицельно?</div>
         <div style="font-size:13px;color:var(--color-text-primary);line-height:1.6;margin-bottom:10px;">Пришли скриншот текущей шапки профиля — я укажу, что заменить в имени, описании и обложках сторис, чтобы за 10 секунд было понятно кто ты, для кого и что предлагаешь.</div>
-        <button class="btn-teal-out" onclick="alert('В этой версии скриншот примет ваш стратег вручную. Перешлите фото на удобный канал связи. В следующей версии загрузка будет прямо здесь.')"><i class="ti ti-photo-up"></i>Прислать скрин для разбора</button>
+        <button class="btn-teal-out" onclick="alert('В этой версии скриншот примет твой стратег вручную. Перешли фото на удобный канал связи. В следующей версии загрузка будет прямо здесь.')"><i class="ti ti-photo-up"></i>Прислать скрин для разбора</button>
       </div>
     </div>`;
   }
@@ -1700,12 +1726,45 @@ function delTask(i){if(!weeks[curWKey])return;weeks[curWKey].splice(i,1);sv('wee
 
 // AI Recommendations
 function rAI(){return`<div class="ai-hero"><div><div style="font-size:15px;font-weight:500;color:var(--teal-dark);margin-bottom:4px;">Рекомендации AI</div><div style="font-size:12px;color:var(--teal-dark);opacity:0.8;line-height:1.5;">AI проанализирует стратегию и даст персональные рекомендации</div><div class="meta-chips" id="meta-chips"></div></div><button class="ai-gen-btn" id="reco-btn" onclick="genReco()"><i class="ti ti-sparkles"></i>Сгенерировать</button></div><div class="ai-sec"><div class="ai-sec-hdr"><div class="ai-sec-icon"><i class="ti ti-compass"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Стратегические рекомендации</div><div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px;">О чём говорить, как подавать, чего избегать</div></div></div><div id="reco-out"><div class="ai-empty"><div class="ai-empty-text">Нажмите "Сгенерировать" чтобы получить рекомендации</div></div></div></div>`;}
-function initAI(){buildChips();}
+function initAI(){buildChips();_aiApplyGate('reco-btn','reco-out');}
 function buildChips(){const ctx=getCtx();const ch=document.getElementById('meta-chips');if(!ch)return;[{l:'Зачем',v:ctx.why},{l:'Суперсила',v:ctx.sp},{l:'Аудитория',v:ctx.cl},{l:'Позиционирование',v:ctx.pos},{l:'Темы',v:ctx.topics}].forEach(i=>{ch.innerHTML+=`<span class="meta-chip${i.v?' filled':''}">${i.v?'✓ ':''}${i.l}</span>`;});}
+
+// Гейтинг AI — требуем минимум данных перед генерацией
+const AI_REQUIRED = [
+  {key:'b2_q5', block:2, blockName:'Распаковка', qn:5, label:'Путь через переломные моменты'},
+  {key:'b2_q8', block:2, blockName:'Распаковка', qn:8, label:'Суперсила'},
+  {key:'b2_q9_list', block:2, blockName:'Распаковка', qn:9, label:'Якоря-ассоциации', isList:true},
+  {key:'b3_q1', block:3, blockName:'Аудитория', qn:1, label:'Идеальный клиент'},
+  {key:'b3_q2_list', block:3, blockName:'Аудитория', qn:2, label:'Боли клиента', isList:true}
+];
+function _aiCheckReady(){
+  const missing = [];
+  AI_REQUIRED.forEach(r=>{
+    const v = ld(r.key);
+    let filled = false;
+    if(r.isList){ filled = Array.isArray(v) && v.filter(x=>x && String(x).trim()).length > 0; }
+    else { filled = !!(v && String(v).trim()); }
+    if(!filled) missing.push(r);
+  });
+  return { ok: missing.length === 0, missing };
+}
+function _aiApplyGate(btnId, outId){
+  const gate = _aiCheckReady();
+  const btn = document.getElementById(btnId);
+  const out = document.getElementById(outId);
+  if(gate.ok){ if(btn) btn.disabled = false; return true; }
+  if(btn){ btn.disabled = true; btn.title = 'Заполни минимум стратегии — тогда AI даст персональные рекомендации'; }
+  if(out){
+    const items = gate.missing.map(m=>`<li style="margin-bottom:5px;"><a href="javascript:void(0)" onclick="show(${m.block})" style="color:var(--teal);text-decoration:none;border-bottom:1px dashed var(--teal-mid);">${m.blockName}, вопрос ${m.qn}</a> — ${m.label}</li>`).join('');
+    out.innerHTML = `<div class="ai-empty" style="text-align:left;padding:20px;"><div style="font-size:13px;color:var(--color-text-primary);margin-bottom:10px;font-weight:500;">Чтобы AI сгенерировал качественные рекомендации, заполни эти вопросы:</div><ul style="margin:0;padding-left:18px;font-size:13px;color:var(--color-text-secondary);line-height:1.6;">${items}</ul><div style="font-size:11px;color:var(--color-text-tertiary);margin-top:12px;font-style:italic;">На пустой стратегии генерация выдаст generic-текст, без твоих смыслов.</div></div>`;
+  }
+  return false;
+}
 function getCtx(){return{why:ld('b1_q1')||'',goal:ld('b1_q2')||'',sp:ld('b2_q8')||'',anchors:ld('b2_q9')||'',cl:ld('b3_q1')||'',pain:ld('b3_q2')||'',pos:ld('b4_q3')||'',topics:ld('b6_q1')||'',fmts:ld('b6_q2')||'',prods:(ld('products')||[]).map(p=>p.name).join(', ')};}
 async function callAI(prompt){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});const d=await r.json();return JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());}
 function ldTxt(id,txt){const el=document.getElementById(id);if(el)el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:16px;color:var(--color-text-secondary);font-size:13px;"><div class="spinner spinner-d"></div>${txt}</div>`;}
 async function genReco(){
+  if(!_aiApplyGate('reco-btn','reco-out')) return;
   const ctx=getCtx();lastCtx=ctx;buildChips();
   const btn=document.getElementById('reco-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>Генерирую...';
   ldTxt('reco-out','Анализирую стратегию...');
@@ -1716,7 +1775,7 @@ async function genReco(){
 }
 
 // Ideas Bank
-function rIdeas(){return`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><div><div style="font-size:15px;font-weight:500;color:var(--color-text-primary);">Банк идей для контента</div><div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px;">Сохраняй идеи от AI и свои — планируй в календарь одним кликом</div></div><button class="ai-gen-btn" id="ideas-gen-btn" onclick="genIdeas()"><i class="ti ti-sparkles"></i>Сгенерировать AI</button></div>
+function rIdeas(){return`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><div><div style="font-size:15px;font-weight:500;color:var(--color-text-primary);">Банк идей для контента</div><div style="font-size:12px;color:var(--color-text-tertiary);margin-top:2px;">Сохраняй идеи от AI и свои — планируй в календарь одним кликом</div></div><button class="ai-gen-btn" id="ideas-gen-btn" onclick="genIdeas()"><i class="ti ti-sparkles"></i>Сгенерировать AI</button></div><div id="ideas-gate-hint"></div>
 <div class="ideas-tabs-row"><button class="ideas-tab active" id="itab-expert" onclick="switchIdTab('expert')"><i class="ti ti-certificate"></i>Экспертные<span class="cnt" id="icnt-expert">0</span></button><button class="ideas-tab" id="itab-personal" onclick="switchIdTab('personal')"><i class="ti ti-user"></i>Личные<span class="cnt" id="icnt-personal">0</span></button><button class="ideas-tab" id="itab-fun" onclick="switchIdTab('fun')"><i class="ti ti-mood-happy"></i>Развлекательные<span class="cnt" id="icnt-fun">0</span></button></div>
 <div class="ideas-add-form"><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="ti ti-plus"></i>Добавить свою идею</div>
 <div class="iform-row"><div><div class="fl-sm">Формат</div><select id="nfmt"><option>Reels</option><option>Пост-карусель</option><option>Пост-фото</option><option>Сторис</option><option>Тред</option><option>Видео</option><option>Shorts</option></select></div><div><div class="fl-sm">Площадка</div><select id="nplt"><option>Instagram</option><option>Threads</option><option>YouTube</option><option>TikTok</option></select></div></div>
@@ -1726,7 +1785,7 @@ function rIdeas(){return`<div style="display:flex;align-items:center;justify-con
 <div class="sort-row"><span class="sort-lbl">Показать:</span><button class="sort-btn active" id="sf-all" onclick="setIF('all')">Все</button><button class="sort-btn" id="sf-ai" onclick="setIF('ai')">От AI</button><button class="sort-btn" id="sf-user" onclick="setIF('user')">Мои</button></div>
 <div class="ideas-grid" id="ideas-grid"></div>`;}
 
-function initIdeas(){const s=ld('ideas2');if(s){ideas.expert=s.expert||[];ideas.personal=s.personal||[];ideas.fun=s.fun||[];}updIdCounts();renderIdeas();}
+function initIdeas(){const s=ld('ideas2');if(s){ideas.expert=s.expert||[];ideas.personal=s.personal||[];ideas.fun=s.fun||[];}updIdCounts();renderIdeas();_aiApplyGate('ideas-gen-btn','ideas-gate-hint');}
 function switchIdTab(t){activeIdTab=t;['expert','personal','fun'].forEach(x=>{const el=document.getElementById('itab-'+x);if(el)el.className='ideas-tab'+(x===t?' active':'');});const l=document.getElementById('itab-lbl');if(l)l.textContent=TAB_LABELS[t];renderIdeas();}
 function setIF(f){ideaFilter=f;['all','ai','user'].forEach(x=>{const el=document.getElementById('sf-'+x);if(el)el.className='sort-btn'+(x===f?' active':'');});renderIdeas();}
 function updIdCounts(){['expert','personal','fun'].forEach(t=>{const el=document.getElementById('icnt-'+t);if(el)el.textContent=ideas[t].length;});}
@@ -1793,7 +1852,7 @@ function renderIdeas(){
   let list=ideas[activeIdTab];
   if(ideaFilter==='ai')list=list.filter(i=>i.source==='ai');
   if(ideaFilter==='user')list=list.filter(i=>i.source==='user');
-  if(!list.length){grid.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;padding:32px;text-align:center;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);grid-column:1/-1;"><div style="font-size:28px;color:var(--color-text-tertiary);margin-bottom:8px;"><i class="ti ti-bulb"></i></div><div style="font-size:13px;color:var(--color-text-tertiary);">${ideaFilter==='ai'?'Нажмите "Сгенерировать AI"':ideaFilter==='user'?'Добавьте свою первую идею выше':'Здесь появятся идеи — от AI и ваши'}</div></div>`;return;}
+  if(!list.length){grid.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;padding:32px;text-align:center;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);grid-column:1/-1;"><div style="font-size:28px;color:var(--color-text-tertiary);margin-bottom:8px;"><i class="ti ti-bulb"></i></div><div style="font-size:13px;color:var(--color-text-tertiary);">${ideaFilter==='ai'?'Нажмите "Сгенерировать AI"':ideaFilter==='user'?'Добавьте свою первую идею выше':'Здесь появятся идеи — от AI и твои'}</div></div>`;return;}
   grid.innerHTML=list.map(idea=>`<div class="idea-card ${idea.source==='ai'?'ai-c':'user-c'}">
     <div class="idea-top"><div class="idea-badges"><span class="idea-fmt ${FMT[idea.fmt]||'p-post'}">${idea.fmt}</span><span class="idea-plt">${idea.platform}</span></div><span class="idea-src ${idea.source==='ai'?'src-ai':'src-user'}">${idea.source==='ai'?'AI':'Моя'}</span></div>
     <div class="idea-title">${idea.title}</div>
@@ -1806,6 +1865,7 @@ function renderIdeas(){
   </div>`).join('');
 }
 async function genIdeas(){
+  if(!_aiApplyGate('ideas-gen-btn','ideas-gate-hint')){ return; }
   const btn=document.getElementById('ideas-gen-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>Генерирую...';
   const ctx=getCtx();
   const bp=(type)=>{const base=`Ты стратег по личному бренду. Данные:\n- Суперсила: ${ctx.sp||'не указано'}\n- Позиционирование: ${ctx.pos||'не указано'}\n- Темы: ${ctx.topics||'не указано'}\n- Клиент: ${ctx.cl||'не указано'}\n`;const t={expert:'8 экспертных идей — кейсы, методология, знания.',personal:'8 личных идей — жизнь, путь, ценности.',fun:'8 развлекательных — трендовые форматы, юмор, интерактив.'};return base+`Предложи ${t[type]} ТОЛЬКО JSON:\n{"ideas":[{"fmt":"Reels или Пост-карусель или Пост-фото или Сторис или Тред","platform":"Instagram или Threads или YouTube или TikTok","title":"заголовок","description":"краткое описание"}]}`};
@@ -1978,7 +2038,7 @@ function renderClientsList(){
   if(!list.length){
     c.innerHTML = `<div class="cl-table"><div class="cl-empty">
       <div class="cl-empty-icon"><i class="ti ti-users-group"></i></div>
-      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;">${_clLoad().length===0?'Здесь будут ваши клиенты':'Ничего не найдено'}</div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;">${_clLoad().length===0?'Здесь будут твои клиенты':'Ничего не найдено'}</div>
       <div style="font-size:13px;margin-bottom:18px;">${_clLoad().length===0?'Добавьте первого клиента, чтобы начать вести базу.':'Попробуйте изменить фильтр или поиск.'}</div>
       ${_clLoad().length===0?'<button class="cl-add-btn" onclick="clOpenAdd()"><i class="ti ti-plus"></i>Добавить первого клиента</button>':''}
     </div></div>`;
@@ -2552,7 +2612,7 @@ function renderCCForm() {
         products.map(p => `<option value="${_clEsc(p.name)}"${val === p.name ? ' selected' : ''}>${_clEsc(p.name)}</option>`)
       ).join('');
       field = `<select data-cc-key="${q.key}">${opts}</select>`;
-      if (!products.length) field += `<div style="font-size:11px;color:#A86918;margin-top:6px;">Добавь хотя бы один продукт в Блоке 4, чтобы выбрать здесь.</div>`;
+      if (!products.length) field += `<div style="font-size:11px;color:#A86918;margin-top:6px;">Добавь хотя бы один продукт в ${_blockLink(4)}, чтобы выбрать здесь.</div>`;
     } else {
       field = `<textarea data-cc-key="${q.key}" placeholder="Напиши подробно...">${_clEsc(val)}</textarea>`;
     }
@@ -2815,6 +2875,41 @@ async function adOpenUser(userId){
 function _list(key){ const v=ld(key+'_list'); return Array.isArray(v)?v.filter(x=>x&&String(x).trim()):[]; }
 function _val(key){ const v=ld(key); return v&&String(v).trim()?String(v).trim():''; }
 function _esc(s){ return (s||'').toString().replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+// Кликабельная ссылка на блок по имени
+const BLOCK_NAMES = {1:'Цели и планы',2:'Распаковка',3:'Аудитория',4:'Продукты',5:'Позиционирование',6:'Контент-стратегия',7:'Упаковка страницы'};
+function _blockLink(n, qn){ const name = BLOCK_NAMES[n] || ('Блок '+n); return `<a href="javascript:void(0)" onclick="show(${n})" style="color:var(--teal);text-decoration:none;border-bottom:1px dashed var(--teal-mid);cursor:pointer;">${name}${qn?', вопрос '+qn:''}</a>`; }
+// Перенос шага анализа в «Задачи на неделю» (дедуп по тексту)
+function _addWeeklyText(text){
+  if(!text || !text.trim()) return false;
+  // текущая неделя как в rTasks/renderWk
+  if(typeof curWKey === 'undefined' || !curWKey){
+    const d=new Date();const day=d.getDay()||7;d.setDate(d.getDate()-(day-1));
+    curWKey = `w_${d.getFullYear()}_${d.getMonth()+1}_${Math.ceil(d.getDate()/7)}`;
+  }
+  weeks = weeks || (ld('weeks')||{});
+  if(!weeks[curWKey]) weeks[curWKey] = [];
+  const exists = weeks[curWKey].some(t => (t.text||'').trim() === text.trim());
+  if(exists) return false;
+  weeks[curWKey].push({text: text.trim(), done: false});
+  sv('weeks', weeks);
+  return true;
+}
+function _stepToWeek(idx){
+  const steps = window._analysisSteps || [];
+  const t = steps[idx]; if(!t) return;
+  const added = _addWeeklyText(t);
+  const msg = added ? 'Задача добавлена в текущую неделю ✓' : 'Уже есть в задачах на неделю';
+  const btn = event && event.target && event.target.closest ? event.target.closest('button') : null;
+  if(btn){ btn.disabled = true; btn.style.opacity = '0.55'; btn.innerHTML = added ? '<i class="ti ti-check"></i> В неделе' : '<i class="ti ti-check"></i> Уже в неделе'; }
+}
+function _stepsAllToWeek(){
+  const steps = window._analysisSteps || [];
+  let added = 0, dup = 0;
+  steps.forEach(t => { if(_addWeeklyText(t)) added++; else dup++; });
+  alert(`Добавлено новых: ${added}${dup?`\nБыло уже в неделе: ${dup}`:''}`);
+  // помечаем все кнопки
+  document.querySelectorAll('button[onclick^="_stepToWeek"]').forEach(b => { b.disabled = true; b.style.opacity = '0.55'; b.innerHTML = '<i class="ti ti-check"></i> В неделе'; });
+}
 function _ul(arr){ if(!arr||!arr.length) return ''; return '<ul>'+arr.map(x=>`<li>${_esc(x)}</li>`).join('')+'</ul>'; }
 function _block(label, body, emptyTxt){
   const hasBody = body && body.trim() && !/^—$/.test(body.trim());
@@ -2924,26 +3019,26 @@ function _analysis(){
   const d = _collectData();
   const out = [];
   // Strongest signals
-  out.push({label:'Самое сильное в вашем бренде', body: (()=>{
+  out.push({label:'Самое сильное в твоём бренде', body: (()=>{
     const items = [];
     if(d.b4.position) items.push('Чёткое позиционирование: <strong>'+_esc(d.b4.position)+'</strong>');
     if(d.b2.superpower) items.push('Ясная суперсила: <strong>'+_esc(d.b2.superpower)+'</strong>');
     if(d.b3.words.length) items.push('Есть «голос клиента» — это самый ценный материал для постов: <em>«'+_esc(d.b3.words[0])+'»</em>');
     if(d.b6.topics.length>=3) items.push('Три темы определены — это основа для контент-плана');
     if(d.b1.goals.length>=2) items.push('Несколько целей одновременно — фокус нужно сузить до одной главной');
-    if(!items.length) items.push('Заполните блоки 2 и 4 — без суперсилы и позиционирования AI не сможет писать контент в вашем голосе.');
+    if(!items.length) items.push('Заполни блоки 2 и 4 — без суперсилы и позиционирования AI не сможет писать контент в твоём голосе.');
     return '<ul>'+items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
   })()});
 
   // Gaps
   out.push({label:'Что нужно достроить в первую очередь', body: (()=>{
     const gaps = [];
-    if(!d.b4.position) gaps.push('Сформулировать позиционирование одной фразой (Блок 5, вопрос 3) — это основа всех текстов.');
-    if(!d.b2.superpower) gaps.push('Назвать суперсилу одной фразой (Блок 2, вопрос 8) — без неё контент будет универсальным.');
-    if(!d.b3.client) gaps.push('Прописать портрет идеального клиента (Блок 3, вопрос 1).');
-    if(!d.b3.words.length) gaps.push('Собрать минимум 5 точных фраз клиента (Блок 3, вопрос 6) — это золото для хуков.');
-    if(!d.b6.topics.length) gaps.push('Выбрать 3 главные темы блога (Блок 6, вопрос 1).');
-    if(!d.b6.visuals) gaps.push('Описать визуальный стиль (Блок 6, вопрос 6) — он определит шапку и ленту.');
+    if(!d.b4.position) gaps.push(`Сформулировать позиционирование одной фразой (${_blockLink(5,3)}) — это основа всех текстов.`);
+    if(!d.b2.superpower) gaps.push(`Назвать суперсилу одной фразой (${_blockLink(2,8)}) — без неё контент будет универсальным.`);
+    if(!d.b3.client) gaps.push(`Прописать портрет идеального клиента (${_blockLink(3,1)}).`);
+    if(!d.b3.words.length) gaps.push(`Собрать минимум 5 точных фраз клиента (${_blockLink(3,6)}) — это золото для хуков.`);
+    if(!d.b6.topics.length) gaps.push(`Выбрать 3 главные темы блога (${_blockLink(6,1)}).`);
+    if(!d.b6.visuals) gaps.push(`Описать визуальный стиль (${_blockLink(6,6)}) — он определит шапку и ленту.`);
     if(!gaps.length) gaps.push('Все ключевые блоки заполнены. Возвращайтесь раз в квартал и обновляйте.');
     return '<ul>'+gaps.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
   })()});
@@ -2951,12 +3046,14 @@ function _analysis(){
   // Practical next step
   out.push({label:'Что сделать на этой неделе', body: (()=>{
     const steps = [];
-    if(d.b4.position) steps.push('Вставить позиционирование в шапку профиля (на основе ответа Блок 5).');
-    if(d.b3.pain.length && d.b2.superpower) steps.push('Записать первый опорный пост на стыке боли «'+_esc(d.b3.pain[0])+'» и суперсилы «'+_esc(d.b2.superpower)+'».');
-    if(d.b6.topics.length) steps.push('Распланировать 9 постов: по 3 на каждую из трёх тем — '+d.b6.topics.slice(0,3).map(t=>'«'+_esc(t)+'»').join(', ')+'.');
-    if(d.b3.words.length) steps.push('Использовать фразу клиента «'+_esc(d.b3.words[0])+'» как заголовок одного поста.');
-    if(!steps.length) steps.push('Закончите Блок 1–4 и вернитесь к этой странице — здесь появятся конкретные шаги.');
-    return '<ol>'+steps.map(i=>'<li>'+i+'</li>').join('')+'</ol>';
+    if(d.b4.position) steps.push('Вставить позиционирование в шапку профиля.');
+    if(d.b3.pain.length && d.b2.superpower) steps.push('Записать опорный пост на стыке боли «'+d.b3.pain[0]+'» и суперсилы «'+d.b2.superpower+'».');
+    if(d.b6.topics.length) steps.push('Распланировать 9 постов: по 3 на каждую из трёх тем — '+d.b6.topics.slice(0,3).map(t=>'«'+t+'»').join(', ')+'.');
+    if(d.b3.words.length) steps.push('Использовать фразу клиента «'+d.b3.words[0]+'» как заголовок одного поста.');
+    if(!steps.length){ return '<div class="doc2-block-empty">Закончи блоки 1–4 и вернись сюда — появятся конкретные шаги.</div>'; }
+    window._analysisSteps = steps.slice(); // сохраняем для «В задачи»
+    const items = steps.map((s,i)=>`<li style="margin-bottom:8px;line-height:1.5;">${_esc(s)}<button onclick="_stepToWeek(${i})" style="margin-left:10px;padding:3px 10px;border-radius:6px;border:0.5px solid var(--teal);background:#fff;color:var(--teal);font-size:11px;cursor:pointer;vertical-align:middle;"><i class="ti ti-plus"></i> В задачи</button></li>`).join('');
+    return `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button onclick="_stepsAllToWeek()" style="padding:5px 14px;border-radius:6px;border:none;background:var(--teal);color:#fff;font-size:12px;cursor:pointer;font-weight:500;"><i class="ti ti-list-check"></i> Добавить все в неделю</button></div><ol style="padding-left:20px;">${items}</ol>`;
   })()});
 
   return out.map(s=>_block(s.label, s.body)).join('');
@@ -2988,9 +3085,9 @@ function rDoc(){
 
   // 02 Цели и видение
   pages += _page('02','Цели и видение','Зачем мне это нужно',
-    _block('Глубинное зачем', _esc(d.b1.why), 'Сформулируйте в Блоке 1 вопрос 1')+
-    _block('3 цели на 6 месяцев', _ul(d.b1.goals)||(d.b1.goals.length?'':'Запишите в Блоке 1 вопрос 2'))+
-    _block('Как я пойму что бренд работает', _esc(d.b1.success), 'Опишите в Блоке 1 вопрос 3')+
+    _block('Глубинное зачем', _esc(d.b1.why), 'Сформулируй в '+_blockLink(1,1))+
+    _block('3 цели на 6 месяцев', _ul(d.b1.goals)||(d.b1.goals.length?'':'Запиши в '+_blockLink(1,2)))+
+    _block('Как я пойму что бренд работает', _esc(d.b1.success), 'Опиши в '+_blockLink(1,3))+
     _block('Что останавливало раньше', _esc(d.b1.blockers), '')
   );
 
@@ -3000,9 +3097,9 @@ function rDoc(){
     valuesHtml = '<ul>'+d.b2.values.map(v=>'<li><strong>'+_esc(v.n||'—')+'</strong>'+(v.b?' — '+_esc(v.b):'')+'</li>').join('')+'</ul>';
   }
   pages += _page('03','Распаковка личности','Что делает меня собой',
-    _block('Моя суперсила', _esc(d.b2.superpower),'Запишите в Блоке 2 вопрос 8')+
-    _block('Якоря-ассоциации со мной', _ul(d.b2.anchors), 'Опишите в Блоке 2 вопрос 9')+
-    _block('Мои ценности', valuesHtml, 'Опишите в Блоке 2 вопрос 2')+
+    _block('Моя суперсила', _esc(d.b2.superpower),'Запиши в '+_blockLink(2,8))+
+    _block('Якоря-ассоциации со мной', _ul(d.b2.anchors), 'Опиши в '+_blockLink(2,9))+
+    _block('Мои ценности', valuesHtml, 'Опиши в '+_blockLink(2,2))+
     _block('Факты, которые меня характеризуют', _ul(d.b2.facts), '')+
     _block('Принципы, по которым я живу', _ul(d.b2.principles), '')+
     _block('Мой путь', _esc(d.b2.path), '')+
@@ -3013,8 +3110,8 @@ function rDoc(){
 
   // 04 Аудитория
   pages += _page('04','Идеальный клиент','Для кого я работаю',
-    _block('Портрет', _esc(d.b3.client), 'Опишите в Блоке 3 вопрос 1')+
-    _block('Главная боль клиента', _ul(d.b3.pain), 'Опишите в Блоке 3 вопрос 2')+
+    _block('Портрет', _esc(d.b3.client), 'Опиши в '+_blockLink(3,1))+
+    _block('Главная боль клиента', _ul(d.b3.pain), 'Опиши в '+_blockLink(3,2))+
     _block('Как боль проявляется в жизни', _ul(d.b3.manifest), '')+
     _block('О чём они мечтают', _ul(d.b3.dream), '')+
     _block('Что пробовали до вас', _esc(d.b3.tried), '')+
@@ -3037,22 +3134,22 @@ function rDoc(){
       ${p.unique?_block('Уникальность', _esc(p.unique)):''}
       ${(p.tasks&&p.tasks.filter(x=>x).length)?_block('Задачи продукта', _ul(p.tasks.filter(x=>x))):''}
       ${p.audience?_block('Для какой аудитории', _esc(p.audience)):''}
-      ${mks.filter(x=>x).length?_block('Для чего человеку ваш продукт?', _ul(mks.filter(x=>x))):''}
+      ${mks.filter(x=>x).length?_block('Для чего человеку твой продукт?', _ul(mks.filter(x=>x))):''}
     </div>`;
   });
-  if(!prodHtml) prodHtml = '<div class="doc2-block-empty">Добавьте продукты в Блоке 4</div>';
+  if(!prodHtml) prodHtml = `<div class="doc2-block-empty">Добавь продукты в ${_blockLink(4)}</div>`;
   pages += _page('05','Продукты','Что я продаю', prodHtml);
 
   // 06 Позиционирование
   pages += _page('06','Позиционирование','Моё место на рынке',
     (d.b4.position?`<div class="doc2-position">«${_esc(d.b4.position)}»</div>`:'')+
-    _block('Презентация по ПУП', pupHtml, 'Заполните в Блоке 5 вопрос 1')+
-    _block('Чем мой подход отличается (из Распаковки)', _esc(d.b2.different), 'Запишите в Блоке 2 вопрос 10')
+    _block('Презентация по ПУП', pupHtml, 'Заполни в '+_blockLink(5,1))+
+    _block('Чем мой подход отличается (из Распаковки)', _esc(d.b2.different), 'Запиши в '+_blockLink(2,10))
   );
 
   // 07 Контент-стратегия
   pages += _page('07','Контент-стратегия','Что и где я говорю',
-    _block('3 главные темы блога', _ul(d.b6.topics), 'Запишите в Блоке 6 вопрос 1')+
+    _block('3 главные темы блога', _ul(d.b6.topics), 'Запиши в '+_blockLink(6,1))+
     _block('Форматы контента', _esc(d.b6.formats), '')+
     _block('Площадки', _esc(d.b6.platforms), '')+
     _block('Впечатление, которое блог должен оставлять', _esc(d.b6.impression), '')+
@@ -3065,34 +3162,38 @@ function rDoc(){
     _analysis()
   );
 
-  // 09 AI-бриф
-  const brief = _aiBrief();
-  pages += `<div class="doc2-page">
-    <div class="doc2-num">09</div>
-    <div class="doc2-heading">AI-бриф</div>
-    <div class="doc2-tagline">Готовый промпт для ChatGPT и Claude</div>
-    <div class="doc2-content">
-      <div class="doc2-block-body" style="margin-bottom:14px">Скопируйте текст ниже и вставьте в начало любого диалога с AI. После этого AI начнёт писать контент в вашем стиле — с вашими ценностями, словами клиента и темами.</div>
-      <div class="doc2-brief-bar">
-        <div class="doc2-block-label">Промпт ${brief.length} символов</div>
-        <button class="doc2-btn primary" onclick="copyBrief()"><i class="ti ti-copy"></i> Скопировать</button>
+  // 09 AI-бриф (скрыт за feature flag EXPORT_ENABLED)
+  if (EXPORT_ENABLED) {
+    const brief = _aiBrief();
+    pages += `<div class="doc2-page">
+      <div class="doc2-num">09</div>
+      <div class="doc2-heading">AI-бриф</div>
+      <div class="doc2-tagline">Готовый промпт для ChatGPT и Claude</div>
+      <div class="doc2-content">
+        <div class="doc2-block-body" style="margin-bottom:14px">Скопируй текст ниже и вставь в начало любого диалога с AI. После этого AI начнёт писать контент в твоём стиле — с твоими ценностями, словами клиента и темами.</div>
+        <div class="doc2-brief-bar">
+          <div class="doc2-block-label">Промпт ${brief.length} символов</div>
+          <button class="doc2-btn primary" onclick="copyBrief()"><i class="ti ti-copy"></i> Скопировать</button>
+        </div>
+        <div class="doc2-brief" id="doc2-brief-text">${_esc(brief)}</div>
       </div>
-      <div class="doc2-brief" id="doc2-brief-text">${_esc(brief)}</div>
-    </div>
-  </div>`;
+    </div>`;
+  }
 
   // Финал
   pages += `<div class="doc2-page cover">
     <div class="doc2-final-title">В результате</div>
-    <div class="doc2-final-text">вы получили готовую стратегию,<br>которая работает на вас.<br><br>Возвращайтесь к этому документу каждый квартал — обновляйте, переписывайте, дорабатывайте.</div>
+    <div class="doc2-final-text">ты получила готовую стратегию,<br>которая работает на тебя.<br><br>Возвращайся к этому документу каждый квартал — обновляй, переписывай, дорабатывай.</div>
     <div class="doc2-cover-meta" style="margin-top:60px">brandmaster · ${today}</div>
   </div>`;
 
-  return `<div class="doc2-actions">
-    <button class="doc2-btn primary" onclick="downloadStrategyPDF()"><i class="ti ti-download"></i> Скачать PDF</button>
-    <button class="doc2-btn" onclick="copyBrief()"><i class="ti ti-copy"></i> Скопировать AI-бриф</button>
-  </div>
-  <div class="doc2">${pages}</div>`;
+  const actions = EXPORT_ENABLED
+    ? `<div class="doc2-actions">
+        <button class="doc2-btn primary" onclick="downloadStrategyPDF()"><i class="ti ti-download"></i> Скачать PDF</button>
+        <button class="doc2-btn" onclick="copyBrief()"><i class="ti ti-copy"></i> Скопировать AI-бриф</button>
+      </div>`
+    : '';
+  return actions + `<div class="doc2">${pages}</div>`;
 }
 
 function downloadStrategyPDF(){
@@ -3118,12 +3219,25 @@ function toggleChk(el,key){el.classList.toggle('checked');const on=el.classList.
 function restoreTA(){setTimeout(()=>{document.querySelectorAll('[data-key]').forEach(el=>{const v=ld(el.dataset.key);if(v!=null&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT'))el.value=v;});const vg=document.getElementById('vg');if(vg){const vals=ld('b2_values')||[];vg.innerHTML='';const src=vals.length>0?vals:[{n:'',b:''},{n:'',b:''}];src.forEach((v,i)=>{const div=document.createElement('div');div.className='val-item';div.innerHTML=`<input class="val-inp" placeholder="Ценность..." data-key="b2_val${i}_n" value="${v.n||''}"><textarea class="val-ta" placeholder="Как проявляется..." data-key="b2_val${i}_b">${v.b||''}</textarea>`;vg.appendChild(div);});}},50);}
 function setupAS(){setTimeout(()=>{document.querySelectorAll('[data-key]').forEach(el=>{el.addEventListener('input',()=>sv(el.dataset.key,el.value));});addCounters();},100);}
 // Счётчики «50 слов / 350 символов» для развёрнутых ответов в блоках 1-7
+// Фактические вопросы — короткие ответы, без порога подробности.
+// Порог сохраняется на «глубинных» полях: зачем, путь, боли клиента, распаковка личности и т.п.
+const FACT_KEYS = new Set([
+  'b2_q8',      // Суперсила — одна фраза
+  'b4_q3',      // Позиционирование — одно предложение
+  'b6_q2',      // Форматы контента — перечисление
+  'b6_q3',      // Площадки — перечисление
+  'b6_q4',      // Впечатление — короткий образ
+  'b6_q5',      // Время в неделю — цифра
+  'b6_q6',      // Визуал — короткое описание
+  'b7_q1'       // Шапка профиля — одна фраза
+]);
 function addCounters(){
   document.querySelectorAll('.qcard textarea[data-key]').forEach(ta=>{
     if(ta.closest('.mi-list')) return;
     if(ta.classList.contains('pup-ta')) return;
     const key=ta.dataset.key||'';
     if(key.startsWith('b0_')) return;
+    if(FACT_KEYS.has(key)) return; // фактический вопрос — без валидатора
     if(ta.parentNode.querySelector('.char-counter')) return;
     const counter=document.createElement('div');
     counter.className='char-counter';
@@ -3144,7 +3258,7 @@ function addCounters(){
 }
 function saveProd(){if(!prods[activeProd])return;const p=prods[activeProd];const ne=document.getElementById('pname');if(ne)p.name=ne.value;['concept','unique','audience'].forEach(f=>{const el=document.getElementById('p_'+f);if(el)p[f]=el.value;});p.tasks=Array.from(document.querySelectorAll('.task-inp2')).map(e=>e.value);const mks=Array.from(document.querySelectorAll('.mk-inp2'));if(mks.length){p.marketing_items=mks.map(e=>e.value);p.marketing=p.marketing_items.join('\n');}saveCats();sv('products',prods);}
 function saveCats(){if(!prods[activeProd])return;const cats=[];document.querySelectorAll('.deliv-cat').forEach(ce=>{const sel=ce.querySelector('.cat-sel');cats.push({type:sel?sel.value:'другое',items:Array.from(ce.querySelectorAll('.deliv-ta')).map(t=>t.value)});});prods[activeProd].cats=cats;}
-function renderProdArea(){const s=ld('products');if(s&&s.length>0)prods=s;document.getElementById('prod-count').textContent='Продуктов: '+prods.length;document.getElementById('ptabs').innerHTML=prods.map((p,i)=>`<div class="ptab${i===activeProd?' active':''}" onclick="switchP(${i})">${p.name}</div>`).join('');if(!prods.length){document.getElementById('parea').innerHTML=`<div class="empty-st"><div class="empty-icon"><i class="ti ti-box"></i></div><div class="empty-title">Продукты ещё не добавлены</div><div class="empty-sub">Добавьте свой первый продукт</div><button class="btn-primary" onclick="addProd()"><i class="ti ti-plus"></i>Добавить первый продукт</button></div>`;}else renderProd();}
+function renderProdArea(){const s=ld('products');if(s&&s.length>0)prods=s;document.getElementById('prod-count').textContent='Продуктов: '+prods.length;const hdrBtn=document.getElementById('prod-add-header');if(hdrBtn)hdrBtn.style.display=prods.length?'':'none';document.getElementById('ptabs').innerHTML=prods.map((p,i)=>`<div class="ptab${i===activeProd?' active':''}" onclick="switchP(${i})">${p.name}</div>`).join('');if(!prods.length){document.getElementById('parea').innerHTML=`<div class="empty-st"><div class="empty-icon"><i class="ti ti-box"></i></div><div class="empty-title">Продукты ещё не добавлены</div><div class="empty-sub">Добавь свой первый продукт</div><button class="btn-primary" onclick="addProd()"><i class="ti ti-plus"></i>Добавить первый продукт</button></div>`;}else renderProd();}
 function addProd(){saveProd();prods.push({name:'Продукт '+(prods.length+1),concept:'',unique:'',tasks:[''],audience:'',marketing:'',cats:[{type:'знания',items:['']},{type:'навыки',items:['']},{type:'материалы',items:['']},{type:'результаты',items:['']}]});activeProd=prods.length-1;sv('products',prods);renderProdArea();}
 function switchP(i){saveProd();activeProd=i;renderProdArea();}
 function delP(i){prods.splice(i,1);if(activeProd>=prods.length)activeProd=prods.length-1;sv('products',prods);renderProdArea();}
@@ -3157,7 +3271,7 @@ function rmCat(i){saveCats();prods[activeProd].cats.splice(i,1);renderProd();}
 function addCI(ci){saveCats();prods[activeProd].cats[ci].items.push('');renderProd();}
 function rmCI(ci,ii){saveCats();prods[activeProd].cats[ci].items.splice(ii,1);if(!prods[activeProd].cats[ci].items.length)prods[activeProd].cats[ci].items=[''];renderProd();}
 function renderProd(){const p=prods[activeProd];const cats=p.cats||[{type:'знания',items:['']},{type:'навыки',items:['']},{type:'материалы',items:['']},{type:'результаты',items:['']}];const ch=cats.map((cat,ci)=>`<div class="deliv-cat"><div class="deliv-hdr"><div style="display:flex;align-items:center;gap:8px;"><span class="cat-badge cat-${cat.type}">${cat.type}</span><select class="cat-sel" onchange="saveCats();prods[activeProd].cats[${ci}].type=this.value;renderProd()">${CATS.map(c=>`<option value="${c}"${c===cat.type?' selected':''}>${c}</option>`).join('')}</select></div><button class="del-btn" onclick="rmCat(${ci})"><i class="ti ti-trash"></i></button></div><div class="deliv-items">${cat.items.map((item,ii)=>`<div class="di"><textarea class="deliv-ta" placeholder="Напишите...">${item}</textarea><button class="rm-btn" onclick="rmCI(${ci},${ii})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addCI(${ci})"><i class="ti ti-plus"></i>Добавить пункт</button></div>`).join('');
-document.getElementById('parea').innerHTML=`<div class="prod-card"><div class="prod-name-row"><div class="prod-num">${activeProd+1}</div><input class="prod-name-inp" id="pname" value="${p.name}" placeholder="Название продукта..."><button class="del-btn" onclick="delP(${activeProd})"><i class="ti ti-trash"></i></button></div><div class="fg"><div class="fl"><i class="ti ti-file-description"></i>Концепция</div><textarea id="p_concept" placeholder="Опишите концепцию...">${p.concept}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-star"></i>Уникальность</div><textarea id="p_unique" placeholder="В чём уникальность...">${p.unique}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-list-check"></i>Задачи продукта</div><div class="ml">${p.tasks.map((t,i)=>`<div class="mi"><textarea class="task-inp2" placeholder="Задача...">${t}</textarea><button class="rm-btn" onclick="rmTP(${i})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addTP()"><i class="ti ti-plus"></i>Добавить задачу</button></div><div class="fg"><div class="sec-div"><i class="ti ti-certificate"></i>Что получат клиенты</div><div class="delivs">${ch}</div><button class="add-cat-btn" onclick="addCat()"><i class="ti ti-plus"></i>Добавить категорию</button></div><div class="fg"><div class="fl"><i class="ti ti-users"></i>Для какой аудитории</div><textarea id="p_audience" placeholder="Опишите аудиторию...">${p.audience}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-chart-bar"></i>Для чего человеку ваш продукт?</div><div class="ml">${(p.marketing_items&&p.marketing_items.length?p.marketing_items:[p.marketing||'']).map((t,i)=>`<div class="mi"><textarea class="mk-inp2" placeholder="Какую цель или глубинную потребность вы решите...">${t}</textarea><button class="rm-btn" onclick="rmMK(${i})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addMK()"><i class="ti ti-plus"></i>Добавить результат</button></div></div>`;
+document.getElementById('parea').innerHTML=`<div class="prod-card"><div class="prod-name-row"><div class="prod-num">${activeProd+1}</div><input class="prod-name-inp" id="pname" value="${p.name}" placeholder="Название продукта..."><button class="del-btn" onclick="delP(${activeProd})"><i class="ti ti-trash"></i></button></div><div class="fg"><div class="fl"><i class="ti ti-file-description"></i>Концепция</div><textarea id="p_concept" placeholder="Опишите концепцию...">${p.concept}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-star"></i>Уникальность</div><textarea id="p_unique" placeholder="В чём уникальность...">${p.unique}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-list-check"></i>Задачи продукта</div><div class="ml">${p.tasks.map((t,i)=>`<div class="mi"><textarea class="task-inp2" placeholder="Задача...">${t}</textarea><button class="rm-btn" onclick="rmTP(${i})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addTP()"><i class="ti ti-plus"></i>Добавить задачу</button></div><div class="fg"><div class="sec-div"><i class="ti ti-certificate"></i>Что получат клиенты</div><div class="delivs">${ch}</div><button class="add-cat-btn" onclick="addCat()"><i class="ti ti-plus"></i>Добавить категорию</button></div><div class="fg"><div class="fl"><i class="ti ti-users"></i>Для какой аудитории</div><textarea id="p_audience" placeholder="Опишите аудиторию...">${p.audience}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-chart-bar"></i>Для чего человеку твой продукт?</div><div class="ml">${(p.marketing_items&&p.marketing_items.length?p.marketing_items:[p.marketing||'']).map((t,i)=>`<div class="mi"><textarea class="mk-inp2" placeholder="Какую цель или глубинную потребность ты решишь...">${t}</textarea><button class="rm-btn" onclick="rmMK(${i})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addMK()"><i class="ti ti-plus"></i>Добавить результат</button></div></div>`;
 document.getElementById('ptabs').innerHTML=prods.map((pr,i)=>`<div class="ptab${i===activeProd?' active':''}" onclick="switchP(${i})">${pr.name}</div>`).join('');
 document.getElementById('prod-count').textContent='Продуктов: '+prods.length;}
 
@@ -3173,6 +3287,9 @@ document.querySelectorAll('[data-lang-btn]').forEach(b=>{
 // === Режим воркшопа: без логина, всё хранится в браузере ===
 // Чтобы включить авторизацию обратно — раскомментируй initSupabase ниже.
 const REQUIRE_AUTH = true;
+// Feature flag: PDF-экспорт и копирование AI-брифа наружу. Отключено ради удержания на платформе.
+// Включить обратно — вернуть true. Функционал остаётся в коде, просто не рендерится.
+const EXPORT_ENABLED = false;
 if(REQUIRE_AUTH){
   show(1);
   initSupabase().then(()=>{ updateAuthLabels(); renderUserBadge(); });
