@@ -1761,16 +1761,15 @@ function _aiApplyGate(btnId, outId){
   return false;
 }
 function getCtx(){return{why:ld('b1_q1')||'',goal:ld('b1_q2')||'',sp:ld('b2_q8')||'',anchors:ld('b2_q9')||'',cl:ld('b3_q1')||'',pain:ld('b3_q2')||'',pos:ld('b4_q3')||'',topics:ld('b6_q1')||'',fmts:ld('b6_q2')||'',prods:(ld('products')||[]).map(p=>p.name).join(', ')};}
-async function callAI(prompt){const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});const d=await r.json();return JSON.parse(d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim());}
+async function callBackend(endpoint,body){const r=await fetch('/api/ai/'+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'HTTP '+r.status);}return r.json();}
 function ldTxt(id,txt){const el=document.getElementById(id);if(el)el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:16px;color:var(--color-text-secondary);font-size:13px;"><div class="spinner spinner-d"></div>${txt}</div>`;}
 async function genReco(){
   if(!_aiApplyGate('reco-btn','reco-out')) return;
   const ctx=getCtx();lastCtx=ctx;buildChips();
   const btn=document.getElementById('reco-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>Генерирую...';
   ldTxt('reco-out','Анализирую стратегию...');
-  const pr=`Ты стратег по личному бренду. Данные:\n- Зачем: ${ctx.why||'не указано'}\n- Суперсила: ${ctx.sp||'не указано'}\n- Якоря: ${ctx.anchors||'не указано'}\n- Клиент: ${ctx.cl||'не указано'}\n- Боль: ${ctx.pain||'не указано'}\n- Позиционирование: ${ctx.pos||'не указано'}\n- Темы: ${ctx.topics||'не указано'}\n- Продукты: ${ctx.prods||'не указано'}\nДай 5-6 стратегических рекомендаций. ТОЛЬКО JSON:\n{"recommendations":[{"label":"название","text":"описание"}]}`;
-  try{const d=await callAI(pr);const o=document.getElementById('reco-out');if(o)o.innerHTML=d.recommendations.map(r=>`<div class="reco-item"><div class="reco-label">${r.label}</div><div class="reco-text">${r.text}</div></div>`).join('');}
-  catch(e){const o=document.getElementById('reco-out');if(o)o.innerHTML='<div class="ai-empty"><div class="ai-empty-text">Ошибка. Попробуйте ещё раз.</div></div>';}
+  try{const d=await callBackend('recommendations',{context:ctx});const o=document.getElementById('reco-out');if(o)o.innerHTML=d.recommendations.map(r=>`<div class="reco-item"><div class="reco-label">${r.label}</div><div class="reco-text">${r.text}</div></div>`).join('');}
+  catch(e){const o=document.getElementById('reco-out');if(o)o.innerHTML=`<div class="ai-empty"><div class="ai-empty-text">Ошибка: ${e.message}. Попробуйте ещё раз.</div></div>`;}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i>Обновить';
 }
 
@@ -1868,13 +1867,12 @@ async function genIdeas(){
   if(!_aiApplyGate('ideas-gen-btn','ideas-gate-hint')){ return; }
   const btn=document.getElementById('ideas-gen-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>Генерирую...';
   const ctx=getCtx();
-  const bp=(type)=>{const base=`Ты стратег по личному бренду. Данные:\n- Суперсила: ${ctx.sp||'не указано'}\n- Позиционирование: ${ctx.pos||'не указано'}\n- Темы: ${ctx.topics||'не указано'}\n- Клиент: ${ctx.cl||'не указано'}\n`;const t={expert:'8 экспертных идей — кейсы, методология, знания.',personal:'8 личных идей — жизнь, путь, ценности.',fun:'8 развлекательных — трендовые форматы, юмор, интерактив.'};return base+`Предложи ${t[type]} ТОЛЬКО JSON:\n{"ideas":[{"fmt":"Reels или Пост-карусель или Пост-фото или Сторис или Тред","platform":"Instagram или Threads или YouTube или TikTok","title":"заголовок","description":"краткое описание"}]}`};
   try{
-    const[ed,pd,fd]=await Promise.all([callAI(bp('expert')),callAI(bp('personal')),callAI(bp('fun'))]);
+    const[ed,pd,fd]=await Promise.all([callBackend('ideas',{context:ctx,tab:'expert'}),callBackend('ideas',{context:ctx,tab:'personal'}),callBackend('ideas',{context:ctx,tab:'fun'})]);
     const mk=arr=>arr.map(i=>({id:Date.now()+Math.random(),fmt:i.fmt,platform:i.platform,title:i.title,description:i.description,source:'ai',scheduledDate:null}));
     ideas.expert=[...ideas.expert,...mk(ed.ideas||[])];ideas.personal=[...ideas.personal,...mk(pd.ideas||[])];ideas.fun=[...ideas.fun,...mk(fd.ideas||[])];
     sv('ideas2',ideas);updIdCounts();renderIdeas();
-  }catch(e){alert('Ошибка. Попробуйте ещё раз.');}
+  }catch(e){alert('Ошибка генерации: '+e.message);}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i>Сгенерировать AI';
 }
 
