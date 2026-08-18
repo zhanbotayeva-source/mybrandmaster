@@ -170,6 +170,11 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 .user-logout:hover{color:var(--teal-dark);}
 .cloud-status{font-size:10px;color:var(--color-text-tertiary);display:inline-flex;align-items:center;gap:4px;margin-left:6px;}
 .cloud-status.synced{color:var(--teal);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.lang-toggle{display:inline-flex;align-items:center;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:999px;padding:2px;gap:2px;flex-shrink:0;}
+.lang-tgl-btn{padding:4px 12px;border:none;background:transparent;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:0.5px;color:var(--color-text-tertiary);cursor:pointer;font-family:var(--font-sans);line-height:1.4;transition:background .15s,color .15s;}
+.lang-tgl-btn:hover{color:var(--teal);}
+.lang-tgl-btn.active{background:var(--teal);color:#fff;}
 .lang-switcher{display:flex;gap:4px;padding:10px 20px 4px;}
 .lang-btn{flex:1;padding:5px 0;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);font-size:11px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
 .lang-btn:hover{border-color:var(--teal-mid);color:var(--teal);}
@@ -621,10 +626,6 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 <div class="sidebar">
   <div class="logo"><div class="logo-text">brandmaster</div><div class="logo-sub">стратегия личного бренда</div></div>
   <div class="nav">
-    <div class="lang-switcher">
-      <button class="lang-btn" data-lang-btn="ru" onclick="setLang('ru')">Русский</button>
-      <button class="lang-btn" data-lang-btn="en" onclick="setLang('en')">English</button>
-    </div>
     <div class="nav-section">Старт</div>
     <div class="nav-item active" onclick="show(0)" id="nav0"><i class="ti ti-clipboard-list" aria-hidden="true"></i>Текущая ситуация</div>
     <div class="nav-section">Стратегия</div>
@@ -661,7 +662,13 @@ textarea:focus{outline:none;border-color:var(--teal);background:var(--color-back
 <div class="main">
   <div class="topbar">
     <div><div class="topbar-title" id="ttitle">Блок 1 — Цели и планы</div><div class="topbar-sub" id="tsub">С чего начинается любой сильный бренд — с ясного зачем</div></div>
-    <span class="badge" id="tbadge">~15 мин</span>
+    <div class="topbar-right">
+      <span class="badge" id="tbadge">~15 мин</span>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" class="lang-tgl-btn" data-lang-btn="ru" onclick="setLang('ru')" title="Русский">RU</button>
+        <button type="button" class="lang-tgl-btn" data-lang-btn="en" onclick="setLang('en')" title="English">EN</button>
+      </div>
+    </div>
   </div>
   <div class="content" id="content"></div>
   <div class="footer">
@@ -701,275 +708,777 @@ let weekStart=(function(){const d=new Date();const day=d.getDay()||7;d.setDate(d
 function sv(k,v){const j=JSON.stringify(v);try{localStorage.setItem('bm_'+k,j);flashSaved();}catch(e){console.warn('[save failed]',k,e);}syncToCloud(k,j);}
 function ld(k){try{return JSON.parse(localStorage.getItem('bm_'+k)||'null');}catch(e){return null;}}
 
-// ===== Двуязычность RU/EN =====
+// ===== Двуязычность RU/EN — полный перевод интерфейса =====
 let lang = (function(){try{return localStorage.getItem('bm_lang')||'ru';}catch(e){return 'ru';}})();
+
+const MONTHS_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOWS_EN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const MONTHS_SHORT_RU=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+const MONTHS_SHORT_EN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function MON(){ return lang==='en'?MONTHS_EN:MONTHS_R; }
+function DOW(){ return lang==='en'?DOWS_EN:DOWS; }
+function MONS(){ return lang==='en'?MONTHS_SHORT_EN:MONTHS_SHORT_RU; }
+function LOC(){ return lang==='en'?'en-GB':'ru'; }
+
 const EN_MAP = {
-  // Бренд / навигация
+  // ---------- Бренд / шапка ----------
   'brandmaster':'brandmaster',
   'стратегия личного бренда':'personal brand strategy',
+  'brandmaster — стратегия личного бренда':'brandmaster — personal brand strategy',
+
+  // ---------- Навигация (секции) ----------
   'Старт':'Start','Стратегия':'Strategy','Действия':'Actions','Контент':'Content','Итог':'Summary',
+  'Клиенты':'Clients','Админ':'Admin',
+
+  // ---------- Навигация (пункты) ----------
   'Текущая ситуация':'Current situation',
   'Цели и планы':'Goals & plans','Распаковка':'Unpacking','Аудитория':'Audience',
   'Позиционирование':'Positioning','Продукты':'Products','Контент-стратегия':'Content strategy',
   'Упаковка страницы':'Profile packaging','Задачи на неделю':'Weekly tasks',
+  'Создать контент':'Create content',
   'Рекомендации AI':'AI recommendations','Банк идей':'Ideas bank','Контент-план':'Content calendar',
-  'Моя стратегия':'My strategy',
-  // Подвал и сохранение
-  'Сохраняется автоматически':'Saved automatically','Сохранено':'Saved',
-  'Скачать копию':'Download backup','Загрузить копию':'Restore backup','Что сохранено?':"What's saved?",
-  'Скачать резервную копию всех ответов':'Download a backup of all answers',
-  'Восстановить из ранее сохранённой копии':'Restore from a previously saved backup',
-  'Показать всё что реально сохранено':'Show what is actually saved',
-  // Кнопки
-  'Получить итог блока ↗':'Get block summary ↗','Блок готов':'Block done','Готово!':'Done!',
-  'Добавить':'Add','Удалить':'Delete','Сохранить':'Save','Сохранить ответ':'Save answer',
-  'Сохранить ответы':'Save answers','Закрыть':'Close','Отмена':'Cancel','Напишите здесь...':'Write here...',
-  // METAtitles
+  'База клиентов':'Client base','Все участники':'All members',
+  'Карта смыслов':'Meaning map','Моя стратегия':'My strategy',
+
+  // ---------- META: заголовки и подзаголовки блоков ----------
   'Блок 1 — Цели и планы':'Block 1 — Goals & plans','Блок 2 — Распаковка':'Block 2 — Unpacking',
   'Блок 3 — Аудитория':'Block 3 — Audience','Блок 4 — Продукты':'Block 4 — Products',
   'Блок 5 — Позиционирование':'Block 5 — Positioning','Блок 6 — Контент-стратегия':'Block 6 — Content strategy',
   'Блок 7 — Упаковка страницы':'Block 7 — Profile packaging',
+  'Расскажи коротко о точке отсчёта — это нужно до начала стратегии':'Briefly describe your starting point — this is needed before the strategy',
   'С чего начинается любой сильный бренд — с ясного зачем':'Every strong brand starts with a clear why',
   'Кто ты — твой путь, сила и уникальность':'Who you are — your path, strength and uniqueness',
-  'Для кого ты работаешь и какую боль закрываешь':'Who you work for and what pain you solve',
-  'Твоё место на рынке и ключевое отличие':'Your place in the market and your key differentiator',
+  'Для кого ты работаешь и какую боль закрываешь':'Who you work for and which pain you solve',
   'Опиши каждый твой продукт':'Describe each of your products',
-  'О чём говорить, где и в каком формате':'What to talk about, where, and in what format',
-  'Чек-лист готовности твоей страницы':'Checklist for your profile readiness',
-  'Конкретные действия которые ты делаешь прямо сейчас':'Concrete actions you do right now',
+  'Твоё место на рынке и ключевое отличие':'Your place in the market and your key difference',
+  'О чём говорить, где и в каком формате':'What to talk about, where, and in which format',
+  'Чек-лист готовности твоей страницы':'Readiness checklist for your profile',
+  'Конкретные действия которые ты делаешь прямо сейчас':'Concrete actions you take right now',
   'Стратегический анализ на основе твоей стратегии':'Strategic analysis based on your strategy',
-  'Сохраняй идеи от AI и свои — планируй в календарь одним кликом':'Save AI and your own ideas — plan them in one click',
-  'Планируй контент по площадкам и перетаскивай в календарь':'Plan content by platform and drag onto the calendar',
-  'Итоговый документ личного бренда':'Final personal brand document',
-  'Расскажи коротко о точке отсчёта — это нужно до начала стратегии':'Briefly share your starting point — needed before strategy',
-  // Times
+  'Сохраняй идеи от AI и свои — планируй в календарь одним кликом':'Save ideas from AI and your own — schedule them in one click',
+  'Планируй контент по площадкам и перетаскивай в календарь':'Plan content per platform and drag it onto the calendar',
+  'Итоговый документ личного бренда':'The final personal brand document',
+  'Управляй клиентами, заметками и встречами в одном месте':'Manage clients, notes and meetings in one place',
+  'Админ-панель: список всех зарегистрированных, их прогресс и ответы':'Admin panel: every registered user, their progress and answers',
+  'Пять сценариев сторителлинга — платформа задаст вопросы и соберёт основу для поста':'Five storytelling scenarios — the platform asks the questions and assembles the base for your post',
+  'Твоя личность как созвездие — то что уже накопилось в платформе, отражённое в звёздах и связях':'Your identity as a constellation — everything gathered in the platform, reflected in stars and links',
+
+  // ---------- Время ----------
   '~5 мин':'~5 min','~15 мин':'~15 min','~20 мин':'~20 min','~25 мин':'~25 min','~30 мин':'~30 min','~60–70 мин':'~60–70 min',
-  // Welcome / b0
+
+  // ---------- Подвал / сохранение / настройки ----------
+  'Сохраняется автоматически':'Saved automatically','Сохранено':'Saved',
+  'Настройки':'Settings','Настройки и данные':'Settings and data',
+  'Данные и резервные копии':'Data and backups',
+  'Все твои ответы автоматически сохраняются в облаке. Резервные копии — на случай если захочешь забрать всё с собой в файл.':
+    'All your answers are saved to the cloud automatically. Backups are there in case you want to take everything with you as a file.',
+  'Скачать резервную копию (JSON)':'Download backup (JSON)',
+  'Загрузить копию из файла':'Restore backup from file',
+  'Показать что сейчас сохранено':'Show what is saved right now',
+  'Язык интерфейса':'Interface language',
+  'Скачать копию':'Download backup','Загрузить копию':'Restore backup','Что сохранено?':"What's saved?",
+  'Скачать резервную копию всех ответов':'Download a backup of all answers',
+  'Восстановить из ранее сохранённой копии':'Restore from a previously saved backup',
+  'Показать всё что реально сохранено':'Show everything that is actually saved',
+  'Что сейчас сохранено':'What is saved right now',
+  'Показаны только непустые поля. Если чего-то нет в списке — оно не сохранилось.':
+    'Only non-empty fields are shown. If something is missing from the list, it was not saved.',
+  'Пока ничего не сохранено в этом браузере.':'Nothing has been saved in this browser yet.',
+
+  // ---------- Кнопки общего назначения ----------
+  'Получить итог блока ↗':'Get block summary ↗','Блок готов':'Block done','Готово!':'Done!',
+  'Добавить':'Add','Удалить':'Delete','Сохранить':'Save','Сохранить ответ':'Save answer',
+  'Сохранить ответы':'Save answers','Закрыть':'Close','Отмена':'Cancel','Создать':'Create',
+  'Редактировать':'Edit','Обновить':'Refresh','Сгенерировать':'Generate','Генерирую...':'Generating…',
+  'Напишите здесь...':'Write here…','Напиши подробно...':'Write in detail…','Напишите...':'Write here…',
+  'Далее — Блок 1':'Next — Block 1',
+
+  // ---------- Блок 0 — Текущая ситуация ----------
   'Прежде чем начать работу со стратегией — расскажите о точке отсчёта. Через 3–6 месяцев вернётесь к этому опроснику и увидите прогресс. Ответьте на все 5 вопросов, после этого откроются блоки стратегии.':
-    "Before starting the strategy — share your starting point. In 3–6 months you'll come back to this questionnaire and see your progress. Answer all 5 questions to unlock the strategy blocks.",
+    "Before you start on the strategy, describe your starting point. In 3–6 months you'll come back to this questionnaire and see your progress. Answer all 5 questions and the strategy blocks will open.",
   'Заполнено':'Filled in',
-  'Ведёшь ли ты свой блог?':'Do you have a blog?',
+  'Ведёшь ли ты свой блог?':'Do you run a blog?',
   'Да, веду активно':'Yes, actively','Иногда, нестабильно':'Sometimes, irregularly',
-  'Только начинаю':'Just starting','Нет, ещё не начала':"No, haven't started yet",
-  'Сколько у тебя сейчас подписчиков?':'How many followers do you have now?',
+  'Только начинаю':'Just starting','Нет, ещё не начала':'No, not started yet',
+  'Сколько у тебя сейчас подписчиков?':'How many followers do you have right now?',
   'Например: 1 200 в Instagram, 300 в Threads':'Example: 1,200 on Instagram, 300 on Threads',
   'Каким образом ты зарабатываешь с блога?':'How do you currently earn from your blog?',
   'Например: продаю услуги напрямую, веду консультации, направляю в свой курс':
-    'Example: I sell services directly, do consultations, funnel followers to my course',
-  'Сколько ты зарабатываешь с блога в месяц?':'How much do you earn from your blog per month?',
+    'Example: I sell services directly, run consultations, funnel people into my course',
+  'Сколько ты зарабатываешь с блога в месяц?':'How much do you earn from the blog per month?',
   'Пока ничего':'Nothing yet','До $500':'Up to $500',
-  'Бизнес: блог влияет на обороты, точно не отследить':"Business: blog impacts revenue, can't be tracked exactly",
-  'Почему ты решила участвовать в стратсессии BrandMaster? Какой главный результат хочешь получить?':
-    'Why did you join the BrandMaster strategy session? What is the main result you want?',
-  'Например: хочу собрать систему, при которой клиенты приходят сами через контент':
-    'Example: I want to build a system where clients come to me through content',
-  'Вопрос':'Question',
-  // Welcome b1
+  'Бизнес: блог влияет на обороты, точно не отследить':'Business: the blog affects revenue, but it cannot be tracked precisely',
+  'Выбери задачу на ближайшее время':'Choose your goal for the coming months',
+  'Упаковка':'Packaging','Запуск':'Launch','Набор аудитории':'Audience growth',
+
+  // ---------- Блок 1 ----------
+  'Чтобы прийти к твоей задаче, мне нужно больше информации о тебе.':'To get to your goal, I need more information about you.',
+  'Пожалуйста, отвечай максимально подробно — так я смогу предложить конкретный контент-план, описание профиля, а также подробный текст для каждой единицы контента.':
+    'Please answer in as much detail as possible — that way I can propose a concrete content plan, a profile description and detailed copy for every piece of content.',
   'Прежде чем начать — ответьте на главный вопрос. Когда есть чёткое зачем, всё остальное становится проще.':
-    'Before starting — answer the main question. With a clear why, everything else gets easier.',
-  // Block 1
+    'Before you begin — answer the main question. With a clear why, everything else gets easier.',
   'Зачем вы хотите развивать свой личный бренд?':'Why do you want to grow your personal brand?',
   'Подумайте о своей глубинной потребности — зачем на самом деле, помимо заработка.':
-    'Think about your deepest reason — what is the real why beyond money.',
-  'Основные 3 цели в блоге на 6 месяцев':'Top 3 goals for your blog in 6 months',
+    'Think about your deeper need — the real why, beyond the money.',
+  'Основные 3 цели в блоге на 6 месяцев':'Your 3 main blog goals for the next 6 months',
   'По одной цели в каждой строке.':'One goal per line.',
   'Например: запустить онлайн-курс / выйти на доход $3 000 в месяц / собрать комьюнити 5 000 человек':
-    'Example: launch an online course / reach $3,000/mo income / build a 5,000-person community',
+    'Example: launch an online course / reach $3,000 per month / build a 5,000-person community',
   'Как ты поймёшь, что личный бренд и блог начали работать эффективно?':
-    'How will you know your personal brand and blog have started working effectively?',
+    'How will you know your personal brand and blog have started working?',
   'Например: клиенты приходят сами, появляются стабильные продажи через контент, аудитория растёт органично.':
     'Example: clients come on their own, content drives steady sales, the audience grows organically.',
-  'Что останавливало раньше?':'What stopped you before?',
-  'Например: боялся осуждения, не знал о чём говорить.':"Example: feared judgement, didn't know what to talk about.",
-  // Block 2
+  'Что останавливало раньше?':'What has held you back until now?',
+  'Например: боялся осуждения, не знал о чём говорить.':"Example: I feared judgement, I didn't know what to talk about.",
+
+  // ---------- Блок 2 ----------
+  'Сильный личный бренд — это правильно рассказанная история.':'A strong personal brand is a story told well.',
+  'Давайте напишем вашу.':"Let's write yours.",
   '5–7 фактов о себе, которые по-настоящему тебя характеризуют':'5–7 facts about you that truly define who you are',
   'То что удивляет людей когда узнают впервые. Это могут быть интересные опыты, которые ты проходила, необычные путешествия, особые умения и др.':
-    'What surprises people when they hear it first time — unusual experiences, travels, special skills, etc.',
-  'Например: жила полгода в монастыре в Тибете':'Example: spent six months in a monastery in Tibet',
-  'Твои ценности 5–7 — как каждая проявляется в жизни?':'Your 5–7 values — how does each show up in life?',
-  'Конкретные примеры, не просто слова.':'Specific examples, not just words.',
-  'Добавить ценность':'Add value',
+    'The things that surprise people when they first hear them — unusual experiences, travels, special skills and so on.',
+  'Например: жила полгода в монастыре в Тибете':'Example: lived six months in a monastery in Tibet',
+  'Твои ценности 5–7 — как каждая проявляется в жизни?':'Your 5–7 values — how does each one show up in life?',
+  'Конкретные примеры, не просто слова.':'Concrete examples, not just words.',
+  'Добавить ценность':'Add value','Ценность...':'Value…','Как проявляется...':'How it shows up…',
   'Принципы и идеи которые хочешь транслировать миру?':'Principles and ideas you want to broadcast to the world?',
   'По одной идее в строке.':'One idea per line.',
   'Например: верю что каждый может зарабатывать на любимом деле':
-    'Example: I believe everyone can make a living from what they love',
-  'За какими советами обращаются друзья и знакомые?':'What advice do friends and acquaintances ask you for?',
-  'В каких темах ты для них авторитет.':"Topics where you're an authority for them.",
+    'Example: I believe anyone can make a living doing what they love',
+  'За какими советами обращаются друзья и знакомые?':'What advice do friends and acquaintances come to you for?',
+  'В каких темах ты для них авторитет.':'The topics where you are their authority.',
   'Например: как договориться о повышении зарплаты':'Example: how to negotiate a raise',
   'Через какие переломные моменты и боли ты пришла к делу, которым занимаешься сейчас?':
-    'Through which turning points and pains did you come to the work you do now?',
-  'Это твоя история — самый ценный контент.':'This is your story — the most valuable content.',
-  '5 профессиональных достижений и кейсы клиентов в цифрах':'5 professional achievements and client case studies in numbers',
-  'По одному достижению в строке. Не скромничай — это твоя сила.':'One achievement per line. Don\'t be modest — this is your strength.',
+    'Which turning points and pains brought you to the work you do now?',
+  'Это твоя история — самый ценный контент.':'This is your story — the most valuable content there is.',
+  '5 профессиональных достижений и кейсы клиентов в цифрах':'5 professional achievements and client cases in numbers',
+  'По одному достижению в строке. Не скромничай — это твоя сила.':"One achievement per line. Don't be modest — this is your strength.",
   'Например: за 3 месяца увеличил доход клиента в 2 раза':"Example: doubled a client's income in 3 months",
-  'Какой конечный результат ты даёшь людям?':'What is the final result you give people?',
-  'По одному пункту в строке.':'One point per line.',
+  'Какой конечный результат ты даёшь людям?':'What is the end result you give people?',
+  'По одному пункту в строке.':'One item per line.',
   'Например: человек понимает, как работает личный бренд, как и что делать в блоге, начинает получать результаты':
-    'Example: the person understands how personal brand works, what to do in their blog, starts seeing results',
+    'Example: the person understands how a personal brand works, what to do in their blog, and starts getting results',
   'В чём твоя суперсила как эксперта?':'What is your superpower as an expert?',
-  'Что ты делаешь легко, а другим даётся с трудом?':'What comes easy to you that others struggle with?',
+  'Что ты делаешь легко, а другим даётся с трудом?':'What comes easily to you that others struggle with?',
   '3–5 якорей-ассоциаций с тобой':'3–5 anchor associations with you',
   'По одной ассоциации в строке.':'One association per line.',
   'Например: личный бренд + Бали + духовное развитие':'Example: personal brand + Bali + spiritual growth',
-  // Block 3
+  'Чем твой подход отличается от других?':'How is your approach different from the others?',
+  'Например: я не учу делать вирусные рилсы — я строю фундамент. Опирайся на свою суперсилу и личный опыт, а не только на инструменты.':
+    "Example: I don't teach viral reels — I build the foundation. Lean on your superpower and personal experience, not only on tools.",
+
+  // ---------- Блок 3 ----------
   'Кто твой идеальный клиент?':'Who is your ideal client?',
   'Например: эксперт с продуктом, который потерял себя в блоге.':
     'Example: an expert with a product who has lost themselves in their blog.',
-  'Как проблемы возникают у твоих клиентов по твоей теме?':'How do problems arise for your clients in your topic?',
-  'По одной ситуации в строке. Опиши контекст и триггеры.':'One situation per line. Describe the context and triggers.',
+  'Как проблемы возникают у твоих клиентов по твоей теме?':'How do problems arise for your clients in your field?',
+  'По одной ситуации в строке. Опиши контекст и триггеры.':'One situation per line. Describe the context and the triggers.',
   'Например: пишу посты регулярно, но охваты падают, а продажи стоят':
-    'Example: I post regularly but reach is dropping and sales are stuck',
-  'Как эта проблема конкретно проявляется в жизни?':'How does this problem manifest specifically in life?',
+    'Example: I post regularly, but reach is falling and sales are flat',
+  'Как эта проблема конкретно проявляется в жизни?':'How exactly does this problem show up in their life?',
   'По одному проявлению в строке.':'One manifestation per line.',
   'Например: открывает Instagram и закрывает, не написав ни одного поста':
     'Example: opens Instagram, then closes it without writing a single post',
   'О чём они мечтают?':'What do they dream about?',
   'По одной мечте в строке.':'One dream per line.',
   'Например: ясность что делать каждый день, клиенты приходят сами через контент':
-    'Example: clarity about what to do daily, clients coming in through content',
-  'Что пробовали до тебя?':'What did they try before coming to you?',
-  'Например: курсы по SMM — дали техники но не понимание.':'Example: SMM courses — gave techniques but no understanding.',
-  'Какими словами говорят о проблеме?':'In what words do they talk about the problem?',
+    'Example: clarity on what to do every day, clients coming in through content',
+  'Что пробовали до тебя?':'What did they try before you?',
+  'Например: курсы по SMM — дали техники но не понимание.':'Example: SMM courses — gave them techniques but no understanding.',
+  'Какими словами говорят о проблеме?':'In which words do they describe the problem?',
   'Прямые цитаты клиентов — по одной в строке.':'Direct client quotes — one per line.',
   'Например: «не знаю о чём писать», «всё уже было сказано до меня»':
-    "Example: \"I don't know what to write about\", \"everything has been said before me\"",
-  // Block 4
-  'Презентация по технике ПУП':'Presentation using the PUU technique',
-  'Три элемента первого впечатления':'Three elements of first impression',
-  'Простой':'Plain','Удивительный':'Unexpected','Полезный':'Useful',
+    'Example: "I don\'t know what to write about", "everything has been said before me"',
+
+  // ---------- Блок 5 (Позиционирование, rB4) ----------
+  'Правильно ли я тебя услышала?':'Did I hear you correctly?',
+  'На основе твоих ответов в «Распаковке» и «Аудитории» я собрала черновик позиционирования. Сверь и подкорректируй — это сэкономит время и поможет не зависнуть.':
+    'From your answers in "Unpacking" and "Audience" I put together a draft positioning. Check it and adjust — it saves time and keeps you from getting stuck.',
+  'Возможная ПУП-сборка':'Possible PSU assembly',
+  'Черновик позиционирования':'Draft positioning',
+  'Это только подсказка. Ниже напиши свой финальный вариант — он останется в твоей стратегии.':
+    'This is only a suggestion. Write your final version below — that is what stays in your strategy.',
+  'Сформулируй коротко: кому ты помогаешь':'State it briefly: who do you help',
+  'Опиши свою суперсилу или необычный поворот':'Describe your superpower or an unexpected twist',
+  'Назови ощутимый результат, который получает клиент':'Name the tangible result your client gets',
+  'Заполни Распаковку и Аудиторию — я предложу формулировку':'Fill in Unpacking and Audience — I will suggest a wording',
+  'Просто:':'Plain:','Удивительно:':'Surprising:','Полезно:':'Useful:',
+  'Презентация по технике ПУП':'Introduction using the PSU technique',
+  'Три элемента первого впечатления':'The three elements of a first impression',
+  'Простой':'Plain','Удивительный':'Surprising','Полезный':'Useful',
   'Кто вы профессионально':'Who you are professionally',
   'Факт который удивляет':'A fact that surprises',
   'Что вы даёте людям':'What you give people',
   'Чем ваш подход отличается от других?':'How is your approach different from others?',
   'Например: я не учу делать вирусные рилсы — я строю фундамент.':"Example: I don't teach viral reels — I build the foundation.",
-  'Позиционирование в одном предложении':'Positioning in one sentence',
+  'Позиционирование в одном предложении':'Your positioning in one sentence',
   'Я помогаю [кому] прийти к [результат] через [подход] — в отличие от [привычная альтернатива]. Например: «Я помогаю экспертам с продуктом собрать сильный личный бренд через глубинную распаковку смыслов — в отличие от курсов по «вирусному» контенту».':
-    'For [target audience], whose main need is [need/pain], our product is a [category/product name] that provides [main benefit/key difference].',
-  // Block 5
+    'I help [whom] reach [result] through [approach] — unlike [the usual alternative]. Example: "I help experts with a product build a strong personal brand through deep unpacking of meaning — unlike courses on \'viral\' content."',
+
+  // ---------- Блок 4 (Продукты, rB5) ----------
   'Продуктов: 0':'Products: 0',
-  'Добавить продукт':'Add product',
-  'Концепция':'Concept','Опишите концепцию...':'Describe the concept...',
-  'Уникальность':'Uniqueness','В чём уникальность...':"What's the uniqueness...",
-  'Задачи продукта':'Product tasks','Задача...':'Task...','Добавить задачу':'Add task',
-  'Что получат клиенты':'What clients will receive',
+  'Добавить продукт':'Add product','Добавить первый продукт':'Add your first product',
+  'Продукты ещё не добавлены':'No products added yet','Добавь свой первый продукт':'Add your first product',
+  'Концепция':'Concept','Опишите концепцию...':'Describe the concept…',
+  'Уникальность':'Uniqueness','В чём уникальность...':'What makes it unique…',
+  'Задачи продукта':'Product tasks','Задача...':'Task…','Добавить задачу':'Add task',
+  'Что получат клиенты':'What clients receive',
   'Добавить категорию':'Add category',
-  'Для какой аудитории':'For which audience','Опишите аудиторию...':'Describe the audience...',
-  'Для чего человеку твой продукт?':'What is your product for the person?','Какую цель или глубинную потребность ты решишь...':'What goal or deep need will you address...',
-  'Добавить результат':'Add result',
+  'Для какой аудитории':'For which audience','Опишите аудиторию...':'Describe the audience…',
+  'Для чего человеку твой продукт?':'What is your product for?',
+  'Какую цель или глубинную потребность ты решишь...':'Which goal or deep need does it address…',
+  'Добавить результат':'Add outcome',
   'знания':'knowledge','навыки':'skills','материалы':'materials','результаты':'results','другое':'other',
-  'Напишите...':'Write here...','Добавить пункт':'Add item',
-  'Название продукта...':'Product name...',
-  // Block 6
-  '3 основные темы блога':'3 main blog topics','По одной теме в строке.':'One topic per line.',
-  'Например: личный бренд / жизнь на Бали / духовное развитие':'Example: personal brand / life on Bali / spiritual growth',
+  'Добавить пункт':'Add item',
+  'Название продукта...':'Product name…',
+  'Спасибо за такой подробный ответ.':'Thank you for such a detailed answer.',
+  'Мы почти закончили со сбором информации. Дальше я сама подскажу варианты позиционирования и упаковки на основе твоих ответов — тебе останется только сверить и подкорректировать. Активно отвечать нужно ещё в Контент-стратегии.':
+    'We are almost done collecting information. From here I will suggest positioning and packaging options based on your answers — you only need to review and adjust them. There is one more section that needs your active input: Content strategy.',
+
+  // ---------- Блок 6 ----------
+  '3 основные темы блога':'Your 3 main blog topics','По одной теме в строке.':'One topic per line.',
+  'Например: личный бренд / жизнь на Бали / духовное развитие':'Example: personal brand / life in Bali / spiritual growth',
   'Форматы контента':'Content formats',
   'Какие именно форматы рилсов / каруселей / др. тебе нравятся и ты готова делать. Например: говорящая голова с субтитрами, экспертные карусели, раскрывающие твою тему, и др.':
-    'Which specific reel / carousel / other formats do you like and are willing to make. Example: talking head with subtitles, expert carousels expanding your topic, etc.',
+    'Which reel / carousel / other formats do you like and are willing to make? Example: talking head with subtitles, expert carousels that unpack your topic, and so on.',
   'Советую сделать отдельную папочку в «Сохранённые» в Instagram, куда будешь складывать все понравившиеся форматы контента.':
-    'I recommend creating a separate folder in Instagram "Saved" where you collect every content format you like.',
+    'I suggest creating a separate folder in Instagram "Saved" where you collect every content format you like.',
   'Площадки':'Platforms',
   'Например: основная — Instagram, дополнительные — Threads, YouTube.':'Example: main — Instagram, secondary — Threads, YouTube.',
   'Какое впечатление хочешь оставлять?':'What impression do you want to leave?',
   'Например: эксперт своего дела, интересная насыщенная жизнь, щедро делюсь полезной информацией.':
-    'Example: an expert in their field, an interesting full life, generously sharing useful information.',
+    'Example: an expert in their field, a rich and interesting life, generously sharing useful information.',
   'Сколько времени в неделю на контент?':'How much time per week for content?',
-  'Например: 2 часа в день, рилсы по вторникам и пятницам.':'Example: 2 hours per day, reels on Tuesdays and Fridays.',
+  'Например: 2 часа в день, рилсы по вторникам и пятницам.':'Example: 2 hours a day, reels on Tuesdays and Fridays.',
   'Какой визуал тебе нравится?':'What kind of visuals do you like?',
   'Например: основные цвета — белый, чёрный, бирюзовый. Спокойные тона, чёткие линии, живые «непостановочные» фото и видео, эстетично.':
-    'Example: main colors — white, black, teal. Calm tones, clean lines, candid (un-staged) photos and videos, aesthetic.',
-  // Block 7
-  'Шапка профиля':'Profile header','Имя и фамилия или понятный ник':'Name and surname, or a clear handle',
-  'Качественное фото':'Quality photo','Описание: кто я + для кого + что даю':'Bio: who I am + for whom + what I give',
-  'Ссылка на сайт или лид-магнит':'Link to website or lead magnet',
-  'Визуал':'Visuals','Единый стиль':'Consistent style',
-  'По первым 9 постам понятно о чём блог':'First 9 posts make the blog topic clear',
+    'Example: main colours — white, black, teal. Calm tones, clean lines, candid un-staged photos and videos, aesthetic.',
+  'Рекомендации под твою задачу':'Recommendations for your goal',
+  'Я знаю, что ты выбрала в начале — и сразу подкручиваю контент-план под эту цель.':
+    'I know what you chose at the start — and I tune the content plan to that goal.',
+  'Выбери задачу в «Текущая ситуация» (Вопрос 5) — здесь появятся персональные рекомендации.':
+    'Choose a goal in "Current situation" (Question 5) — personal recommendations will appear here.',
+  'Цель: Упаковка профиля':'Goal: Profile packaging',
+  'Цель: Запуск продукта':'Goal: Product launch',
+  'Цель: Набор аудитории':'Goal: Audience growth',
+  // (тексты рекомендаций живут в RECS_RU/RECS_EN внутри renderTaskRecommendations —
+  //  ключ со встроенным <strong> сюда не годится: это два разных текстовых узла)
+
+  // ---------- Блок 7 ----------
+  'Шапка профиля':'Profile bio','Имя и фамилия или понятный ник':'First and last name, or a clear handle',
+  'Качественное фото':'A good quality photo','Описание: кто я + для кого + что даю':'Bio: who I am + who for + what I give',
+  'Ссылка на сайт или лид-магнит':'Link to a website or lead magnet',
+  'Визуал':'Visuals','Единый стиль':'A consistent style',
+  'По первым 9 постам понятно о чём блог':'The first 9 posts make the blog topic clear',
   'Закреплённые сторис':'Pinned highlights',
-  'Контент':'Content','Пост-знакомство':'Intro post','Экспертные посты':'Expert posts',
-  'Кейсы с результатами':'Cases with results','Понятно что продаёшь':'Clear what is being sold',
-  'Общее':'Overall','За 10 сек понятно кто я':'It is clear who I am within 10 seconds',
+  'Пост-знакомство':'An introduction post','Экспертные посты':'Expert posts',
+  'Кейсы с результатами':'Case studies with results','Понятно что продаёшь':'It is clear what you sell',
+  'Общее':'Overall','За 10 сек понятно кто я':'Who I am is clear within 10 seconds',
   'Есть призыв к действию':'There is a call to action',
-  // Weekly tasks
-  'Эта неделя':'This week','Выполнено':'Completed','Добавить задачу':'Add task',
-  'Добавьте задачи на эту неделю':'Add tasks for this week','Напишите задачу...':'Write a task...',
-  // AI / Ideas / Calendar — заголовки и общее
+  'Твоя задача — упаковка. Вот что я подготовила':'Your goal is packaging. Here is what I prepared',
+  'На основе твоих ответов я собрала предложения для шапки профиля и визуала. Сверь, подкорректируй — и используй в Instagram прямо сегодня.':
+    'From your answers I put together suggestions for your profile bio and visuals. Review, adjust — and use them on Instagram today.',
+  'Шапка профиля — драфт':'Profile bio — draft','Твоё имя':'Your name',
+  '📩 Связаться · 🔗 ссылка на лид-магнит':'📩 Get in touch · 🔗 lead magnet link',
+  'Хочешь, чтобы я разобрала твою шапку прицельно?':'Want me to review your bio specifically?',
+  'Пришли скриншот текущей шапки профиля — я укажу, что заменить в имени, описании и обложках сторис, чтобы за 10 секунд было понятно кто ты, для кого и что предлагаешь.':
+    'Send a screenshot of your current profile bio — I will point out what to change in the name, description and highlight covers so that within 10 seconds it is clear who you are, who you are for and what you offer.',
+  'Прислать скрин для разбора':'Send a screenshot for review',
+  'В этой версии скриншот примет твой стратег вручную. Перешли фото на удобный канал связи. В следующей версии загрузка будет прямо здесь.':
+    'In this version your strategist accepts the screenshot manually. Send the photo through whichever channel suits you. In the next version the upload will be right here.',
+  'Сформулируй позиционирование в Б5 — подставлю сюда':'Write your positioning in Block 5 — I will drop it in here',
+  'Опиши свою суперсилу в Б2':'Describe your superpower in Block 2',
+
+  // ---------- Задачи на неделю ----------
+  'Эта неделя':'This week','Выполнено':'Completed',
+  'Добавьте задачи на эту неделю':'Add tasks for this week','Напишите задачу...':'Write a task…',
+
+  // ---------- Рекомендации AI ----------
+  'AI проанализирует стратегию и даст персональные рекомендации':'AI will analyse your strategy and give personal recommendations',
+  'Зачем':'Why','Суперсила':'Superpower','Темы':'Topics',
+  'Стратегические рекомендации':'Strategic recommendations',
+  'О чём говорить, как подавать, чего избегать':'What to talk about, how to frame it, what to avoid',
+  'Нажмите "Сгенерировать" чтобы получить рекомендации':'Click "Generate" to get recommendations',
+  'Анализирую стратегию...':'Analysing your strategy…',
+  'Заполни минимум стратегии — тогда AI даст персональные рекомендации':
+    'Fill in a minimum of the strategy — then AI can give personal recommendations',
+  'Чтобы AI сгенерировал качественные рекомендации, заполни эти вопросы:':
+    'For AI to generate good recommendations, fill in these questions:',
+  'На пустой стратегии генерация выдаст generic-текст, без твоих смыслов.':
+    'On an empty strategy the generator returns generic text, without your meaning.',
+  'Путь через переломные моменты':'The path through turning points',
+  'Якоря-ассоциации':'Anchor associations',
+  'Идеальный клиент':'Ideal client','Боли клиента':'Client pains',
+
+  // ---------- Банк идей ----------
+  'Банк идей для контента':'Content ideas bank',
   'Экспертные':'Expert','Личные':'Personal','Развлекательные':'Entertaining',
-  'Все':'All','От AI':'From AI','Мои':'Mine','Показать:':'Show:',
-  'Сгенерировать AI':'Generate with AI','Добавить свою идею':'Add your idea',
+  'Все':'All','От AI':'From AI','Мои':'Mine','Моя':'Mine','Показать:':'Show:',
+  'Сгенерировать AI':'Generate with AI','Добавить свою идею':'Add your own idea',
   'Формат':'Format','Площадка':'Platform','Тема (заголовок)':'Topic (title)','Идея (подробнее)':'Idea (details)',
-  'Опиши что снять или написать...':'Describe what to film or write...',
-  'Например: Как я нашла свою нишу через 3 провала':'Example: How I found my niche through 3 failures',
+  'Опиши что снять или написать...':'Describe what to film or write…',
+  'Например: Как я нашла свою нишу через 3 провала':'Example: How I found my niche after 3 failures',
   'Вкладка:':'Tab:',
-  'Здесь появятся идеи — от AI и твои':'Ideas will appear here — from AI and yours',
+  'Здесь появятся идеи — от AI и твои':'Ideas will appear here — from AI and your own',
+  'Нажмите "Сгенерировать AI"':'Click "Generate with AI"',
+  'Добавьте свою первую идею выше':'Add your first idea above',
+  'В план':'Schedule','Перенести':'Reschedule',
+  'Выбери дату публикации':'Choose the publication date',
+  'Площадка в контент-плане':'Platform in the content plan',
+  'Выберите дату':'Choose a date','Добавить в план':'Add to plan',
+
+  // ---------- Форматы контента ----------
+  'Пост-карусель':'Carousel post','Пост-фото':'Photo post','Сторис':'Story','Прямой эфир':'Live',
+  'Тред':'Thread','Пост':'Post','Цитата':'Quote','Опрос':'Poll','Видео':'Video',
+  'Короткое видео':'Short video','Дуэт':'Duet','Фото-слайды':'Photo slides','Карусель':'Carousel','Лонгрид':'Longread',
+
+  // ---------- Контент-план ----------
+  'Месяц':'Month','Неделя':'Week','Пред.':'Prev','След.':'Next',
   'Новая единица контента':'New content unit',
-  'Идея (кратко)':'Idea (brief)','Опиши идею рилса, карусели или поста...':'Describe the idea of the reel, carousel or post...',
+  'Идея (кратко)':'Idea (brief)','Опиши идею...':'Describe the idea…',
+  'Опиши идею рилса, карусели или поста...':'Describe the idea for the reel, carousel or post…',
   'Например: Почему блог вызывает раздражение':'Example: Why blogging feels irritating',
-  'Добавить в очередь':'Add to queue','Месяц':'Month','Неделя':'Week',
-  'Пред.':'Prev','След.':'Next','всего':'total','в плане':'planned','в очереди':'in queue',
-  'Очередь':'Queue','Все единицы запланированы':'All units are planned',
-  '← Перетащи или нажми чтобы убрать из плана':"← Drag or click to remove from plan",
-  'Моя стратегия':'My strategy',
+  'Добавить в очередь':'Add to queue','всего':'total','в плане':'planned','в очереди':'in queue',
+  'Очередь':'Queue','Все запланированы':'Everything is scheduled','Все единицы запланированы':'All units are scheduled',
+  '← Перетащи или нажми чтобы убрать из плана':'← Drag or click to remove from the plan',
+  'Выбери карточку и нажми на день':'Pick a card, then click a day',
+  'Не запланировано':'Not scheduled','Тема':'Topic','Идея':'Idea','Идея не добавлена':'No idea added',
+
+  // ---------- Дни недели / месяцы ----------
+  'Пн':'Mon','Вт':'Tue','Ср':'Wed','Чт':'Thu','Пт':'Fri','Сб':'Sat','Вс':'Sun',
+  'Январь':'January','Февраль':'February','Март':'March','Апрель':'April','Май':'May','Июнь':'June',
+  'Июль':'July','Август':'August','Сентябрь':'September','Октябрь':'October','Ноябрь':'November','Декабрь':'December',
+
+  // ---------- CRM ----------
+  'Лид':'Lead','Лиды':'Leads','В работе':'In progress','Клиент':'Client','Завершён':'Closed',
+  'Поиск по имени или контактам...':'Search by name or contacts…',
+  'Добавить клиента':'Add client','Добавить первого клиента':'Add your first client',
+  'Здесь будут твои клиенты':'Your clients will live here',
+  'Добавьте первого клиента, чтобы начать вести базу.':'Add your first client to start building the base.',
+  'Ничего не найдено':'Nothing found','Попробуйте изменить фильтр или поиск.':'Try changing the filter or the search.',
+  'Всего':'Total','Прогноз':'Forecast','Закрыто':'Closed won','по «В работе»':'from "In progress"',
+  'Имя':'Name','Статус':'Status','Продукт':'Product','Сумма':'Amount','След. касание':'Next touch',
+  'Без имени':'No name','Без названия':'Untitled',
+  'Новый клиент':'New client','Карточка клиента':'Client card',
+  'Имя клиента':'Client name','Например: Анна Иванова':'Example: Anna Ivanova',
+  'Контакты':'Contacts','Источник':'Source','Instagram / рекомендация / реклама':'Instagram / referral / ads',
+  'Например: Brand Sprint':'Example: Brand Sprint',
+  'Дата следующего касания':'Date of next touch',
+  'Заметки и встречи':'Notes and meetings',
+  'Встреча':'Meeting','Заметка':'Note',
+  'Что обсудили / договорились / следующий шаг...':'What was discussed / agreed / next step…',
+  'Заметок пока нет. Добавь первую — встреча, договорённость или важный момент.':
+    'No notes yet. Add the first one — a meeting, an agreement or an important moment.',
+  'Удалить этого клиента из базы?':'Delete this client from the base?',
+  'Напишите текст заметки':'Write the note text',
+  'Укажите имя клиента':'Enter the client name',
+  'Клиент не найден':'Client not found',
+  '— Не указан —':'— Not set —','(из ваших)':'(from yours)',
+  'Продукт (из ваших)':'Product (from yours)','Продукт':'Product',
+
+  // ---------- Карта смыслов ----------
+  'Ядро':'Core','Личность':'Personality','Экспертность':'Expertise','Голос':'Voice','Истории':'Stories',
+  'Всего звёзд':'Stars total','Связей':'Links','Историй':'Stories','Продуктов':'Products','Смыслов':'Meanings',
+  'Небо пока пустое':'The sky is still empty',
+  'Заполни хотя бы один блок стратегии — и здесь появятся первые звёзды твоей идентичности.':
+    'Fill in at least one strategy block and the first stars of your identity will appear here.',
+  'Что тут скоро появится':'What is coming here soon',
+  'AI будет читать твою карту и говорить: «твоя центральная тема — Х, ты уже трижды раскрыла её через истории про Y, но не хватает связки с продуктом Z». Пока это зеркало — показывает то, что уже накопилось. Заполняй стратегию и сторителлинги — созвездия будут разрастаться.':
+    'AI will read your map and say: "your central theme is X, you have unpacked it three times through stories about Y, but the link to product Z is missing". For now it is a mirror — it shows what has already accumulated. Keep filling in the strategy and the storytelling, and the constellations will grow.',
+  'Клик — подробнее':'Click for details','Связано с':'Connected to',
+  'Твой центр — то, вокруг чего строится бренд':'Your centre — what the brand is built around',
+  'Что ты делаешь легко, а другим сложно':'What you do easily and others find hard',
+  'Ценность':'Value','Принцип':'Principle','Факт о себе':'Fact about yourself',
+  'Достижение':'Achievement','Результат для клиентов':'Result for clients','Якорь-ассоциация':'Anchor association',
+  'Боль клиента':'Client pain','Мечта клиента':'Client dream','Слова клиента':'Client words',
+  'Твой продукт':'Your product','Сторителлинг':'Storytelling',
+  'Публикация':'Publication','Инсайт':'Insight','Про продукт':'About the product',
+  'Про метод':'About the method','Про личность':'About the personality',
+  '(без названия)':'(untitled)',
+
+  // ---------- Создать контент ----------
+  'Выбери сценарий сторителлинга':'Choose a storytelling scenario',
+  'Каждый сценарий — не просто «пост», а способ раскрыть смысл. Отвечай подробно — платформа собирает основу для будущей карты твоих смыслов и связей между историями.':
+    'Each scenario is not just a "post" but a way to unfold meaning. Answer in detail — the platform is assembling the base for your future map of meanings and the links between your stories.',
+  'Публикация: продажа или анонс':'Publication: a sale or an announcement',
+  'Пост о запуске, скидке, вебинаре или анонсе':'A post about a launch, a discount, a webinar or an announcement',
+  'Какой продукт или акцию ты анонсируешь?':'Which product or offer are you announcing?',
+  'Название и короткая суть':'The name and a short summary',
+  'Кому именно он предназначен?':'Who exactly is it for?',
+  'Портрет клиента максимально конкретно':'The client profile, as specific as possible',
+  'Какая главная выгода для клиента одной фразой?':'What is the main benefit for the client, in one phrase?',
+  'Не «мы делаем всё хорошо» — а конкретный измеримый результат':'Not "we do everything well" — a concrete, measurable result',
+  'Какой сейчас лучший повод об этом рассказать?':'What is the best reason to talk about it right now?',
+  'Сезон / событие / открытие продаж / момент в жизни клиента':"Season / event / sales opening / a moment in the client's life",
+  'Какие сомнения обычно возникают — их надо развеять?':'Which doubts usually come up — the ones you need to dispel?',
+  'Дорого / не для меня / не сработает — что и как отвечать':"Too expensive / not for me / it won't work — what to answer and how",
+  'Что читатель должен сделать после поста?':'What should the reader do after the post?',
+  'Сохранить / оставить заявку / записаться / прийти':'Save it / send a request / sign up / show up',
+  'Сторителлинг: поделиться инсайтом':'Storytelling: share an insight',
+  'История с открытием, которое изменило твоё мышление':'A story about a realisation that changed how you think',
+  'Каким инсайтом ты хочешь поделиться?':'Which insight do you want to share?',
+  'Одной фразой — сам вывод':'In one phrase — the conclusion itself',
+  'Чем ты занималась, когда к тебе пришла эта мысль?':'What were you doing when this thought came to you?',
+  'Конкретное действие / место / момент':'A concrete action / place / moment',
+  'Почему именно эта ситуация оказалась для тебя значимой? Что ты поняла такого, чего раньше не замечала?':
+    'Why did this particular situation matter to you? What did you understand that you had not noticed before?',
+  'Что было до — и что стало после':'What it was like before — and what changed after',
+  'Какие предыдущие события твоей жизни подтверждают этот инсайт?':'Which earlier events in your life confirm this insight?',
+  '1–3 эпизода из прошлого, связанные общей нитью':'1–3 episodes from the past tied by a common thread',
+  'Какие инструменты твоей экспертности или твоего профессионального пути подтверждают сказанное?':
+    'Which tools from your expertise or your professional path back this up?',
+  'Методики, курсы, результаты клиентов':'Methods, courses, client results',
+  'Что после этой истории должен почувствовать или понять читатель?':'What should the reader feel or understand after this story?',
+  'Эмоция + инсайт для него':'An emotion plus an insight for them',
+  'Сторителлинг: рассказать про продукт':'Storytelling: talk about your product',
+  'История, которая раскрывает суть твоего продукта':'A story that reveals the essence of your product',
+  'О каком твоём продукте пойдёт речь?':'Which of your products is this about?',
+  'Выбери из своей стратегии':'Pick one from your strategy',
+  'Какая история из твоей жизни или практики лучше всего показывает, почему этот продукт нужен?':
+    'Which story from your life or practice best shows why this product is needed?',
+  'Реальный кейс — свой или клиента':'A real case — yours or a client\'s',
+  'С какой болью клиента она перекликается?':'Which client pain does it echo?',
+  'Прямо словами клиента, а не «маркетинговым языком»':'In the client\'s own words, not in "marketing speak"',
+  'Как этот продукт решил похожую боль у прошлого клиента (или у тебя самой)?':
+    'How did this product solve a similar pain for a past client (or for you)?',
+  'Конкретные шаги / инсайты / результат':'Concrete steps / insights / result',
+  'Какой один осязаемый результат должен «показать» продукт в этой истории?':
+    'Which single tangible result should the product "show" in this story?',
+  'Цифра / до-после / эмоция':'A number / before-after / an emotion',
+  'Что читатель должен захотеть сделать в конце?':'What should the reader want to do at the end?',
+  'Пойти на сайт / оставить заявку / посмотреть подробнее':'Visit the site / send a request / look into it further',
+  'Сторителлинг: рассказать про метод':'Storytelling: talk about your method',
+  'Как ты работаешь и почему это работает':'How you work and why it works',
+  'Как называется твой метод / подход?':'What is your method or approach called?',
+  'Твоё авторское название или рабочая формулировка':'Your own name for it, or a working formulation',
+  'В чём его главная суть в одном предложении?':'What is its core, in one sentence?',
+  'Кому + от чего + через что':'For whom + from what + through what',
+  'Как ты пришла к этому методу — какая ситуация вынудила его сформулировать?':
+    'How did you arrive at this method — which situation forced you to formulate it?',
+  'Момент, когда «старое» перестало работать':'The moment the "old way" stopped working',
+  'Чем он отличается от того, что делают другие в нише?':'How is it different from what others in the niche do?',
+  'Конкретно — что ты делаешь по-другому':'Specifically — what you do differently',
+  'Расскажи случай, когда метод сработал наглядно':'Tell a case where the method visibly worked',
+  'Одна история клиента с явным до/после':'One client story with a clear before/after',
+  'Что должно произойти в голове читателя после этой истории?':"What should happen in the reader's head after this story?",
+  'Осознание / мотивация / решение':'Realisation / motivation / decision',
+  'Сторителлинг: личность':'Storytelling: personality',
+  'История о тебе — которая делает тебя настоящим':'A story about you — the one that makes you real',
+  'Какая черта твоей личности сегодня в центре истории?':'Which trait of yours is at the centre of the story today?',
+  'Одно слово или короткая фраза':'One word or a short phrase',
+  'Какое конкретное событие / момент отражает эту черту?':'Which concrete event or moment reflects this trait?',
+  'Сцена — где, когда, что произошло':'A scene — where, when, what happened',
+  'Как это связано с тем, чем ты занимаешься профессионально?':'How does it connect to what you do professionally?',
+  'Мостик от личного к экспертному':'The bridge from the personal to the expert',
+  'Что об этом обычно не рассказывают другие эксперты в твоей нише?':
+    'What do other experts in your niche usually leave unsaid about this?',
+  'То, что делает тебя тобой':'The thing that makes you you',
+  'Какую эмоцию читатель должен унести из истории?':'Which emotion should the reader carry away from the story?',
+  'Понимание / тепло / вдохновение / серьёзность':'Understanding / warmth / inspiration / gravity',
+  'К выбору сценария':'Back to scenarios','Автосохранение':'Autosave',
+  'Черновик сохраняется автоматически по мере набора':'The draft is saved automatically as you type',
+  'Отметить как готовый':'Mark as ready','Готов':'Ready',
+  'Когда всё заполнишь — здесь появится журналист-AI: задаст 1–3 углубляющих вопроса, найдёт связи с твоими прошлыми историями и предложит готовый пост в твоём голосе. Пока это заглушка — в следующей итерации подключим настоящий Claude.':
+    'Once everything is filled in, an AI journalist will appear here: it will ask 1–3 deepening questions, find links to your past stories and propose a finished post in your voice. For now this is a placeholder — the real Claude arrives in the next iteration.',
+  '— Выбери из своих продуктов —':'— Pick one of your products —',
+  'Удалить этот черновик?':'Delete this draft?',
+  'Черновик отмечен как готовый. В следующей версии здесь запустится AI-журналист и генерация поста в твоём голосе.':
+    'Draft marked as ready. In the next version the AI journalist will run here and generate a post in your voice.',
+
+  // ---------- Админ-панель ----------
+  'Поиск по email или имени...':'Search by email or name…',
+  'Загружаю участников...':'Loading members…','Нет прав доступа':'No access rights',
+  'Никого нет':'Nobody here','Пока никто не зарегистрировался.':'Nobody has registered yet.',
+  'По этому фильтру ничего не найдено.':'Nothing found for this filter.',
+  'Начали':'Started','Прошли':'Completed','Прошли всё':'Completed all','Пусто':'Empty',
+  'хотя бы 1 блок':'at least 1 block','все 7 блоков':'all 7 blocks','Админов':'Admins',
+  'Роль':'Role','Прогресс':'Progress','Клиентов':'Clients','Регистрация':'Registered',
+  'Участник':'Member',
+  'Этот участник ещё не заполнил ни одного блока стратегии.':'This member has not filled in a single strategy block yet.',
+  'Ведёт блог':'Runs a blog','Подписчиков':'Followers','Как зарабатывает':'How they earn',
+  'Доход':'Income','Задача':'Goal','Зачем ЛБ':'Why a personal brand',
+  'Что значит работает':'What "working" means','Что останавливало':'What held them back',
+  'Факты о себе':'Facts about themselves','Принципы':'Principles','За советами':'Advice sought',
+  'Путь через боли':'Path through pains','Достижения':'Achievements','Результат':'Result',
+  'Якоря':'Anchors','Чем отличается':'What sets them apart',
+  'Как боли':'How pains arise','Как проявляется':'How it shows up','Мечты':'Dreams',
+  'Что пробовали':'What they tried',
+  'ПУП простой':'PSU plain','ПУП удивительный':'PSU surprising','ПУП полезный':'PSU useful',
+  'Впечатление':'Impression','Время':'Time',
+
+  // ---------- Документ «Моя стратегия» ----------
+  'Стратегия личного бренда':'Personal brand strategy',
+  'который работает на вас':'one that works for you',
+  'Точка отсчёта':'Starting point','Где я сейчас':'Where I am now',
+  'Ведёшь ли блог сейчас':'Do you run a blog now','Как зарабатываешь с блога':'How you earn from the blog',
+  'Доход с блога':'Income from the blog','Задача на ближайшее время':'Goal for the coming months',
+  'Цели и видение':'Goals and vision','Зачем мне это нужно':'Why I need this',
+  'Глубинное зачем':'The deeper why','3 цели на 6 месяцев':'3 goals for 6 months',
+  'Как я пойму что бренд работает':'How I will know the brand is working',
+  'Что останавливало раньше':'What held me back before',
+  'Распаковка личности':'Unpacking the personality','Что делает меня собой':'What makes me who I am',
+  'Моя суперсила':'My superpower','Якоря-ассоциации со мной':'Anchor associations with me',
+  'Мои ценности':'My values','Факты, которые меня характеризуют':'Facts that define me',
+  'Принципы, по которым я живу':'The principles I live by','Мой путь':'My path',
+  'Достижения и кейсы':'Achievements and cases','Результат, который я даю клиентам':'The result I give clients',
+  'За какими советами обращаются друзья':'The advice friends come to me for',
+  'Для кого я работаю':'Who I work for','Портрет':'Profile','Главная боль клиента':'The main client pain',
+  'Как боль проявляется в жизни':'How the pain shows up in life','Что пробовали до вас':'What they tried before you',
+  'Прямые слова клиента':'The client\'s own words','Это «золото» для заголовков постов':'This is gold for post headlines',
+  'Что я продаю':'What I sell','Моё место на рынке':'My place in the market',
+  'Презентация по ПУП':'The PSU introduction',
+  'Чем мой подход отличается (из Распаковки)':'How my approach differs (from Unpacking)',
+  'Что и где я говорю':'What I say and where',
+  '3 главные темы блога':'The 3 main blog topics',
+  'Впечатление, которое блог должен оставлять':'The impression the blog should leave',
+  'Время на контент в неделю':'Time for content per week','Визуальный стиль':'Visual style',
+  'Анализ стратегии':'Strategy analysis','Что сильно, что достроить':'What is strong, what to build out',
+  'Самое сильное в твоём бренде':'The strongest parts of your brand',
+  'Что нужно достроить в первую очередь':'What to build out first',
+  'Что сделать на этой неделе':'What to do this week',
+  'Не заполнено':'Not filled in',
+  'Три темы определены — это основа для контент-плана':'Three topics are defined — that is the base for a content plan',
+  'Несколько целей одновременно — фокус нужно сузить до одной главной':
+    'Several goals at once — narrow the focus down to one main goal',
+  'Заполни блоки 2 и 4 — без суперсилы и позиционирования AI не сможет писать контент в твоём голосе.':
+    'Fill in blocks 2 and 4 — without a superpower and positioning, AI cannot write content in your voice.',
+  'Все ключевые блоки заполнены. Возвращайтесь раз в квартал и обновляйте.':
+    'All key blocks are filled in. Come back once a quarter and update them.',
+  'Закончи блоки 1–4 и вернись сюда — появятся конкретные шаги.':
+    'Finish blocks 1–4 and come back here — concrete steps will appear.',
+  'Вставить позиционирование в шапку профиля.':'Put the positioning into your profile bio.',
+  'Добавить все в неделю':'Add all to the week','В задачи':'To tasks',
+  'В неделе':'In the week','Уже в неделе':'Already in the week',
+  'Задача добавлена в текущую неделю ✓':'Task added to the current week ✓',
+  'Уже есть в задачах на неделю':'Already in the weekly tasks',
+  'AI-бриф':'AI brief','Готовый промпт для ChatGPT и Claude':'A ready-made prompt for ChatGPT and Claude',
+  'Скопируй текст ниже и вставь в начало любого диалога с AI. После этого AI начнёт писать контент в твоём стиле — с твоими ценностями, словами клиента и темами.':
+    'Copy the text below and paste it at the start of any AI conversation. After that the AI will write content in your style — with your values, your client\'s words and your topics.',
+  'Скопировать':'Copy','Скачать PDF':'Download PDF','Скопировать AI-бриф':'Copy the AI brief',
+  'Сформулируй в':'Write it in','Запиши в':'Write it in','Опиши в':'Describe it in',
+  'Заполни в':'Fill it in in','Добавь продукты в':'Add products in',
+  'Добавь хотя бы один продукт в':'Add at least one product in',
+  ', чтобы выбрать здесь.':', so you can pick it here.',
+  'Простой:':'Plain:','Удивительный:':'Surprising:','Полезный:':'Useful:',
+  'продажа или анонс':'sale or announcement','поделиться инсайтом':'share an insight',
+  'рассказать про продукт':'about your product','рассказать про метод':'about your method',
+  'личность':'personality',
+  'В результате':'The result',
+  'ты получила готовую стратегию,':'you now have a finished strategy',
+  'которая работает на тебя.':'that works for you.',
+  'Возвращайся к этому документу каждый квартал — обновляй, переписывай, дорабатывай.':
+    'Come back to this document every quarter — update it, rewrite it, refine it.',
+  'О чём они мечтают':'What they dream about',
+  'AI-бриф скопирован. Вставьте его в начало диалога с ChatGPT или Claude.':
+    'AI brief copied. Paste it at the start of a conversation with ChatGPT or Claude.',
+  'AI-бриф скопирован.':'AI brief copied.',
   'Запросить анализ AI':'Request AI analysis','Скачать как текст':'Download as text',
-  // Заглушки / надписи в модалках
-  'Прогресс':'Progress','из':'of',
-  // Авторизация
+
+  // ---------- Диагностика «что сохранено» ----------
+  'Б1':'B1','Б2':'B2','Б3':'B3','Б4':'B4','Б5':'B5','Б6':'B6','Б7':'B7',
+  'Зачем развивать бренд':'Why grow the brand','Цель на 3–6 мес':'Goal for 3–6 months',
+  'Что значит «работает»':'What "working" means','Что останавливало':'What held me back',
+  'За какими советами обращаются':'Advice people ask for','Конечный результат':'End result',
+  'Ценности':'Values','Главная боль':'Main pain','О чём мечтают':'What they dream about',
+  'Словами клиента':'In the client\'s words',
+  'ПУП — Простой':'PSU — Plain','ПУП — Удивительный':'PSU — Surprising','ПУП — Полезный':'PSU — Useful',
+  'Чем отличается подход':'How the approach differs',
+  '3 темы':'3 topics','Форматы':'Formats','Время в неделю':'Time per week',
+  'Прогресс блоков':'Block progress',
+
+  // ---------- Авторизация ----------
   'Войти':'Sign in','Создать аккаунт':'Create account','Пароль':'Password',
-  'Введите email и пароль':'Enter email and password',
+  'Введите email и пароль':'Enter your email and password',
+  'Авторизация недоступна (нет интернета?)':'Authentication is unavailable (no internet?)',
   'Подождите…':'Please wait…',
   'Аккаунт создан. Проверьте почту и подтвердите email, затем войдите.':
-    'Account created. Check your email to confirm, then sign in.',
+    'Account created. Check your inbox to confirm your email, then sign in.',
   'Выйти':'Log out','Синхронизировано':'Synced',
   'Локально (нет соединения с облаком)':'Local only (no cloud connection)',
+
+  // ---------- Сообщения / алерты ----------
+  'Ошибка загрузки':'Load error','Ошибка генерации':'Generation error','Ошибка':'Error',
+  'AI-промпт (демо)':'AI prompt (demo)',
+  'Не удалось скопировать. Вот текст:':'Could not copy. Here is the text:',
+  'записей загружено. Сейчас перезагрузим страницу.':'records loaded. The page will reload now.',
+  'Добавлено новых':'Newly added','Было уже в неделе':'Already in the week',
+  'за':'in',
+
+  // ---------- AI-промпты блоков ----------
+  'Проанализируй мои ответы про цели':'Analyse my answers about goals',
+  'Выдели 4–5 ключевых якорей моего личного бренда':'Identify 4–5 key anchors of my personal brand',
+  'Сформулируй портрет идеального клиента':'Describe the profile of my ideal client',
+  'Проанализируй мои продукты':'Analyse my products',
+  'Предложи 3 варианта позиционирования. Опирайся не только на инструменты, но и на мою суперсилу, ценности, якорные ассоциации, путь и другие уникальные черты из блока Распаковка.':
+    'Propose 3 positioning options. Draw not only on tools but also on my superpower, values, anchor associations, path and other unique traits from the Unpacking block.',
+  'Предложи темы для первых 5 постов':'Suggest topics for my first 5 posts',
+  'Дай приоритеты по чек-листу упаковки страницы':'Prioritise the profile packaging checklist',
+  'Помоги проанализировать мою стратегию':'Help me analyse my strategy',
 };
-function t(s){ if(lang==='ru') return s; return EN_MAP[s] || s; }
-// Пробегает по DOM и заменяет известные русские строки на английские
-function applyTranslations(){
-  if(lang==='ru') return;
-  const root=document.body;
-  // текстовые узлы
-  const walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-  const nodes=[];
-  let n; while(n=walker.nextNode()) nodes.push(n);
-  nodes.forEach(node=>{
-    const raw=node.textContent;
-    const trimmed=raw.trim();
-    if(!trimmed) return;
-    if(EN_MAP[trimmed]){
-      node.textContent=raw.replace(trimmed, EN_MAP[trimmed]);
-      return;
-    }
-    // частичный матч: "Прогресс: 3 из 7" → "Progress: 3 of 7"
-    const m=trimmed.match(/^Прогресс:\s*(\d+)\s+из\s+(\d+)$/);
-    if(m){ node.textContent=raw.replace(trimmed, `Progress: ${m[1]} of ${m[2]}`); return; }
-    const m2=trimmed.match(/^(\d+)\s+из\s+(\d+)$/);
-    if(m2){ node.textContent=raw.replace(trimmed, `${m2[1]} of ${m2[2]}`); return; }
-  });
-  // placeholder / title
-  document.querySelectorAll('[placeholder]').forEach(el=>{
-    const v=(el.placeholder||'').trim();
-    if(v && EN_MAP[v]) el.placeholder=EN_MAP[v];
-  });
-  document.querySelectorAll('[title]').forEach(el=>{
-    const v=(el.title||'').trim();
-    if(v && EN_MAP[v]) el.title=EN_MAP[v];
-  });
+
+// Шаблоны для строк с подстановкой (счётчики, даты, номера)
+const EN_PATTERNS = [
+  [/^Прогресс:\s*(\d+)\s+из\s+(\d+)$/,          m=>`Progress: ${m[1]} of ${m[2]}`],
+  [/^(\d+)\s+из\s+(\d+)$/,                      m=>`${m[1]} of ${m[2]}`],
+  [/^Вопрос\s+(\d+)$/,                          m=>`Question ${m[1]}`],
+  [/^Продуктов:\s*(\d+)$/,                      m=>`Products: ${m[1]}`],
+  [/^Клиентов:\s*(\d+)$/,                       m=>`Clients: ${m[1]}`],
+  [/^Роль:\s*(.+)$/,                            m=>`Role: ${m[1]}`],
+  [/^Заполнено блоков:\s*(\d+)\/(\d+)$/,        m=>`Blocks filled: ${m[1]}/${m[2]}`],
+  [/^Твои черновики\s*\((\d+)\)$/,              m=>`Your drafts (${m[1]})`],
+  [/^Сохранено\s*·\s*(.+)$/,                    m=>`Saved · ${m[1]}`],
+  [/^Выбрано:\s*(.+)$/,                         m=>`Selected: ${m[1]}`],
+  [/^Промпт\s+(\d+)\s+символов$/,               m=>`Prompt · ${m[1]} characters`],
+  [/^(.+),\s*вопрос\s*(\d+)$/,                  m=>{const h=trFragment(m[1]); return h===null?null:`${h}, question ${m[2]}`;}],
+  [/^—\s*(.+)$/,                                m=>{const h=trFragment(m[1]); return h===null?null:`— ${h}`;}],
+  [/^Блок\s+(\d+)$/,                            m=>`Block ${m[1]}`],
+  [/^Суперсила:\s*(.+)$/,                       m=>`Superpower: ${m[1]}`],
+];
+
+// Переводит фрагмент. Возвращает null если перевода нет.
+function trFragment(s){
+  s = (s==null?'':String(s)).trim();
+  if(!s) return null;
+  if(Object.prototype.hasOwnProperty.call(EN_MAP, s)) return EN_MAP[s];
+  // составные строки разбираем ДО шаблонов: жадный шаблон иначе съест остаток строки
+  if(s.indexOf(' · ')>-1){
+    const parts = s.split(' · ');
+    const out = parts.map(p=>{ const r=trFragment(p); return r===null?p.trim():r; });
+    if(out.join(' · ') !== parts.map(p=>p.trim()).join(' · ')) return out.join(' · ');
+  }
+  for(let i=0;i<EN_PATTERNS.length;i++){
+    const m = s.match(EN_PATTERNS[i][0]);
+    if(m){ const r = EN_PATTERNS[i][1](m); if(r!==null && r!==undefined) return r; }
+  }
+  return null;
 }
+function tr(s){ const r = trFragment(s); return r===null ? s : r; }
+// t() — перевод строки для JS-кода (alert, textContent и т.п.)
+function t(s){ if(lang==='ru') return s; return tr(s); }
+// tn() — прямой выбор строки по языку (для textContent со вставками)
+function tn(ru,en){ return lang==='en' ? en : ru; }
+
+const _SKIP_TAGS = {SCRIPT:1, STYLE:1, TEXTAREA:1, NOSCRIPT:1};
+// [data-user] помечает узлы с данными пользователя: их текст переводить НЕЛЬЗЯ,
+// иначе ответ «Запуск» или продукт с таким названием превратится в «Launch».
+function _isUserContent(el){
+  try{ return !!(el && el.closest && el.closest('[data-user]')); }catch(e){ return false; }
+}
+let _trBusy = false;
+// Журнал подмен — чтобы вернуть русский без перезагрузки страницы
+let _trLog = [];
+function _trRemember(node, kind, original){
+  if(_trLog.length > 6000) _trLog = _trLog.filter(r=>r.n && r.n.isConnected);
+  _trLog.push({n:node, k:kind, v:original});
+}
+function revertTranslations(){
+  _trBusy = true;
+  try{
+    for(let i=_trLog.length-1;i>=0;i--){
+      const r=_trLog[i];
+      try{
+        if(!r.n || !r.n.isConnected) continue;
+        if(r.k==='text') r.n.nodeValue = r.v;
+        else r.n.setAttribute(r.k, r.v);
+      }catch(e){}
+    }
+  } finally { _trLog = []; _trBusy = false; }
+}
+
+// Пробегает по поддереву и заменяет русские строки на английские
+function applyTranslations(root){
+  if(lang==='ru') return;
+  root = root || document.body;
+  if(!root || !root.querySelectorAll) return;
+  _trBusy = true;
+  try{
+    // выборка, включающая сам root — иначе одиночно добавленные узлы пропускаются
+    const self = (sel)=>{
+      const list = Array.prototype.slice.call(root.querySelectorAll(sel));
+      if(root.nodeType===1 && root.matches && root.matches(sel)) list.unshift(root);
+      return list;
+    };
+    // <option>: фиксируем value до подмены текста, иначе сломается select.value
+    self('option').forEach(o=>{
+      if(!o.hasAttribute('value')) o.setAttribute('value', o.textContent);
+    });
+    // текстовые узлы
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(n){
+        const p = n.parentNode;
+        if(p && _SKIP_TAGS[p.nodeName]) return NodeFilter.FILTER_REJECT;
+        if(_isUserContent(p)) return NodeFilter.FILTER_REJECT;
+        return n.nodeValue && n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    const nodes=[]; let n;
+    while(n = walker.nextNode()) nodes.push(n);
+    nodes.forEach(node=>{
+      const raw = node.nodeValue;
+      const trimmed = raw.trim();
+      const en = trFragment(trimmed);
+      if(en !== null && en !== trimmed){ _trRemember(node,'text',raw); node.nodeValue = raw.replace(trimmed, en); }
+    });
+    // атрибуты
+    ['placeholder','title','aria-label'].forEach(attr=>{
+      self('['+attr+']').forEach(el=>{
+        if(_isUserContent(el)) return;
+        const orig = el.getAttribute(attr);
+        const en = trFragment(orig);
+        if(en !== null && en !== (orig||'').trim()){ _trRemember(el,attr,orig); el.setAttribute(attr, en); }
+      });
+    });
+  } finally { _trBusy = false; }
+}
+
+// Любая динамика (модалки, перерисовки) переводится автоматически
+function initTranslationObserver(){
+  if(!window.MutationObserver || window._trObserver) return;
+  const obs = new MutationObserver(muts=>{
+    if(_trBusy || lang==='ru') return;
+    const roots = [];
+    muts.forEach(m=>{
+      m.addedNodes && m.addedNodes.forEach(nd=>{
+        if(nd.nodeType===1) roots.push(nd);
+        else if(nd.nodeType===3 && nd.parentNode && nd.parentNode.nodeType===1) roots.push(nd.parentNode);
+      });
+    });
+    if(!roots.length) return;
+    roots.forEach(r=>applyTranslations(r));
+  });
+  obs.observe(document.body, {childList:true, subtree:true});
+  window._trObserver = obs;
+}
+
+function applyStaticChrome(){
+  try{
+    document.documentElement.setAttribute('lang', lang);
+    document.title = lang==='en' ? 'brandmaster — personal brand strategy' : 'brandmaster — стратегия личного бренда';
+  }catch(e){}
+}
+
 function setLang(l){
-  lang=l;
-  try{localStorage.setItem('bm_lang',l);}catch(e){}
-  // обновить переключатель в сайдбаре
+  if(l!=='ru' && l!=='en') return;
+  const changed = (l !== lang);
+  lang = l;
+  try{localStorage.setItem('bm_lang', l);}catch(e){}
   document.querySelectorAll('[data-lang-btn]').forEach(b=>{
     b.classList.toggle('active', b.dataset.langBtn===l);
   });
-  // обновить переключатель на экране авторизации
   document.querySelectorAll('[data-auth-lang]').forEach(b=>{
     b.classList.toggle('active', b.dataset.authLang===l);
   });
-  // если экран авторизации виден — перевести его статичные тексты
-  applyTranslations();
-  updateAuthLabels();
-  renderUserBadge();
-  // перерисовать текущий экран приложения
-  if(typeof show==='function' && typeof cur!=='undefined') show(cur);
+  applyStaticChrome();
+  // возврат на русский — откатываем подмены и перерисовываем из исходников
+  if(l==='ru'){
+    revertTranslations();
+    if(typeof show==='function' && typeof cur!=='undefined'){ show(cur); }
+    updateAuthLabels(); renderUserBadge();
+    return;
+  }
+  if(typeof show==='function' && typeof cur!=='undefined'){ show(cur); }
+  updateAuthLabels(); renderUserBadge();
+  applyTranslations(document.body);
 }
 
 // ===== Supabase Auth + облачное сохранение =====
@@ -1184,11 +1693,11 @@ function flashSaved(){
   if(!el) return;
   el.classList.add('saved');
   const t=el.querySelector('.save-text');
-  if(t) t.textContent='Сохранено · '+new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  if(t) t.textContent=tn('Сохранено · ','Saved · ')+new Date().toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   clearTimeout(_saveTimer);
   _saveTimer=setTimeout(()=>{
     el.classList.remove('saved');
-    if(t) t.textContent='Сохраняется автоматически';
+    if(t) t.textContent=tn('Сохраняется автоматически','Saved automatically');
   },2500);
 }
 
@@ -1221,9 +1730,9 @@ function openSettings(){
     <button class="cl-icon-btn" onclick="showSaved()" style="width:100%;padding:10px;font-size:13px;justify-content:center;display:flex;align-items:center;gap:6px;"><i class="ti ti-eye"></i> Показать что сейчас сохранено</button>
     <div style="margin-top:20px;padding-top:16px;border-top:0.5px solid var(--color-border-tertiary);">
       <div style="font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;font-weight:500;">Язык интерфейса</div>
-      <div style="display:flex;gap:8px;">
-        <button onclick="setLang('ru')" style="flex:1;padding:10px;border-radius:8px;border:0.5px solid var(--color-border-tertiary);background:${(typeof lang!=='undefined'&&lang==='ru')?'var(--teal-light)':'var(--color-background-primary)'};color:${(typeof lang!=='undefined'&&lang==='ru')?'var(--teal-dark)':'var(--color-text-primary)'};font-size:13px;cursor:pointer;font-weight:500;">Русский</button>
-        <button onclick="setLang('en')" style="flex:1;padding:10px;border-radius:8px;border:0.5px solid var(--color-border-tertiary);background:${(typeof lang!=='undefined'&&lang==='en')?'var(--teal-light)':'var(--color-background-primary)'};color:${(typeof lang!=='undefined'&&lang==='en')?'var(--teal-dark)':'var(--color-text-primary)'};font-size:13px;cursor:pointer;font-weight:500;">English</button>
+      <div class="lang-toggle" style="width:100%;" role="group" aria-label="Language">
+        <button type="button" class="lang-tgl-btn${lang==='ru'?' active':''}" data-lang-btn="ru" onclick="setLang('ru')" style="flex:1;padding:9px 0;font-size:13px;">Русский</button>
+        <button type="button" class="lang-tgl-btn${lang==='en'?' active':''}" data-lang-btn="en" onclick="setLang('en')" style="flex:1;padding:9px 0;font-size:13px;">English</button>
       </div>
     </div>
     <div class="cl-modal-acts">
@@ -1262,9 +1771,9 @@ function importBackup(){
         Object.entries(data).forEach(([k,v])=>{
           if(k.startsWith('bm_')){localStorage.setItem(k,v);n++;}
         });
-        alert('Загружено '+n+' записей. Сейчас перезагрузим страницу.');
+        alert(tn('Загружено '+n+' записей. Сейчас перезагрузим страницу.', n+' records loaded. The page will reload now.'));
         location.reload();
-      }catch(err){alert('Ошибка загрузки: '+err.message);}
+      }catch(err){alert(t('Ошибка загрузки')+': '+err.message);}
     };
     reader.readAsText(file);
   };
@@ -1292,7 +1801,7 @@ function showSaved(){
   };
   const html = rows.length===0
     ? '<div style="padding:24px;text-align:center;color:var(--color-text-tertiary)">Пока ничего не сохранено в этом браузере.</div>'
-    : rows.map(r=>`<div style="margin-bottom:14px;padding:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)"><div style="font-size:11px;color:var(--teal);font-weight:500;margin-bottom:4px">${labels[r.k]||r.k}</div><div style="font-size:13px;color:var(--color-text-primary);white-space:pre-wrap;word-break:break-word">${r.v.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}</div></div>`).join('');
+    : rows.map(r=>`<div style="margin-bottom:14px;padding:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)"><div style="font-size:11px;color:var(--teal);font-weight:500;margin-bottom:4px">${labels[r.k]||r.k}</div><div style="font-size:13px;color:var(--color-text-primary);white-space:pre-wrap;word-break:break-word" data-user>${r.v.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}</div></div>`).join('');
   const ov=document.createElement('div');
   ov.className='modal-ov';
   ov.innerHTML=`<div class="modal" style="width:560px;max-height:80vh;overflow:auto">
@@ -1345,7 +1854,7 @@ function updateNav(){
     let lockMark=el.querySelector('.lock-ic'); if(lockMark) lockMark.remove();
     if(cur===i) el.classList.add('active');
   });
-  document.getElementById('prog-label').textContent='Прогресс: '+cnt+' из 7';
+  document.getElementById('prog-label').textContent=tn('Прогресс: '+cnt+' из 7','Progress: '+cnt+' of 7');
   document.getElementById('prog-fill').style.width=(cnt/7*100)+'%';
 }
 
@@ -1382,7 +1891,7 @@ function show(n){
   else if(n===16){c.innerHTML=rMindmap();initMindmap();}
   if(n===0){restoreTA();setupAS();setupB0();}
   else if(![5,8,9,10,11,13,14,15,16].includes(n)){restoreTA();setupAS();restoreAllMI();}
-  setTimeout(applyTranslations, 0);
+  setTimeout(()=>applyTranslations(document.body), 0);
 }
 
 function q(num,icon,text,hint,body){return`<div class="qcard"><button class="card-save" onclick="saveCardBtn(this)" title="Сохранить ответ" type="button"><i class="ti ti-device-floppy"></i></button><div class="q-label"><i class="ti ti-${icon}"></i> Вопрос ${num}</div><div class="q-text">${text}</div><div class="q-hint">${hint}</div>${body||`<textarea data-key="b${cur}_q${num}" placeholder="Напишите здесь..."></textarea>`}</div>`;}
@@ -1543,7 +2052,7 @@ function renderB0Progress(){
   }
   const pct=Math.round(n/5*100);
   const lbl=document.getElementById('b0-pct'),fill=document.getElementById('b0-fill');
-  if(lbl) lbl.textContent=n+' из 5';
+  if(lbl) lbl.textContent=tn(n+' из 5',n+' of 5');
   if(fill) fill.style.width=pct+'%';
 }
 function isB0Complete(){
@@ -1566,12 +2075,16 @@ function rB4(){
   const client=ld('b3_q1')||''; const pain=(ld('b3_q2_list')||[])[0]||'';
   const result=(ld('b2_q7_list')||[])[0]||''; const path=ld('b2_q5')||'';
   const different=ld('b2_q10')||''; const sup=sp.trim();
-  const sugPlain = client ? `Я помогаю ${client.toLowerCase().slice(0,80)}${client.length>80?'…':''}` : 'Сформулируй коротко: кому ты помогаешь';
-  const sugSurprise = sup || (ach[0]||'') || (path?path.slice(0,90)+(path.length>90?'…':''):'') || 'Опиши свою суперсилу или необычный поворот';
-  const sugUseful = result || 'Назови ощутимый результат, который получает клиент';
+  const sugPlain = client
+    ? tn(`Я помогаю ${client.toLowerCase().slice(0,80)}${client.length>80?'…':''}`,
+         `I help ${client.toLowerCase().slice(0,80)}${client.length>80?'…':''}`)
+    : tn('Сформулируй коротко: кому ты помогаешь','State it briefly: who do you help');
+  const sugSurprise = sup || (ach[0]||'') || (path?path.slice(0,90)+(path.length>90?'…':''):'') || tn('Опиши свою суперсилу или необычный поворот','Describe your superpower or an unexpected twist');
+  const sugUseful = result || tn('Назови ощутимый результат, который получает клиент','Name the tangible result your client gets');
   const sugPos = (client && pain && sup)
-    ? `Я помогаю ${client.toLowerCase().slice(0,60)} ${pain?'справиться с «'+pain.slice(0,50)+'»':''} через ${sup.toLowerCase()}.`
-    : 'Заполни Распаковку и Аудиторию — я предложу формулировку';
+    ? tn(`Я помогаю ${client.toLowerCase().slice(0,60)} ${pain?'справиться с «'+pain.slice(0,50)+'»':''} через ${sup.toLowerCase()}.`,
+         `I help ${client.toLowerCase().slice(0,60)} ${pain?'deal with "'+pain.slice(0,50)+'"':''} through ${sup.toLowerCase()}.`)
+    : tn('Заполни Распаковку и Аудиторию — я предложу формулировку','Fill in Unpacking and Audience — I will suggest a wording');
   const hasAny = sp||client||pain||result||path||ach.length||facts.length;
   const sverka = hasAny ? `<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:20px 24px;margin-bottom:18px;">
     <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
@@ -1584,14 +2097,14 @@ function rB4(){
     <div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;margin-top:8px;">
       <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Возможная ПУП-сборка</div>
       <div style="font-size:13px;color:var(--color-text-primary);line-height:1.7;">
-        <strong>Просто:</strong> ${sugPlain}<br>
-        <strong>Удивительно:</strong> ${sugSurprise}<br>
-        <strong>Полезно:</strong> ${sugUseful}
+        <strong>Просто:</strong> <span data-user>${sugPlain}</span><br>
+        <strong>Удивительно:</strong> <span data-user>${sugSurprise}</span><br>
+        <strong>Полезно:</strong> <span data-user>${sugUseful}</span>
       </div>
     </div>
     <div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;margin-top:10px;border-left:3px solid var(--teal);">
       <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Черновик позиционирования</div>
-      <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:var(--color-text-primary);line-height:1.5;">${sugPos}</div>
+      <div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:var(--color-text-primary);line-height:1.5;" data-user>${sugPos}</div>
     </div>
     <div style="font-size:12px;color:var(--teal-dark);margin-top:12px;font-style:italic;">Это только подсказка. Ниже напиши свой финальный вариант — он останется в твоей стратегии.</div>
   </div>` : '';
@@ -1620,8 +2133,8 @@ function rB6(){return qList(1,'layout','3 основные темы блога',
 function renderTaskRecommendations(){
   const task = ld('b0_q5')||'';
   const time = ld('b6_q5')||'';
-  if(!task) return `<div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;font-size:13px;color:var(--color-text-secondary);font-style:italic;">Выбери задачу в «Текущая ситуация» (Вопрос 5) — здесь появятся персональные рекомендации.</div>`;
-  const recs = {
+  if(!task) return `<div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;font-size:13px;color:var(--color-text-secondary);font-style:italic;">${tn('Выбери задачу в «Текущая ситуация» (Вопрос 5) — здесь появятся персональные рекомендации.','Choose a goal in "Current situation" (Question 5) — personal recommendations will appear here.')}</div>`;
+  const RECS_RU = {
     'Упаковка': {
       title:'Цель: Упаковка профиля',
       items:[
@@ -1651,8 +2164,44 @@ function renderTaskRecommendations(){
       ]
     }
   };
+  const RECS_EN = {
+    'Упаковка': {
+      title:'Goal: Profile packaging',
+      items:[
+        '<strong>Week one:</strong> rewrite the bio (name, description, offer) and pin 4 current highlights with covers.',
+        '<strong>The first 9 posts in your feed</strong> should make clear who you are, who you are for and what you offer — 3 posts for each of your 3 blog topics.',
+        '<strong>Format:</strong> 60% carousels (expert), 30% Reels (personal / introduction), 10% intro stories.',
+        '<strong>What not to do:</strong> do not launch paid products until the visual and narrative packaging catches up.',
+      ]
+    },
+    'Запуск': {
+      title:'Goal: Product launch',
+      items:[
+        '<strong>One month before launch:</strong> warm-up — posts about the client\'s pain, personal stories of failures and wins, case studies.',
+        '<strong>Two weeks before launch:</strong> announce the product, open the waiting list, behind-the-scenes launch stories.',
+        '<strong>Sales open:</strong> 1 key invitation post + daily stories + Reels answering objections.',
+        '<strong>Format:</strong> 40% selling (Reels and stories), 40% expert (carousels), 20% personal.',
+      ]
+    },
+    'Набор аудитории': {
+      title:'Goal: Audience growth',
+      items:[
+        '<strong>Focus on Reels:</strong> 3–5 short videos a week, the goal is reach, not sales.',
+        '<strong>Topics:</strong> hooks on the client\'s pain, myth-busting, personal before/after experience.',
+        '<strong>Collaborations:</strong> 1 joint live or Reels a month with an audience close to your niche.',
+        '<strong>Metrics:</strong> watch saves and comments, not likes.',
+        '<strong>What not to do:</strong> do not launch paid products until reach has doubled.',
+      ]
+    }
+  };
+  const recs = lang==='en' ? RECS_EN : RECS_RU;
   const r = recs[task] || recs['Упаковка'];
-  const timeNote = time ? `<div style="font-size:12px;color:var(--teal-dark);margin-top:12px;font-style:italic;">У тебя ${time} в неделю — рекомендую держать ${task==='Набор аудитории'?'3–4 Reels':'2–3 единицы контента'} в неделю, не больше. Лучше реже, но качественно.</div>` : '';
+  const cadence = task==='Набор аудитории' ? tn('3–4 Reels','3–4 Reels') : tn('2–3 единицы контента','2–3 pieces of content');
+  const timeNote = time
+    ? `<div style="font-size:12px;color:var(--teal-dark);margin-top:12px;font-style:italic;" data-user>${tn(
+        `У тебя ${time} в неделю — рекомендую держать ${cadence} в неделю, не больше. Лучше реже, но качественно.`,
+        `You have ${time} per week — I recommend keeping to ${cadence} a week, no more. Better less often, but done well.`)}</div>`
+    : '';
   return `<div style="background:#fff;border-radius:var(--border-radius-md);padding:16px 18px;">
     <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">${r.title}</div>
     <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--color-text-primary);line-height:1.7;">
@@ -1667,8 +2216,8 @@ function rB7(){
   const client = ld('b3_q1')||''; const sp = ld('b2_q8')||''; const pos = ld('b4_q3')||'';
   let aiSuggest = '';
   if(task==='Упаковка'){
-    const bioLine1 = pos ? pos.replace(/^я помогаю\s*/i,'Помогаю ').slice(0,80) : 'Сформулируй позиционирование в Б5 — подставлю сюда';
-    const bioLine2 = sp ? 'Суперсила: '+sp : 'Опиши свою суперсилу в Б2';
+    const bioLine1 = pos ? pos.replace(/^я помогаю\s*/i, tn('Помогаю ','I help ')).slice(0,80) : t('Сформулируй позиционирование в Б5 — подставлю сюда');
+    const bioLine2 = sp ? tn('Суперсила: ','Superpower: ')+sp : t('Опиши свою суперсилу в Б2');
     aiSuggest = `<div style="background:var(--teal-light);border:0.5px solid var(--teal-mid);border-radius:var(--border-radius-lg);padding:20px 24px;margin-bottom:18px;">
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;">
         <div style="font-size:22px;color:var(--teal);flex-shrink:0;margin-top:2px;"><i class="ti ti-wand"></i></div>
@@ -1682,8 +2231,8 @@ function rB7(){
         <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Шапка профиля — драфт</div>
         <div style="font-size:13px;color:var(--color-text-primary);line-height:1.6;">
           <div style="font-weight:600;margin-bottom:4px;">Твоё имя</div>
-          <div style="margin-bottom:3px;">${bioLine1}</div>
-          <div style="margin-bottom:3px;">${bioLine2}</div>
+          <div style="margin-bottom:3px;" data-user>${bioLine1}</div>
+          <div style="margin-bottom:3px;" data-user>${bioLine2}</div>
           <div style="color:var(--color-text-secondary);font-style:italic;">📩 Связаться · 🔗 ссылка на лид-магнит</div>
         </div>
       </div>
@@ -1691,7 +2240,7 @@ function rB7(){
       <div style="background:#fff;border-radius:var(--border-radius-md);padding:14px 16px;border-left:3px solid var(--teal);">
         <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Хочешь, чтобы я разобрала твою шапку прицельно?</div>
         <div style="font-size:13px;color:var(--color-text-primary);line-height:1.6;margin-bottom:10px;">Пришли скриншот текущей шапки профиля — я укажу, что заменить в имени, описании и обложках сторис, чтобы за 10 секунд было понятно кто ты, для кого и что предлагаешь.</div>
-        <button class="btn-teal-out" onclick="alert('В этой версии скриншот примет твой стратег вручную. Перешли фото на удобный канал связи. В следующей версии загрузка будет прямо здесь.')"><i class="ti ti-photo-up"></i>Прислать скрин для разбора</button>
+        <button class="btn-teal-out" onclick="alert(t('В этой версии скриншот примет твой стратег вручную. Перешли фото на удобный канал связи. В следующей версии загрузка будет прямо здесь.'))"><i class="ti ti-photo-up"></i>Прислать скрин для разбора</button>
       </div>
     </div>`;
   }
@@ -1702,7 +2251,7 @@ function rB7(){
 function rTasks(){return`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">Задачи на неделю</div><span style="font-size:11px;padding:3px 10px;border-radius:var(--border-radius-md);background:var(--teal-light);color:var(--teal);font-weight:500;" id="wrange"></span></div><div style="display:flex;gap:8px;margin-bottom:14px;"><button style="flex:1;padding:7px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-secondary);" onclick="switchWk(-1)" id="wbtn-prev"></button><button style="flex:1;padding:7px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;border:0.5px solid var(--teal);background:var(--teal);color:white;" onclick="switchWk(0)">Эта неделя</button><button style="flex:1;padding:7px;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-secondary);" onclick="switchWk(1)" id="wbtn-next"></button></div><div class="wp-wrap"><div style="font-size:12px;color:var(--color-text-secondary);">Выполнено</div><div class="wp-bar"><div class="wp-fill" id="wp-fill" style="width:0%"></div></div><div style="font-size:11px;color:var(--teal);font-weight:500;" id="wp-pct">0%</div></div><div id="task-list"></div><button class="add-btn" onclick="addTask()"><i class="ti ti-plus"></i>Добавить задачу</button>`;}
 function initTasks(){const s=ld('weeks');if(s)weeks=s;wOff=0;renderWk();}
 function getWKey(o){const d=new Date();d.setDate(d.getDate()-d.getDay()+1+o*7);return`w_${d.getFullYear()}_${d.getMonth()}_${Math.ceil(d.getDate()/7)}`;}
-function getWLabel(o){const d=new Date();d.setDate(d.getDate()-d.getDay()+1+o*7);const e=new Date(d);e.setDate(d.getDate()+6);const f=dt=>dt.toLocaleDateString('ru',{day:'numeric',month:'short'});return`${f(d)} — ${f(e)}`;}
+function getWLabel(o){const d=new Date();d.setDate(d.getDate()-d.getDay()+1+o*7);const e=new Date(d);e.setDate(d.getDate()+6);const f=dt=>dt.toLocaleDateString(LOC(),{day:'numeric',month:'short'});return`${f(d)} — ${f(e)}`;}
 function switchWk(o){saveWk();wOff=o;renderWk();}
 function renderWk(){
   const key=getWKey(wOff);curWKey=key;
@@ -1727,7 +2276,7 @@ function delTask(i){if(!weeks[curWKey])return;weeks[curWKey].splice(i,1);sv('wee
 // AI Recommendations
 function rAI(){return`<div class="ai-hero"><div><div style="font-size:15px;font-weight:500;color:var(--teal-dark);margin-bottom:4px;">Рекомендации AI</div><div style="font-size:12px;color:var(--teal-dark);opacity:0.8;line-height:1.5;">AI проанализирует стратегию и даст персональные рекомендации</div><div class="meta-chips" id="meta-chips"></div></div><button class="ai-gen-btn" id="reco-btn" onclick="genReco()"><i class="ti ti-sparkles"></i>Сгенерировать</button></div><div class="ai-sec"><div class="ai-sec-hdr"><div class="ai-sec-icon"><i class="ti ti-compass"></i></div><div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Стратегические рекомендации</div><div style="font-size:11px;color:var(--color-text-tertiary);margin-top:2px;">О чём говорить, как подавать, чего избегать</div></div></div><div id="reco-out"><div class="ai-empty"><div class="ai-empty-text">Нажмите "Сгенерировать" чтобы получить рекомендации</div></div></div></div>`;}
 function initAI(){buildChips();_aiApplyGate('reco-btn','reco-out');}
-function buildChips(){const ctx=getCtx();const ch=document.getElementById('meta-chips');if(!ch)return;[{l:'Зачем',v:ctx.why},{l:'Суперсила',v:ctx.sp},{l:'Аудитория',v:ctx.cl},{l:'Позиционирование',v:ctx.pos},{l:'Темы',v:ctx.topics}].forEach(i=>{ch.innerHTML+=`<span class="meta-chip${i.v?' filled':''}">${i.v?'✓ ':''}${i.l}</span>`;});}
+function buildChips(){const ctx=getCtx();const ch=document.getElementById('meta-chips');if(!ch)return;[{l:'Зачем',v:ctx.why},{l:'Суперсила',v:ctx.sp},{l:'Аудитория',v:ctx.cl},{l:'Позиционирование',v:ctx.pos},{l:'Темы',v:ctx.topics}].forEach(i=>{ch.innerHTML+=`<span class="meta-chip${i.v?' filled':''}">${i.v?'✓ ':''}${t(i.l)}</span>`;});}
 
 // Гейтинг AI — требуем минимум данных перед генерацией
 const AI_REQUIRED = [
@@ -1753,7 +2302,7 @@ function _aiApplyGate(btnId, outId){
   const btn = document.getElementById(btnId);
   const out = document.getElementById(outId);
   if(gate.ok){ if(btn) btn.disabled = false; return true; }
-  if(btn){ btn.disabled = true; btn.title = 'Заполни минимум стратегии — тогда AI даст персональные рекомендации'; }
+  if(btn){ btn.disabled = true; btn.title = t('Заполни минимум стратегии — тогда AI даст персональные рекомендации'); }
   if(out){
     const items = gate.missing.map(m=>`<li style="margin-bottom:5px;"><a href="javascript:void(0)" onclick="show(${m.block})" style="color:var(--teal);text-decoration:none;border-bottom:1px dashed var(--teal-mid);">${m.blockName}, вопрос ${m.qn}</a> — ${m.label}</li>`).join('');
     out.innerHTML = `<div class="ai-empty" style="text-align:left;padding:20px;"><div style="font-size:13px;color:var(--color-text-primary);margin-bottom:10px;font-weight:500;">Чтобы AI сгенерировал качественные рекомендации, заполни эти вопросы:</div><ul style="margin:0;padding-left:18px;font-size:13px;color:var(--color-text-secondary);line-height:1.6;">${items}</ul><div style="font-size:11px;color:var(--color-text-tertiary);margin-top:12px;font-style:italic;">На пустой стратегии генерация выдаст generic-текст, без твоих смыслов.</div></div>`;
@@ -1761,7 +2310,7 @@ function _aiApplyGate(btnId, outId){
   return false;
 }
 function getCtx(){return{why:ld('b1_q1')||'',goal:ld('b1_q2')||'',sp:ld('b2_q8')||'',anchors:ld('b2_q9')||'',cl:ld('b3_q1')||'',pain:ld('b3_q2')||'',pos:ld('b4_q3')||'',topics:ld('b6_q1')||'',fmts:ld('b6_q2')||'',prods:(ld('products')||[]).map(p=>p.name).join(', ')};}
-async function callBackend(endpoint,body){const r=await fetch('/api/ai/'+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'HTTP '+r.status);}return r.json();}
+async function callBackend(endpoint,body){const r=await fetch('/api/ai/'+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({lang:lang},body))});if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error||'HTTP '+r.status);}return r.json();}
 function ldTxt(id,txt){const el=document.getElementById(id);if(el)el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:16px;color:var(--color-text-secondary);font-size:13px;"><div class="spinner spinner-d"></div>${txt}</div>`;}
 async function genReco(){
   if(!_aiApplyGate('reco-btn','reco-out')) return;
@@ -1769,7 +2318,7 @@ async function genReco(){
   const btn=document.getElementById('reco-btn');btn.disabled=true;btn.innerHTML='<div class="spinner"></div>Генерирую...';
   ldTxt('reco-out','Анализирую стратегию...');
   try{const d=await callBackend('recommendations',{context:ctx});const o=document.getElementById('reco-out');if(o)o.innerHTML=d.recommendations.map(r=>`<div class="reco-item"><div class="reco-label">${r.label}</div><div class="reco-text">${r.text}</div></div>`).join('');}
-  catch(e){const o=document.getElementById('reco-out');if(o)o.innerHTML=`<div class="ai-empty"><div class="ai-empty-text">Ошибка: ${e.message}. Попробуйте ещё раз.</div></div>`;}
+  catch(e){const o=document.getElementById('reco-out');if(o)o.innerHTML=`<div class="ai-empty"><div class="ai-empty-text">${tn('Ошибка','Error')}: ${e.message}. ${tn('Попробуйте ещё раз.','Please try again.')}</div></div>`;}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i>Обновить';
 }
 
@@ -1785,7 +2334,7 @@ function rIdeas(){return`<div style="display:flex;align-items:center;justify-con
 <div class="ideas-grid" id="ideas-grid"></div>`;}
 
 function initIdeas(){const s=ld('ideas2');if(s){ideas.expert=s.expert||[];ideas.personal=s.personal||[];ideas.fun=s.fun||[];}updIdCounts();renderIdeas();_aiApplyGate('ideas-gen-btn','ideas-gate-hint');}
-function switchIdTab(t){activeIdTab=t;['expert','personal','fun'].forEach(x=>{const el=document.getElementById('itab-'+x);if(el)el.className='ideas-tab'+(x===t?' active':'');});const l=document.getElementById('itab-lbl');if(l)l.textContent=TAB_LABELS[t];renderIdeas();}
+function switchIdTab(tab){activeIdTab=tab;['expert','personal','fun'].forEach(x=>{const el=document.getElementById('itab-'+x);if(el)el.className='ideas-tab'+(x===tab?' active':'');});const l=document.getElementById('itab-lbl');if(l)l.textContent=t(TAB_LABELS[tab]);renderIdeas();}
 function setIF(f){ideaFilter=f;['all','ai','user'].forEach(x=>{const el=document.getElementById('sf-'+x);if(el)el.className='sort-btn'+(x===f?' active':'');});renderIdeas();}
 function updIdCounts(){['expert','personal','fun'].forEach(t=>{const el=document.getElementById('icnt-'+t);if(el)el.textContent=ideas[t].length;});}
 function addIdea(){const fmt=document.getElementById('nfmt').value,plt=document.getElementById('nplt').value,ttl=document.getElementById('nttl').value.trim(),desc=document.getElementById('ndesc').value.trim();if(!ttl)return;ideas[activeIdTab].push({id:Date.now(),fmt,platform:plt,title:ttl,description:desc,source:'user',scheduledDate:null});document.getElementById('nttl').value='';document.getElementById('ndesc').value='';sv('ideas2',ideas);updIdCounts();renderIdeas();}
@@ -1801,7 +2350,7 @@ function showDP(idea){
   const ov=document.createElement('div');ov.className='modal-ov';
   ov.innerHTML=`<div class="modal">
     <div class="modal-hdr"><div class="modal-title">Выбери дату публикации</div><button class="modal-close" onclick="this.closest('.modal-ov').remove()">✕</button></div>
-    <div class="dp-card-prev"><div class="dp-card-fmt ${FMT[idea.fmt]||'p-post'}">${idea.fmt}</div><div class="dp-card-ttl">${idea.title}</div></div>
+    <div class="dp-card-prev"><div class="dp-card-fmt ${FMT[idea.fmt]||'p-post'}">${idea.fmt}</div><div class="dp-card-ttl" data-user>${idea.title}</div></div>
     <div class="fl-sm" style="margin-bottom:6px;">Площадка в контент-плане</div>
     <div class="dp-plt-row">
       <button class="dp-plt-btn${dpPlt==='ig'?' a-ig':''}" onclick="dpSetPlt('ig',this)">Instagram</button>
@@ -1809,24 +2358,24 @@ function showDP(idea){
       <button class="dp-plt-btn${dpPlt==='yt'?' a-yt':''}" onclick="dpSetPlt('yt',this)">YouTube</button>
       <button class="dp-plt-btn${dpPlt==='tt'?' a-tt':''}" onclick="dpSetPlt('tt',this)">TikTok</button>
     </div>
-    <div class="dp-nav"><button class="dp-nav-btn" onclick="dpPrev()">‹</button><div class="dp-month-lbl" id="dp-mlbl">${MONTHS_R[dpM]} ${dpY}</div><button class="dp-nav-btn" onclick="dpNext()">›</button></div>
+    <div class="dp-nav"><button class="dp-nav-btn" onclick="dpPrev()">‹</button><div class="dp-month-lbl" id="dp-mlbl">${MON()[dpM]} ${dpY}</div><button class="dp-nav-btn" onclick="dpNext()">›</button></div>
     <div class="dp-grid" id="dp-grid"></div>
-    <div class="dp-sel-lbl" id="dp-slbl">${dpSelDate?'Выбрано: '+fmtDate(dpSelDate):'Выберите дату'}</div>
+    <div class="dp-sel-lbl" id="dp-slbl">${dpSelDate?tn('Выбрано: ','Selected: ')+fmtDate(dpSelDate):tn('Выберите дату','Choose a date')}</div>
     <div class="dp-acts"><button class="dp-cancel" onclick="this.closest('.modal-ov').remove()">Отмена</button><button class="dp-confirm" id="dp-confirm" onclick="confirmDP()" ${dpSelDate?'':'disabled'}><i class="ti ti-calendar-plus"></i> Добавить в план</button></div>
   </div>`;
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   document.body.appendChild(ov);renderDPGrid();
 }
 function dpSetPlt(p,btn){dpPlt=p;document.querySelectorAll('.dp-plt-btn').forEach(b=>b.className='dp-plt-btn');btn.className=`dp-plt-btn a-${p}`;}
-function dpPrev(){dpM--;if(dpM<0){dpM=11;dpY--;}document.getElementById('dp-mlbl').textContent=MONTHS_R[dpM]+' '+dpY;renderDPGrid();}
-function dpNext(){dpM++;if(dpM>11){dpM=0;dpY++;}document.getElementById('dp-mlbl').textContent=MONTHS_R[dpM]+' '+dpY;renderDPGrid();}
+function dpPrev(){dpM--;if(dpM<0){dpM=11;dpY--;}document.getElementById('dp-mlbl').textContent=MON()[dpM]+' '+dpY;renderDPGrid();}
+function dpNext(){dpM++;if(dpM>11){dpM=0;dpY++;}document.getElementById('dp-mlbl').textContent=MON()[dpM]+' '+dpY;renderDPGrid();}
 function getSchedDates(){try{const raw=localStorage.getItem('bm_calData3');const cd=raw?JSON.parse(raw):{ig:[],th:[],yt:[],tt:[]};return new Set(Object.values(cd).flat().filter(c=>c.day).map(c=>c.day));}catch(e){return new Set();}}
 function renderDPGrid(){
   const grid=document.getElementById('dp-grid');if(!grid)return;
   const first=new Date(dpY,dpM,1);let sd=first.getDay();if(sd===0)sd=7;
   const dim=new Date(dpY,dpM+1,0).getDate(),dip=new Date(dpY,dpM,0).getDate();
   const today=new Date(),sched=getSchedDates();
-  let h=DOWS.map(d=>`<div class="dp-dow">${d}</div>`).join('');
+  let h=DOW().map(d=>`<div class="dp-dow">${d}</div>`).join('');
   let cells=[];for(let i=sd-1;i>0;i--)cells.push({d:dip-i+1,c:false});for(let i=1;i<=dim;i++)cells.push({d:i,c:true});while(cells.length%7!==0)cells.push({d:cells.length-dim-sd+2,c:false});
   cells.forEach(cell=>{
     const dk=cell.c?`${dpY}-${String(dpM+1).padStart(2,'0')}-${String(cell.d).padStart(2,'0')}`:null;
@@ -1837,8 +2386,8 @@ function renderDPGrid(){
   });
   grid.innerHTML=h;
 }
-function dpPick(dk){dpSelDate=dk;const l=document.getElementById('dp-slbl');if(l)l.textContent='Выбрано: '+fmtDate(dk);const c=document.getElementById('dp-confirm');if(c)c.disabled=false;renderDPGrid();}
-function fmtDate(dk){const[y,m,d]=dk.split('-');const ms=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];return`${parseInt(d)} ${ms[parseInt(m)-1]} ${y}`;}
+function dpPick(dk){dpSelDate=dk;const l=document.getElementById('dp-slbl');if(l)l.textContent=tn('Выбрано: ','Selected: ')+fmtDate(dk);const c=document.getElementById('dp-confirm');if(c)c.disabled=false;renderDPGrid();}
+function fmtDate(dk){const[y,m,d]=dk.split('-');return`${parseInt(d)} ${MONS()[parseInt(m)-1]} ${y}`;}
 function confirmDP(){
   if(!dpSelDate||!dpIdea)return;
   const idea=ideas[dpIdea.tab].find(i=>i.id===dpIdea.id);if(!idea)return;
@@ -1854,8 +2403,8 @@ function renderIdeas(){
   if(!list.length){grid.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;padding:32px;text-align:center;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);grid-column:1/-1;"><div style="font-size:28px;color:var(--color-text-tertiary);margin-bottom:8px;"><i class="ti ti-bulb"></i></div><div style="font-size:13px;color:var(--color-text-tertiary);">${ideaFilter==='ai'?'Нажмите "Сгенерировать AI"':ideaFilter==='user'?'Добавьте свою первую идею выше':'Здесь появятся идеи — от AI и твои'}</div></div>`;return;}
   grid.innerHTML=list.map(idea=>`<div class="idea-card ${idea.source==='ai'?'ai-c':'user-c'}">
     <div class="idea-top"><div class="idea-badges"><span class="idea-fmt ${FMT[idea.fmt]||'p-post'}">${idea.fmt}</span><span class="idea-plt">${idea.platform}</span></div><span class="idea-src ${idea.source==='ai'?'src-ai':'src-user'}">${idea.source==='ai'?'AI':'Моя'}</span></div>
-    <div class="idea-title">${idea.title}</div>
-    ${idea.description?`<div class="idea-desc">${idea.description}</div>`:''}
+    <div class="idea-title" data-user>${idea.title}</div>
+    ${idea.description?`<div class="idea-desc" data-user>${idea.description}</div>`:''}
     <div class="idea-acts">
       <button class="idea-cal-btn" onclick="openDP('${activeIdTab}',${idea.id})"><i class="ti ti-calendar-plus"></i>${idea.scheduledDate?'Перенести':'В план'}</button>
       ${idea.scheduledDate?`<span class="sched-badge"><i class="ti ti-check"></i>${fmtDate(idea.scheduledDate)}</span>`:''}
@@ -1872,7 +2421,7 @@ async function genIdeas(){
     const mk=arr=>arr.map(i=>({id:Date.now()+Math.random(),fmt:i.fmt,platform:i.platform,title:i.title,description:i.description,source:'ai',scheduledDate:null}));
     ideas.expert=[...ideas.expert,...mk(ed.ideas||[])];ideas.personal=[...ideas.personal,...mk(pd.ideas||[])];ideas.fun=[...ideas.fun,...mk(fd.ideas||[])];
     sv('ideas2',ideas);updIdCounts();renderIdeas();
-  }catch(e){alert('Ошибка генерации: '+e.message);}
+  }catch(e){alert(t('Ошибка генерации')+': '+e.message);}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-sparkles"></i>Сгенерировать AI';
 }
 
@@ -1892,7 +2441,7 @@ function openCalModal(id){
   const card=calData[calPlt].find(c=>c.id===id);if(!card)return;
   const dl=card.day?card.day.split('-').reverse().join('.'):'Не запланировано';
   const ov=document.createElement('div');ov.className='modal-ov';
-  ov.innerHTML=`<div class="modal"><div class="modal-hdr"><div class="modal-title">${card.title}</div><button class="modal-close" onclick="this.closest('.modal-ov').remove()">✕</button></div><span class="modal-fmt ${FMT[card.fmt]||'p-post'}">${card.fmt}</span><div style="font-size:12px;color:var(--color-text-secondary);margin:8px 0 12px;"><i class="ti ti-calendar"></i> ${dl}</div><div class="modal-field"><div class="modal-lbl">Тема</div><div class="modal-val">${card.title}</div></div><div class="modal-field"><div class="modal-lbl">Идея</div><div class="modal-val${card.idea?'':' emp'}">${card.idea||'Идея не добавлена'}</div></div><div class="modal-acts"><button class="modal-btn mb-del" onclick="calDelCard(${id});this.closest('.modal-ov').remove()"><i class="ti ti-trash"></i> Удалить</button><button class="modal-btn mb-ok" onclick="this.closest('.modal-ov').remove()">Закрыть</button></div></div>`;
+  ov.innerHTML=`<div class="modal"><div class="modal-hdr"><div class="modal-title" data-user>${card.title}</div><button class="modal-close" onclick="this.closest('.modal-ov').remove()">✕</button></div><span class="modal-fmt ${FMT[card.fmt]||'p-post'}">${card.fmt}</span><div style="font-size:12px;color:var(--color-text-secondary);margin:8px 0 12px;"><i class="ti ti-calendar"></i> ${dl}</div><div class="modal-field"><div class="modal-lbl">Тема</div><div class="modal-val" data-user>${card.title}</div></div><div class="modal-field"><div class="modal-lbl">Идея</div><div class="modal-val${card.idea?'':' emp'}"${card.idea?' data-user':''}>${card.idea||'Идея не добавлена'}</div></div><div class="modal-acts"><button class="modal-btn mb-del" onclick="calDelCard(${id});this.closest('.modal-ov').remove()"><i class="ti ti-trash"></i> Удалить</button><button class="modal-btn mb-ok" onclick="this.closest('.modal-ov').remove()">Закрыть</button></div></div>`;
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});document.body.appendChild(ov);
 }
 function calDelCard(id){if(calSel===id)calClearSel();calData[calPlt]=calData[calPlt].filter(c=>c.id!==id);sv('calData3',calData);renderCalAll();}
@@ -1904,7 +2453,7 @@ function renderCalAll(){
   const bc=document.getElementById('bl-cnt');if(bc)bc.textContent=cards.length?`(${cards.length})`:'';
   const wrap=document.getElementById('queue-wrap');
   if(wrap){
-    wrap.innerHTML=cards.length?cards.map(c=>`<div class="q-card${calSel===c.id?' sel':''}" draggable="true" ondragstart="calDrag=${c.id}" onclick="calSelectCard(${c.id})"><div class="q-fmt ${FMT[c.fmt]||'p-post'}">${c.fmt}</div><div class="q-ttl">${c.title}</div>${c.idea?`<div class="q-idea">${c.idea}</div>`:''}<div style="display:flex;justify-content:space-between;margin-top:3px;"><button style="background:none;border:none;font-size:10px;color:var(--teal);cursor:pointer;padding:0;" onclick="event.stopPropagation();openCalModal(${c.id})"><i class="ti ti-eye"></i></button><button style="background:none;border:none;font-size:10px;color:var(--color-text-tertiary);cursor:pointer;padding:0;" onclick="event.stopPropagation();calDelCard(${c.id})"><i class="ti ti-x"></i></button></div></div>`).join(''):'<div style="font-size:12px;color:var(--color-text-tertiary);font-style:italic;padding:10px 0;">Все запланированы</div>';
+    wrap.innerHTML=cards.length?cards.map(c=>`<div class="q-card${calSel===c.id?' sel':''}" draggable="true" ondragstart="calDrag=${c.id}" onclick="calSelectCard(${c.id})"><div class="q-fmt ${FMT[c.fmt]||'p-post'}">${c.fmt}</div><div class="q-ttl" data-user>${c.title}</div>${c.idea?`<div class="q-idea" data-user>${c.idea}</div>`:''}<div style="display:flex;justify-content:space-between;margin-top:3px;"><button style="background:none;border:none;font-size:10px;color:var(--teal);cursor:pointer;padding:0;" onclick="event.stopPropagation();openCalModal(${c.id})"><i class="ti ti-eye"></i></button><button style="background:none;border:none;font-size:10px;color:var(--color-text-tertiary);cursor:pointer;padding:0;" onclick="event.stopPropagation();calDelCard(${c.id})"><i class="ti ti-x"></i></button></div></div>`).join(''):'<div style="font-size:12px;color:var(--color-text-tertiary);font-style:italic;padding:10px 0;">Все запланированы</div>';
     const db=document.getElementById('drop-back');
     if(db){db.ondragover=e=>{e.preventDefault();db.style.borderColor='var(--teal)';};db.ondragleave=()=>{db.style.borderColor='';};db.ondrop=e=>{e.preventDefault();db.style.borderColor='';if(!calDrag)return;const c=calData[calPlt].find(x=>x.id===calDrag);if(c)c.day=null;sv('calData3',calData);renderCalAll();};db.onclick=()=>{if(calSel){const c=calData[calPlt].find(x=>x.id===calSel);if(c)c.day=null;sv('calData3',calData);calClearSel();renderCalAll();}};}
   }
@@ -1915,17 +2464,17 @@ function renderCalGrid(){
   if(calView==='month'){
     const first=new Date(calY,calM,1);let sd=first.getDay();if(sd===0)sd=7;
     const dim=new Date(calY,calM+1,0).getDate(),dip=new Date(calY,calM,0).getDate();
-    const today=new Date();document.getElementById('cal-period').textContent=MONTHS_R[calM]+' '+calY;
-    let h=`<div class="cal-grid-m">`;h+=DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+    const today=new Date();document.getElementById('cal-period').textContent=MON()[calM]+' '+calY;
+    let h=`<div class="cal-grid-m">`;h+=DOW().map(d=>`<div class="cal-dow">${d}</div>`).join('');
     let cells=[];for(let i=sd-1;i>0;i--)cells.push({d:dip-i+1,c:false});for(let i=1;i<=dim;i++)cells.push({d:i,c:true});while(cells.length%7!==0)cells.push({d:cells.length-dim-sd+2,c:false});
-    cells.forEach(cell=>{const dk=cell.c?`${calY}-${String(calM+1).padStart(2,'0')}-${String(cell.d).padStart(2,'0')}`:null;const isTd=cell.c&&today.getFullYear()===calY&&today.getMonth()===calM&&today.getDate()===cell.d;const dayCards=dk?calData[calPlt].filter(c=>c.day===dk):[];const isTap=calSel&&dk;h+=`<div class="cal-day${!cell.c?' other-m':''}${isTd?' today-d':''}${isTap?' tap-tgt':''}" ${dda(dk||'')}><div class="day-num">${cell.d}</div>${dayCards.map(c=>`<div class="day-pill ${FMT[c.fmt]||'p-post'}" draggable="true" ondragstart="calDrag=${c.id}" onclick="event.stopPropagation();openCalModal(${c.id})" title="${c.title}">${c.title}</div>`).join('')}</div>`;});
+    cells.forEach(cell=>{const dk=cell.c?`${calY}-${String(calM+1).padStart(2,'0')}-${String(cell.d).padStart(2,'0')}`:null;const isTd=cell.c&&today.getFullYear()===calY&&today.getMonth()===calM&&today.getDate()===cell.d;const dayCards=dk?calData[calPlt].filter(c=>c.day===dk):[];const isTap=calSel&&dk;h+=`<div class="cal-day${!cell.c?' other-m':''}${isTd?' today-d':''}${isTap?' tap-tgt':''}" ${dda(dk||'')}><div class="day-num">${cell.d}</div>${dayCards.map(c=>`<div class="day-pill ${FMT[c.fmt]||'p-post'}" data-user draggable="true" ondragstart="calDrag=${c.id}" onclick="event.stopPropagation();openCalModal(${c.id})" title="${c.title}">${c.title}</div>`).join('')}</div>`;});
     cont.innerHTML=h+'</div>';
   } else {
     const days=[];for(let i=0;i<7;i++){const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);days.push(d);}
-    const today=new Date(),fmt=dt=>dt.toLocaleDateString('ru',{day:'numeric',month:'short'});
+    const today=new Date(),fmt=dt=>dt.toLocaleDateString(LOC(),{day:'numeric',month:'short'});
     document.getElementById('cal-period').textContent=`${fmt(days[0])} — ${fmt(days[6])}`;
     let h=`<div class="cal-grid-w">`;
-    days.forEach(d=>{const dk=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const isTd=d.toDateString()===today.toDateString();const dayCards=calData[calPlt].filter(c=>c.day===dk);const dow=DOWS[d.getDay()===0?6:d.getDay()-1];const isTap=!!calSel;h+=`<div class="week-day${isTd?' today-d':''}${isTap?' tap-tgt':''}" ${dda(dk)}><div class="w-dow">${dow}</div><div class="w-num">${d.getDate()}</div>${dayCards.map(c=>`<div class="week-pill ${FMT[c.fmt]||'p-post'}" draggable="true" ondragstart="calDrag=${c.id}" onclick="event.stopPropagation();openCalModal(${c.id})">${c.fmt}: ${c.title}</div>`).join('')}</div>`;});
+    days.forEach(d=>{const dk=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;const isTd=d.toDateString()===today.toDateString();const dayCards=calData[calPlt].filter(c=>c.day===dk);const dow=DOW()[d.getDay()===0?6:d.getDay()-1];const isTap=!!calSel;h+=`<div class="week-day${isTd?' today-d':''}${isTap?' tap-tgt':''}" ${dda(dk)}><div class="w-dow">${dow}</div><div class="w-num">${d.getDate()}</div>${dayCards.map(c=>`<div class="week-pill ${FMT[c.fmt]||'p-post'}" data-user draggable="true" ondragstart="calDrag=${c.id}" onclick="event.stopPropagation();openCalModal(${c.id})">${t(c.fmt)}: ${c.title}</div>`).join('')}</div>`;});
     cont.innerHTML=h+'</div>';
   }
 }
@@ -1951,8 +2500,7 @@ function _clFmtDate(iso){
   if(!iso) return '';
   try{
     const d=new Date(iso); if(isNaN(d.getTime())) return iso;
-    const m=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
-    return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()}`;
+    return `${d.getDate()} ${MONS()[d.getMonth()]} ${d.getFullYear()}`;
   }catch(e){return iso;}
 }
 function _clEsc(s){return (s==null?'':String(s)).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
@@ -1993,7 +2541,7 @@ function renderClientsStats(){
     <div class="cl-stat"><div class="cl-stat-n">${all.length}</div><div class="cl-stat-l">Всего</div></div>
     <div class="cl-stat"><div class="cl-stat-n">${inWork}</div><div class="cl-stat-l">В работе</div></div>
     <div class="cl-stat"><div class="cl-stat-n">${fmt(sumPipe)}</div><div class="cl-stat-l">Прогноз</div><div class="cl-stat-sub">по «В работе»</div></div>
-    <div class="cl-stat"><div class="cl-stat-n">${fmt(sumClosed)}</div><div class="cl-stat-l">Закрыто</div><div class="cl-stat-sub">за ${now.toLocaleString('ru',{month:'long'})}</div></div>
+    <div class="cl-stat"><div class="cl-stat-n">${fmt(sumClosed)}</div><div class="cl-stat-l">Закрыто</div><div class="cl-stat-sub">${tn('за','in')} ${now.toLocaleString(LOC(),{month:'long'})}</div></div>
   `;
 }
 
@@ -2047,11 +2595,11 @@ function renderClientsList(){
     ${list.map(cl=>{
       const st = CL_STATUS[cl.status]||CL_STATUS.lead;
       return `<div class="cl-row" onclick="clOpenEdit('${cl.id}')">
-        <div><div class="cl-name">${_clEsc(cl.name||'Без имени')}</div>${cl.contacts?'<div class="cl-name-sub">'+_clEsc(cl.contacts)+'</div>':''}</div>
+        <div data-user><div class="cl-name">${_clEsc(cl.name||t('Без имени'))}</div>${cl.contacts?'<div class="cl-name-sub">'+_clEsc(cl.contacts)+'</div>':''}</div>
         <div><span class="cl-status ${st.color}">${st.label}</span></div>
-        <div>${_clEsc(cl.product||'—')}</div>
-        <div>${cl.amount?_clEsc(cl.amount):'—'}</div>
-        <div>${cl.nextDate?_clFmtDate(cl.nextDate):'—'}</div>
+        <div data-user>${_clEsc(cl.product||'—')}</div>
+        <div data-user>${cl.amount?_clEsc(cl.amount):'—'}</div>
+        <div data-user>${cl.nextDate?_clFmtDate(cl.nextDate):'—'}</div>
         <div class="cl-row-acts">
           <button class="cl-icon-btn" onclick="event.stopPropagation();clOpenEdit('${cl.id}')" title="Редактировать"><i class="ti ti-edit"></i></button>
           <button class="cl-icon-btn del" onclick="event.stopPropagation();clDelete('${cl.id}')" title="Удалить"><i class="ti ti-trash"></i></button>
@@ -2073,7 +2621,7 @@ function clOpenEdit(id){
   clOpenModal(JSON.parse(JSON.stringify(c)), false);
 }
 function clDelete(id){
-  if(!confirm('Удалить этого клиента из базы?')) return;
+  if(!confirm(t('Удалить этого клиента из базы?'))) return;
   _clSave(_clLoad().filter(c=>c.id!==id));
   renderClientsStats(); renderClientsFilters(); renderClientsList();
 }
@@ -2152,7 +2700,7 @@ function renderClientNotes(client){
       </div>
       <button class="cl-note-del" onclick="clRemoveNote(${i})" title="Удалить"><i class="ti ti-x"></i></button>
     </div>
-    <div class="cl-note-txt">${_clEsc(n.text)}</div>
+    <div class="cl-note-txt" data-user>${_clEsc(n.text)}</div>
   </div>`).join('');
 }
 
@@ -2162,7 +2710,7 @@ function clAddNote(){
   const date = document.getElementById('cl-new-note-date').value || new Date().toISOString().slice(0,10);
   const type = document.getElementById('cl-new-note-type').value || 'note';
   const text = (document.getElementById('cl-new-note-text').value||'').trim();
-  if(!text){ alert('Напишите текст заметки'); return; }
+  if(!text){ alert(t('Напишите текст заметки')); return; }
   client.notes = client.notes||[];
   client.notes.push({date, type, text, createdAt:new Date().toISOString()});
   document.getElementById('cl-new-note-text').value = '';
@@ -2191,7 +2739,7 @@ function clSaveFromModal(isNew){
     nextDate: get('cl-nextDate'),
     updatedAt: new Date().toISOString()
   };
-  if(!data.name){ alert('Укажите имя клиента'); return; }
+  if(!data.name){ alert(t('Укажите имя клиента')); return; }
   let arr = _clLoad();
   if(isNew){
     data.createdAt = new Date().toISOString();
@@ -2199,7 +2747,7 @@ function clSaveFromModal(isNew){
     arr.push(data);
   } else {
     const idx = arr.findIndex(c=>c.id===data.id);
-    if(idx<0){ alert('Клиент не найден'); return; }
+    if(idx<0){ alert(t('Клиент не найден')); return; }
     // сохраняем заметки из черновика модалки
     data.notes = (ov._client && ov._client.notes) ? ov._client.notes : (arr[idx].notes||[]);
     data.createdAt = arr[idx].createdAt;
@@ -2213,7 +2761,7 @@ function clDeleteFromModal(){
   const ov = document.getElementById('cl-modal-ov'); if(!ov) return;
   const id = document.getElementById('cl-id')?.value;
   if(!id) return;
-  if(!confirm('Удалить этого клиента из базы?')) return;
+  if(!confirm(t('Удалить этого клиента из базы?'))) return;
   _clSave(_clLoad().filter(c=>c.id!==id));
   ov.remove();
   renderClientsStats(); renderClientsFilters(); renderClientsList();
@@ -2392,8 +2940,8 @@ function mmShowTip(e, node) {
   if (!tt || !node) return;
   const c = MM_CONSTELLATIONS[node.constellation] || MM_CONSTELLATIONS.personality;
   tt.innerHTML = `<div class="mm-tt-const" style="color:${c.color}">${c.name} · ${node.meta || ''}</div>
-    <div class="mm-tt-text">${_clEsc(node.text)}</div>
-    ${node.description ? '<div class="mm-tt-desc">' + _clEsc(node.description) + '</div>' : ''}
+    <div class="mm-tt-text" data-user>${_clEsc(node.text)}</div>
+    ${node.description ? '<div class="mm-tt-desc" data-user>' + _clEsc(node.description) + '</div>' : ''}
     <div class="mm-tt-hint">Клик — подробнее</div>`;
   tt.style.display = 'block';
   mmMoveTip(e);
@@ -2418,17 +2966,17 @@ function mmOpenDetail(node, links, nodes) {
   const relatedIds = new Set();
   links.forEach(l => { if (l.from === node.id) relatedIds.add(l.to); if (l.to === node.id) relatedIds.add(l.from); });
   const related = Array.from(relatedIds).map(id => nodes.find(n => n.id === id)).filter(Boolean);
-  const relHtml = related.length ? `<div style="margin-top:14px;padding-top:12px;border-top:0.5px solid var(--color-border-tertiary);"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--color-text-tertiary);margin-bottom:8px;">Связано с</div>${related.map(r => { const rc = MM_CONSTELLATIONS[r.constellation]; return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;"><span style="width:8px;height:8px;border-radius:50%;background:${rc.color};box-shadow:0 0 6px ${rc.color};"></span><span style="color:var(--color-text-tertiary);font-size:11px;">${rc.name}</span><span>${_clEsc(r.text)}</span></div>`; }).join('')}</div>` : '';
+  const relHtml = related.length ? `<div style="margin-top:14px;padding-top:12px;border-top:0.5px solid var(--color-border-tertiary);"><div style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:var(--color-text-tertiary);margin-bottom:8px;">Связано с</div>${related.map(r => { const rc = MM_CONSTELLATIONS[r.constellation]; return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;"><span style="width:8px;height:8px;border-radius:50%;background:${rc.color};box-shadow:0 0 6px ${rc.color};"></span><span style="color:var(--color-text-tertiary);font-size:11px;">${rc.name}</span><span data-user>${_clEsc(r.text)}</span></div>`; }).join('')}</div>` : '';
   const ov = document.createElement('div'); ov.className = 'modal-ov'; ov.id = 'mm-detail-ov';
   ov.innerHTML = `<div class="cl-modal" onclick="event.stopPropagation()" style="width:560px;">
     <div class="cl-modal-hdr">
       <div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span style="width:12px;height:12px;border-radius:50%;background:${c.color};box-shadow:0 0 10px ${c.color};"></span><span style="font-size:11px;text-transform:uppercase;letter-spacing:0.6px;color:${c.color};font-weight:600;">${c.name} · ${node.meta || ''}</span></div>
-        <div class="cl-modal-ttl" style="font-size:22px;">${_clEsc(node.text)}</div>
+        <div class="cl-modal-ttl" style="font-size:22px;" data-user>${_clEsc(node.text)}</div>
       </div>
       <button class="cl-modal-close" onclick="document.getElementById('mm-detail-ov').remove()">×</button>
     </div>
-    ${node.description ? '<div style="font-size:13px;color:var(--color-text-secondary);line-height:1.6;font-style:italic;">' + _clEsc(node.description) + '</div>' : ''}
+    ${node.description ? '<div style="font-size:13px;color:var(--color-text-secondary);line-height:1.6;font-style:italic;" data-user>' + _clEsc(node.description) + '</div>' : ''}
     ${relHtml}
     <div class="cl-modal-acts"><button class="cl-add-btn" onclick="document.getElementById('mm-detail-ov').remove()"><i class="ti ti-check"></i>Закрыть</button></div>
   </div>`;
@@ -2545,7 +3093,7 @@ function renderCCTiles() {
       return `<div class="cc-draft" onclick="ccOpen('${u.id}')">
         <div class="cc-draft-meta">
           <span class="cc-draft-type">${_clEsc(shortType)}</span>
-          <span class="cc-draft-title">${_clEsc(title)}</span>
+          <span class="cc-draft-title" data-user>${_clEsc(title)}</span>
           ${u.status === 'ready' ? '<span class="cl-status customer" style="font-size:10px;">Готов</span>' : ''}
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
@@ -2585,7 +3133,7 @@ function ccOpen(unitId) {
 }
 
 function ccDelete(unitId) {
-  if (!confirm('Удалить этот черновик?')) return;
+  if (!confirm(t('Удалить этот черновик?'))) return;
   _ccSave(_ccUnits.filter(u => u.id !== unitId));
   renderCC();
 }
@@ -2666,7 +3214,7 @@ function ccMarkReady() {
   unit.status = 'ready';
   unit.updated_at = new Date().toISOString();
   _ccSave(_ccUnits);
-  alert('Черновик отмечен как готовый. В следующей версии здесь запустится AI-журналист и генерация поста в твоём голосе.');
+  alert(t('Черновик отмечен как готовый. В следующей версии здесь запустится AI-журналист и генерация поста в твоём голосе.'));
   ccBackToTiles();
 }
 
@@ -2717,7 +3265,7 @@ async function adRefresh(){
   try{
     // 1) Все профили
     const {data: profiles, error: e1} = await sb.from('profiles').select('id,email,role,created_at').order('created_at',{ascending:false});
-    if(e1){ console.warn('[admin profiles]', e1); alert('Ошибка: '+e1.message); return; }
+    if(e1){ console.warn('[admin profiles]', e1); alert(t('Ошибка')+': '+e1.message); return; }
     // 2) Все ответы стратегии для подсчёта прогресса
     const {data: answers, error: e2} = await sb.from('strategy_answers').select('user_id,block_key,value');
     if(e2){ console.warn('[admin answers]', e2); }
@@ -2734,7 +3282,7 @@ async function adRefresh(){
     renderAdminStats();
     renderAdminFilters();
     renderAdminList();
-  }catch(e){ console.warn('[adRefresh]', e); alert('Ошибка: '+e.message); }
+  }catch(e){ console.warn('[adRefresh]', e); alert(t('Ошибка')+': '+e.message); }
 }
 
 function _adProgress(user){
@@ -2845,7 +3393,7 @@ async function adOpenUser(userId){
     if(!val || !String(val).trim()) return '';
     return `<div style="margin-bottom:12px;padding:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:3px solid var(--teal-mid);">
       <div style="font-size:11px;font-weight:500;color:var(--teal);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">${_clEsc(label)} · ${k}</div>
-      <div style="font-size:13px;color:var(--color-text-primary);white-space:pre-wrap;">${_clEsc(String(val))}</div>
+      <div style="font-size:13px;color:var(--color-text-primary);white-space:pre-wrap;" data-user>${_clEsc(String(val))}</div>
     </div>`;
   }).filter(Boolean).join('');
 
@@ -2875,7 +3423,7 @@ function _val(key){ const v=ld(key); return v&&String(v).trim()?String(v).trim()
 function _esc(s){ return (s||'').toString().replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
 // Кликабельная ссылка на блок по имени
 const BLOCK_NAMES = {1:'Цели и планы',2:'Распаковка',3:'Аудитория',4:'Продукты',5:'Позиционирование',6:'Контент-стратегия',7:'Упаковка страницы'};
-function _blockLink(n, qn){ const name = BLOCK_NAMES[n] || ('Блок '+n); return `<a href="javascript:void(0)" onclick="show(${n})" style="color:var(--teal);text-decoration:none;border-bottom:1px dashed var(--teal-mid);cursor:pointer;">${name}${qn?', вопрос '+qn:''}</a>`; }
+function _blockLink(n, qn){ const name = t(BLOCK_NAMES[n] || ('Блок '+n)); const q = qn ? tn(', вопрос '+qn, ', question '+qn) : ''; return `<a href="javascript:void(0)" onclick="show(${n})" style="color:var(--teal);text-decoration:none;border-bottom:1px dashed var(--teal-mid);cursor:pointer;">${name}${q}</a>`; }
 // Перенос шага анализа в «Задачи на неделю» (дедуп по тексту)
 function _addWeeklyText(text){
   if(!text || !text.trim()) return false;
@@ -2894,26 +3442,26 @@ function _addWeeklyText(text){
 }
 function _stepToWeek(idx){
   const steps = window._analysisSteps || [];
-  const t = steps[idx]; if(!t) return;
-  const added = _addWeeklyText(t);
-  const msg = added ? 'Задача добавлена в текущую неделю ✓' : 'Уже есть в задачах на неделю';
+  // NB: не называть переменную `t` — она затенит глобальный переводчик t()
+  const stepText = steps[idx]; if(!stepText) return;
+  const added = _addWeeklyText(stepText);
   const btn = event && event.target && event.target.closest ? event.target.closest('button') : null;
-  if(btn){ btn.disabled = true; btn.style.opacity = '0.55'; btn.innerHTML = added ? '<i class="ti ti-check"></i> В неделе' : '<i class="ti ti-check"></i> Уже в неделе'; }
+  if(btn){ btn.disabled = true; btn.style.opacity = '0.55'; btn.innerHTML = '<i class="ti ti-check"></i> ' + (added ? tn('В неделе','In the week') : tn('Уже в неделе','Already in the week')); }
 }
 function _stepsAllToWeek(){
   const steps = window._analysisSteps || [];
   let added = 0, dup = 0;
   steps.forEach(t => { if(_addWeeklyText(t)) added++; else dup++; });
-  alert(`Добавлено новых: ${added}${dup?`\nБыло уже в неделе: ${dup}`:''}`);
+  alert(`${t('Добавлено новых')}: ${added}${dup?`\n${t('Было уже в неделе')}: ${dup}`:''}`);
   // помечаем все кнопки
-  document.querySelectorAll('button[onclick^="_stepToWeek"]').forEach(b => { b.disabled = true; b.style.opacity = '0.55'; b.innerHTML = '<i class="ti ti-check"></i> В неделе'; });
+  document.querySelectorAll('button[onclick^="_stepToWeek"]').forEach(b => { b.disabled = true; b.style.opacity = '0.55'; b.innerHTML = '<i class="ti ti-check"></i> ' + tn('В неделе','In the week'); });
 }
 function _ul(arr){ if(!arr||!arr.length) return ''; return '<ul>'+arr.map(x=>`<li>${_esc(x)}</li>`).join('')+'</ul>'; }
 function _block(label, body, emptyTxt){
   const hasBody = body && body.trim() && !/^—$/.test(body.trim());
   return `<div class="doc2-block">
     <div class="doc2-block-label">${label}</div>
-    <div class="doc2-block-body">${hasBody?body:'<span class="doc2-block-empty">'+(emptyTxt||'Не заполнено')+'</span>'}</div>
+    <div class="doc2-block-body">${hasBody?'<span data-user>'+body+'</span>':'<span class="doc2-block-empty">'+(emptyTxt||'Не заполнено')+'</span>'}</div>
   </div>`;
 }
 function _page(num, title, tagline, contentHtml){
@@ -2963,109 +3511,125 @@ function _collectData(){
 
 function _aiBrief(){
   const d = _collectData();
+  const EN = (lang==='en');
+  const L = (ru,en)=>EN?en:ru;
   const lines = [];
-  lines.push('Ты — мой персональный контент-стратег и копирайтер. Используй этот профиль каждый раз когда я прошу написать пост, рилс, сторис или подпись.');
+  lines.push(L('Ты — мой персональный контент-стратег и копирайтер. Используй этот профиль каждый раз когда я прошу написать пост, рилс, сторис или подпись.',
+               'You are my personal content strategist and copywriter. Use this profile every time I ask you to write a post, a reel, a story or a caption.'));
   lines.push('');
-  lines.push('═══ КТО Я ═══');
-  if(d.b1.why) lines.push('Зачем я в блоге: '+d.b1.why);
-  if(d.b2.superpower) lines.push('Моя суперсила: '+d.b2.superpower);
-  if(d.b2.anchors.length) lines.push('Якоря-ассоциации со мной: '+d.b2.anchors.join(', '));
-  if(d.b2.different) lines.push('Чем мой подход отличается от других: '+d.b2.different);
-  if(d.b0.task) lines.push('Моя ближайшая задача: '+d.b0.task);
+  lines.push(L('═══ КТО Я ═══','═══ WHO I AM ═══'));
+  if(d.b1.why) lines.push(L('Зачем я в блоге: ','Why I am blogging: ')+d.b1.why);
+  if(d.b2.superpower) lines.push(L('Моя суперсила: ','My superpower: ')+d.b2.superpower);
+  if(d.b2.anchors.length) lines.push(L('Якоря-ассоциации со мной: ','Anchor associations with me: ')+d.b2.anchors.join(', '));
+  if(d.b2.different) lines.push(L('Чем мой подход отличается от других: ','How my approach differs from others: ')+d.b2.different);
+  if(d.b0.task) lines.push(L('Моя ближайшая задача: ','My immediate goal: ')+d.b0.task);
   if(d.b2.values.length){
     const vv = d.b2.values.filter(v=>v.n).map(v=>v.n+(v.b?' ('+v.b+')':'')).join('; ');
-    if(vv) lines.push('Мои ценности: '+vv);
+    if(vv) lines.push(L('Мои ценности: ','My values: ')+vv);
   }
-  if(d.b2.path) lines.push('Мой путь: '+d.b2.path);
+  if(d.b2.path) lines.push(L('Мой путь: ','My path: ')+d.b2.path);
   lines.push('');
-  lines.push('═══ ДЛЯ КОГО Я ПИШУ ═══');
-  if(d.b3.client) lines.push('Идеальный клиент: '+d.b3.client);
-  if(d.b3.pain.length) lines.push('Главная боль: '+d.b3.pain.join('; '));
-  if(d.b3.manifest.length) lines.push('Как проявляется в жизни: '+d.b3.manifest.join('; '));
-  if(d.b3.dream.length) lines.push('О чём мечтают: '+d.b3.dream.join('; '));
+  lines.push(L('═══ ДЛЯ КОГО Я ПИШУ ═══','═══ WHO I WRITE FOR ═══'));
+  if(d.b3.client) lines.push(L('Идеальный клиент: ','Ideal client: ')+d.b3.client);
+  if(d.b3.pain.length) lines.push(L('Главная боль: ','Main pain: ')+d.b3.pain.join('; '));
+  if(d.b3.manifest.length) lines.push(L('Как проявляется в жизни: ','How it shows up in life: ')+d.b3.manifest.join('; '));
+  if(d.b3.dream.length) lines.push(L('О чём мечтают: ','What they dream about: ')+d.b3.dream.join('; '));
   if(d.b3.words.length){
-    lines.push('Точные слова клиента (используй их в постах вместо моих формулировок):');
+    lines.push(L('Точные слова клиента (используй их в постах вместо моих формулировок):',
+                 "The client's exact words (use these in posts instead of my own phrasing):"));
     d.b3.words.forEach(w=>lines.push('  «'+w+'»'));
   }
   lines.push('');
-  lines.push('═══ ПОЗИЦИОНИРОВАНИЕ ═══');
+  lines.push(L('═══ ПОЗИЦИОНИРОВАНИЕ ═══','═══ POSITIONING ═══'));
   if(d.b4.position) lines.push(d.b4.position);
-  if(d.b2.different) lines.push('Уникальность подхода (опирается на суперсилу и путь): '+d.b2.different);
+  if(d.b2.different) lines.push(L('Уникальность подхода (опирается на суперсилу и путь): ',
+                                  'What makes the approach unique (based on the superpower and the path): ')+d.b2.different);
   lines.push('');
-  lines.push('═══ КОНТЕНТ ═══');
-  if(d.b6.topics.length) lines.push('Темы блога: '+d.b6.topics.join(' / '));
-  if(d.b6.formats) lines.push('Форматы: '+d.b6.formats);
-  if(d.b6.platforms) lines.push('Площадки: '+d.b6.platforms);
-  if(d.b6.impression) lines.push('Впечатление, которое нужно оставлять: '+d.b6.impression);
-  if(d.b6.visuals) lines.push('Визуальный стиль: '+d.b6.visuals);
+  lines.push(L('═══ КОНТЕНТ ═══','═══ CONTENT ═══'));
+  if(d.b6.topics.length) lines.push(L('Темы блога: ','Blog topics: ')+d.b6.topics.join(' / '));
+  if(d.b6.formats) lines.push(L('Форматы: ','Formats: ')+d.b6.formats);
+  if(d.b6.platforms) lines.push(L('Площадки: ','Platforms: ')+d.b6.platforms);
+  if(d.b6.impression) lines.push(L('Впечатление, которое нужно оставлять: ','The impression to leave: ')+d.b6.impression);
+  if(d.b6.visuals) lines.push(L('Визуальный стиль: ','Visual style: ')+d.b6.visuals);
   if(d.b1.goals.length){
-    lines.push('Цели на 6 месяцев (помни о них в каждом посте):');
+    lines.push(L('Цели на 6 месяцев (помни о них в каждом посте):','Goals for 6 months (keep them in mind in every post):'));
     d.b1.goals.forEach(g=>lines.push('  • '+g));
   }
   lines.push('');
-  lines.push('═══ КАК ПИСАТЬ ═══');
-  lines.push('1. Открывай посты словами клиента (см. цитаты выше), не отраслевым жаргоном.');
-  lines.push('2. Каждый пост — на стыке моей суперсилы и боли клиента.');
-  lines.push('3. Тон — '+(d.b6.impression || 'честный, без пафоса')+'.');
-  lines.push('4. В конце — мягкий призыв к действию: сохранить, переслать, ответить.');
+  lines.push(L('═══ КАК ПИСАТЬ ═══','═══ HOW TO WRITE ═══'));
+  lines.push(L('1. Открывай посты словами клиента (см. цитаты выше), не отраслевым жаргоном.',
+               "1. Open posts with the client's own words (see the quotes above), not industry jargon."));
+  lines.push(L('2. Каждый пост — на стыке моей суперсилы и боли клиента.',
+               "2. Every post sits at the intersection of my superpower and the client's pain."));
+  lines.push(L('3. Тон — ','3. Tone — ')+(d.b6.impression || L('честный, без пафоса','honest, without grandstanding'))+'.');
+  lines.push(L('4. В конце — мягкий призыв к действию: сохранить, переслать, ответить.',
+               '4. End with a soft call to action: save, share, reply.'));
   lines.push('');
-  lines.push('Когда я прошу контент — спроси формат (Reels/карусель/пост), затем напиши драфт на основе этого профиля.');
+  lines.push(L('Когда я прошу контент — спроси формат (Reels/карусель/пост), затем напиши драфт на основе этого профиля.',
+               'When I ask for content, ask which format (Reels/carousel/post), then write a draft based on this profile.'));
   return lines.join('\n');
 }
 
 function _analysis(){
   const d = _collectData();
+  const EN = (lang==='en');
   const out = [];
   // Strongest signals
-  out.push({label:'Самое сильное в твоём бренде', body: (()=>{
+  out.push({label: EN?'The strongest parts of your brand':'Самое сильное в твоём бренде', body: (()=>{
     const items = [];
-    if(d.b4.position) items.push('Чёткое позиционирование: <strong>'+_esc(d.b4.position)+'</strong>');
-    if(d.b2.superpower) items.push('Ясная суперсила: <strong>'+_esc(d.b2.superpower)+'</strong>');
-    if(d.b3.words.length) items.push('Есть «голос клиента» — это самый ценный материал для постов: <em>«'+_esc(d.b3.words[0])+'»</em>');
-    if(d.b6.topics.length>=3) items.push('Три темы определены — это основа для контент-плана');
-    if(d.b1.goals.length>=2) items.push('Несколько целей одновременно — фокус нужно сузить до одной главной');
-    if(!items.length) items.push('Заполни блоки 2 и 4 — без суперсилы и позиционирования AI не сможет писать контент в твоём голосе.');
+    if(d.b4.position) items.push((EN?'Clear positioning: ':'Чёткое позиционирование: ')+'<strong>'+_esc(d.b4.position)+'</strong>');
+    if(d.b2.superpower) items.push((EN?'A defined superpower: ':'Ясная суперсила: ')+'<strong>'+_esc(d.b2.superpower)+'</strong>');
+    if(d.b3.words.length) items.push((EN?'You have the client\'s voice — the most valuable material for posts: ':'Есть «голос клиента» — это самый ценный материал для постов: ')+'<em>«'+_esc(d.b3.words[0])+'»</em>');
+    if(d.b6.topics.length>=3) items.push(EN?'Three topics are defined — that is the base for a content plan':'Три темы определены — это основа для контент-плана');
+    if(d.b1.goals.length>=2) items.push(EN?'Several goals at once — narrow the focus down to one main goal':'Несколько целей одновременно — фокус нужно сузить до одной главной');
+    if(!items.length) items.push(EN?'Fill in blocks 2 and 4 — without a superpower and positioning, AI cannot write content in your voice.':'Заполни блоки 2 и 4 — без суперсилы и позиционирования AI не сможет писать контент в твоём голосе.');
     return '<ul>'+items.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
   })()});
 
   // Gaps
-  out.push({label:'Что нужно достроить в первую очередь', body: (()=>{
+  out.push({label: EN?'What to build out first':'Что нужно достроить в первую очередь', body: (()=>{
     const gaps = [];
-    if(!d.b4.position) gaps.push(`Сформулировать позиционирование одной фразой (${_blockLink(5,3)}) — это основа всех текстов.`);
-    if(!d.b2.superpower) gaps.push(`Назвать суперсилу одной фразой (${_blockLink(2,8)}) — без неё контент будет универсальным.`);
-    if(!d.b3.client) gaps.push(`Прописать портрет идеального клиента (${_blockLink(3,1)}).`);
-    if(!d.b3.words.length) gaps.push(`Собрать минимум 5 точных фраз клиента (${_blockLink(3,6)}) — это золото для хуков.`);
-    if(!d.b6.topics.length) gaps.push(`Выбрать 3 главные темы блога (${_blockLink(6,1)}).`);
-    if(!d.b6.visuals) gaps.push(`Описать визуальный стиль (${_blockLink(6,6)}) — он определит шапку и ленту.`);
-    if(!gaps.length) gaps.push('Все ключевые блоки заполнены. Возвращайтесь раз в квартал и обновляйте.');
+    if(!d.b4.position) gaps.push(EN?`Write your positioning in one phrase (${_blockLink(5,3)}) — it is the foundation of every text.`:`Сформулировать позиционирование одной фразой (${_blockLink(5,3)}) — это основа всех текстов.`);
+    if(!d.b2.superpower) gaps.push(EN?`Name your superpower in one phrase (${_blockLink(2,8)}) — without it the content stays generic.`:`Назвать суперсилу одной фразой (${_blockLink(2,8)}) — без неё контент будет универсальным.`);
+    if(!d.b3.client) gaps.push(EN?`Describe your ideal client (${_blockLink(3,1)}).`:`Прописать портрет идеального клиента (${_blockLink(3,1)}).`);
+    if(!d.b3.words.length) gaps.push(EN?`Collect at least 5 exact client phrases (${_blockLink(3,6)}) — pure gold for hooks.`:`Собрать минимум 5 точных фраз клиента (${_blockLink(3,6)}) — это золото для хуков.`);
+    if(!d.b6.topics.length) gaps.push(EN?`Choose the 3 main blog topics (${_blockLink(6,1)}).`:`Выбрать 3 главные темы блога (${_blockLink(6,1)}).`);
+    if(!d.b6.visuals) gaps.push(EN?`Describe your visual style (${_blockLink(6,6)}) — it sets the bio and the feed.`:`Описать визуальный стиль (${_blockLink(6,6)}) — он определит шапку и ленту.`);
+    if(!gaps.length) gaps.push(EN?'All key blocks are filled in. Come back once a quarter and update them.':'Все ключевые блоки заполнены. Возвращайтесь раз в квартал и обновляйте.');
     return '<ul>'+gaps.map(i=>'<li>'+i+'</li>').join('')+'</ul>';
   })()});
 
   // Practical next step
-  out.push({label:'Что сделать на этой неделе', body: (()=>{
+  out.push({label: EN?'What to do this week':'Что сделать на этой неделе', body: (()=>{
     const steps = [];
-    if(d.b4.position) steps.push('Вставить позиционирование в шапку профиля.');
-    if(d.b3.pain.length && d.b2.superpower) steps.push('Записать опорный пост на стыке боли «'+d.b3.pain[0]+'» и суперсилы «'+d.b2.superpower+'».');
-    if(d.b6.topics.length) steps.push('Распланировать 9 постов: по 3 на каждую из трёх тем — '+d.b6.topics.slice(0,3).map(t=>'«'+t+'»').join(', ')+'.');
-    if(d.b3.words.length) steps.push('Использовать фразу клиента «'+d.b3.words[0]+'» как заголовок одного поста.');
-    if(!steps.length){ return '<div class="doc2-block-empty">Закончи блоки 1–4 и вернись сюда — появятся конкретные шаги.</div>'; }
+    if(d.b4.position) steps.push(EN?'Put the positioning into your profile bio.':'Вставить позиционирование в шапку профиля.');
+    if(d.b3.pain.length && d.b2.superpower) steps.push(EN
+      ? 'Write a cornerstone post at the intersection of the pain "'+d.b3.pain[0]+'" and the superpower "'+d.b2.superpower+'".'
+      : 'Записать опорный пост на стыке боли «'+d.b3.pain[0]+'» и суперсилы «'+d.b2.superpower+'».');
+    if(d.b6.topics.length) steps.push(EN
+      ? 'Plan 9 posts: 3 for each of the three topics — '+d.b6.topics.slice(0,3).map(x=>'"'+x+'"').join(', ')+'.'
+      : 'Распланировать 9 постов: по 3 на каждую из трёх тем — '+d.b6.topics.slice(0,3).map(x=>'«'+x+'»').join(', ')+'.');
+    if(d.b3.words.length) steps.push(EN
+      ? 'Use the client phrase "'+d.b3.words[0]+'" as the headline of one post.'
+      : 'Использовать фразу клиента «'+d.b3.words[0]+'» как заголовок одного поста.');
+    if(!steps.length){ return '<div class="doc2-block-empty">'+(EN?'Finish blocks 1–4 and come back here — concrete steps will appear.':'Закончи блоки 1–4 и вернись сюда — появятся конкретные шаги.')+'</div>'; }
     window._analysisSteps = steps.slice(); // сохраняем для «В задачи»
-    const items = steps.map((s,i)=>`<li style="margin-bottom:8px;line-height:1.5;">${_esc(s)}<button onclick="_stepToWeek(${i})" style="margin-left:10px;padding:3px 10px;border-radius:6px;border:0.5px solid var(--teal);background:#fff;color:var(--teal);font-size:11px;cursor:pointer;vertical-align:middle;"><i class="ti ti-plus"></i> В задачи</button></li>`).join('');
-    return `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button onclick="_stepsAllToWeek()" style="padding:5px 14px;border-radius:6px;border:none;background:var(--teal);color:#fff;font-size:12px;cursor:pointer;font-weight:500;"><i class="ti ti-list-check"></i> Добавить все в неделю</button></div><ol style="padding-left:20px;">${items}</ol>`;
+    const items = steps.map((x,i)=>`<li style="margin-bottom:8px;line-height:1.5;">${_esc(x)}<button onclick="_stepToWeek(${i})" style="margin-left:10px;padding:3px 10px;border-radius:6px;border:0.5px solid var(--teal);background:#fff;color:var(--teal);font-size:11px;cursor:pointer;vertical-align:middle;"><i class="ti ti-plus"></i> ${EN?'To tasks':'В задачи'}</button></li>`).join('');
+    return `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button onclick="_stepsAllToWeek()" style="padding:5px 14px;border-radius:6px;border:none;background:var(--teal);color:#fff;font-size:12px;cursor:pointer;font-weight:500;"><i class="ti ti-list-check"></i> ${EN?'Add all to the week':'Добавить все в неделю'}</button></div><ol style="padding-left:20px;">${items}</ol>`;
   })()});
 
-  return out.map(s=>_block(s.label, s.body)).join('');
+  return out.map(x=>_block(x.label, x.body)).join('');
 }
 
 function rDoc(){
   const d = _collectData();
-  const today = new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  const today = new Date().toLocaleDateString(lang==='en'?'en-GB':'ru-RU',{day:'numeric',month:'long',year:'numeric'});
 
   let pages = '';
 
   // Обложка
   pages += `<div class="doc2-page cover">
-    <div class="doc2-cover-title">Стратегия<br>личного бренда</div>
+    <div class="doc2-cover-title">${t('Стратегия личного бренда')}</div>
     <div class="doc2-cover-sub">который работает на вас</div>
     <div class="doc2-cover-meta">brandmaster · ${today}</div>
   </div>`;
@@ -3073,18 +3637,18 @@ function rDoc(){
   // 01 Текущая ситуация
   if(d.b0.blog||d.b0.followers||d.b0.monetize||d.b0.income||d.b0.task){
     let c='';
-    if(d.b0.blog) c+=_block('Ведёшь ли блог сейчас', _esc(d.b0.blog));
+    if(d.b0.blog) c+=_block('Ведёшь ли блог сейчас', _esc(t(d.b0.blog)));
     if(d.b0.followers) c+=_block('Подписчиков', _esc(d.b0.followers));
     if(d.b0.monetize) c+=_block('Как зарабатываешь с блога', _esc(d.b0.monetize));
-    if(d.b0.income) c+=_block('Доход с блога', _esc(d.b0.income));
-    if(d.b0.task) c+=_block('Задача на ближайшее время', _esc(d.b0.task));
+    if(d.b0.income) c+=_block('Доход с блога', _esc(t(d.b0.income)));
+    if(d.b0.task) c+=_block('Задача на ближайшее время', _esc(t(d.b0.task)));
     pages += _page('01','Точка отсчёта','Где я сейчас', c);
   }
 
   // 02 Цели и видение
   pages += _page('02','Цели и видение','Зачем мне это нужно',
     _block('Глубинное зачем', _esc(d.b1.why), 'Сформулируй в '+_blockLink(1,1))+
-    _block('3 цели на 6 месяцев', _ul(d.b1.goals)||(d.b1.goals.length?'':'Запиши в '+_blockLink(1,2)))+
+    _block('3 цели на 6 месяцев', _ul(d.b1.goals)||(d.b1.goals.length?'':tn('Запиши в ','Write it in ')+_blockLink(1,2)))+
     _block('Как я пойму что бренд работает', _esc(d.b1.success), 'Опиши в '+_blockLink(1,3))+
     _block('Что останавливало раньше', _esc(d.b1.blockers), '')
   );
@@ -3127,7 +3691,7 @@ function rDoc(){
   d.products.forEach((p,i)=>{
     const mks = (p.marketing_items && p.marketing_items.length) ? p.marketing_items : (p.marketing?[p.marketing]:[]);
     prodHtml += `<div class="doc2-prod">
-      <div class="doc2-prod-name">${_esc(p.name||'Продукт '+(i+1))}</div>
+      <div class="doc2-prod-name" data-user>${_esc(p.name||tn('Продукт ','Product ')+(i+1))}</div>
       ${p.concept?_block('Концепция', _esc(p.concept)):''}
       ${p.unique?_block('Уникальность', _esc(p.unique)):''}
       ${(p.tasks&&p.tasks.filter(x=>x).length)?_block('Задачи продукта', _ul(p.tasks.filter(x=>x))):''}
@@ -3140,7 +3704,7 @@ function rDoc(){
 
   // 06 Позиционирование
   pages += _page('06','Позиционирование','Моё место на рынке',
-    (d.b4.position?`<div class="doc2-position">«${_esc(d.b4.position)}»</div>`:'')+
+    (d.b4.position?`<div class="doc2-position" data-user>«${_esc(d.b4.position)}»</div>`:'')+
     _block('Презентация по ПУП', pupHtml, 'Заполни в '+_blockLink(5,1))+
     _block('Чем мой подход отличается (из Распаковки)', _esc(d.b2.different), 'Запиши в '+_blockLink(2,10))
   );
@@ -3173,7 +3737,7 @@ function rDoc(){
           <div class="doc2-block-label">Промпт ${brief.length} символов</div>
           <button class="doc2-btn primary" onclick="copyBrief()"><i class="ti ti-copy"></i> Скопировать</button>
         </div>
-        <div class="doc2-brief" id="doc2-brief-text">${_esc(brief)}</div>
+        <div class="doc2-brief" id="doc2-brief-text" data-user>${_esc(brief)}</div>
       </div>
     </div>`;
   }
@@ -3202,12 +3766,12 @@ async function copyBrief(){
   const txt = _aiBrief();
   try{
     await navigator.clipboard.writeText(txt);
-    alert('AI-бриф скопирован. Вставьте его в начало диалога с ChatGPT или Claude.');
+    alert(t('AI-бриф скопирован. Вставьте его в начало диалога с ChatGPT или Claude.'));
   }catch(e){
     // fallback — выделяем
     const ta = document.createElement('textarea');
     ta.value = txt; document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); alert('AI-бриф скопирован.'); }catch(_){ alert('Не удалось скопировать. Вот текст:\n\n'+txt.slice(0,500)+'…'); }
+    try{ document.execCommand('copy'); alert(t('AI-бриф скопирован.')); }catch(_){ alert(t('Не удалось скопировать. Вот текст:')+'\n\n'+txt.slice(0,500)+'…'); }
     document.body.removeChild(ta);
   }
 }
@@ -3246,8 +3810,10 @@ function addCounters(){
       const chars=txt.length;
       const ok = words>=50 || chars>=350;
       counter.textContent = ok
-        ? `Достаточно подробно · ${words} слов · ${chars} символов`
-        : `${words}/50 слов · ${chars}/350 символов — нужен более подробный ответ`;
+        ? tn(`Достаточно подробно · ${words} слов · ${chars} символов`,
+             `Detailed enough · ${words} words · ${chars} characters`)
+        : tn(`${words}/50 слов · ${chars}/350 символов — нужен более подробный ответ`,
+             `${words}/50 words · ${chars}/350 characters — a more detailed answer is needed`);
       counter.classList.toggle('ok', ok);
     };
     ta.addEventListener('input', upd);
@@ -3256,8 +3822,8 @@ function addCounters(){
 }
 function saveProd(){if(!prods[activeProd])return;const p=prods[activeProd];const ne=document.getElementById('pname');if(ne)p.name=ne.value;['concept','unique','audience'].forEach(f=>{const el=document.getElementById('p_'+f);if(el)p[f]=el.value;});p.tasks=Array.from(document.querySelectorAll('.task-inp2')).map(e=>e.value);const mks=Array.from(document.querySelectorAll('.mk-inp2'));if(mks.length){p.marketing_items=mks.map(e=>e.value);p.marketing=p.marketing_items.join('\n');}saveCats();sv('products',prods);}
 function saveCats(){if(!prods[activeProd])return;const cats=[];document.querySelectorAll('.deliv-cat').forEach(ce=>{const sel=ce.querySelector('.cat-sel');cats.push({type:sel?sel.value:'другое',items:Array.from(ce.querySelectorAll('.deliv-ta')).map(t=>t.value)});});prods[activeProd].cats=cats;}
-function renderProdArea(){const s=ld('products');if(s&&s.length>0)prods=s;document.getElementById('prod-count').textContent='Продуктов: '+prods.length;const hdrBtn=document.getElementById('prod-add-header');if(hdrBtn)hdrBtn.style.display=prods.length?'':'none';document.getElementById('ptabs').innerHTML=prods.map((p,i)=>`<div class="ptab${i===activeProd?' active':''}" onclick="switchP(${i})">${p.name}</div>`).join('');if(!prods.length){document.getElementById('parea').innerHTML=`<div class="empty-st"><div class="empty-icon"><i class="ti ti-box"></i></div><div class="empty-title">Продукты ещё не добавлены</div><div class="empty-sub">Добавь свой первый продукт</div><button class="btn-primary" onclick="addProd()"><i class="ti ti-plus"></i>Добавить первый продукт</button></div>`;}else renderProd();}
-function addProd(){saveProd();prods.push({name:'Продукт '+(prods.length+1),concept:'',unique:'',tasks:[''],audience:'',marketing:'',cats:[{type:'знания',items:['']},{type:'навыки',items:['']},{type:'материалы',items:['']},{type:'результаты',items:['']}]});activeProd=prods.length-1;sv('products',prods);renderProdArea();}
+function renderProdArea(){const s=ld('products');if(s&&s.length>0)prods=s;document.getElementById('prod-count').textContent=tn('Продуктов: ','Products: ')+prods.length;const hdrBtn=document.getElementById('prod-add-header');if(hdrBtn)hdrBtn.style.display=prods.length?'':'none';document.getElementById('ptabs').innerHTML=prods.map((p,i)=>`<div class="ptab${i===activeProd?' active':''}" data-user onclick="switchP(${i})">${p.name}</div>`).join('');if(!prods.length){document.getElementById('parea').innerHTML=`<div class="empty-st"><div class="empty-icon"><i class="ti ti-box"></i></div><div class="empty-title">Продукты ещё не добавлены</div><div class="empty-sub">Добавь свой первый продукт</div><button class="btn-primary" onclick="addProd()"><i class="ti ti-plus"></i>Добавить первый продукт</button></div>`;}else renderProd();}
+function addProd(){saveProd();prods.push({name:tn('Продукт ','Product ')+(prods.length+1),concept:'',unique:'',tasks:[''],audience:'',marketing:'',cats:[{type:'знания',items:['']},{type:'навыки',items:['']},{type:'материалы',items:['']},{type:'результаты',items:['']}]});activeProd=prods.length-1;sv('products',prods);renderProdArea();}
 function switchP(i){saveProd();activeProd=i;renderProdArea();}
 function delP(i){prods.splice(i,1);if(activeProd>=prods.length)activeProd=prods.length-1;sv('products',prods);renderProdArea();}
 function addTP(){saveProd();prods[activeProd].tasks.push('');renderProd();}
@@ -3270,18 +3836,24 @@ function addCI(ci){saveCats();prods[activeProd].cats[ci].items.push('');renderPr
 function rmCI(ci,ii){saveCats();prods[activeProd].cats[ci].items.splice(ii,1);if(!prods[activeProd].cats[ci].items.length)prods[activeProd].cats[ci].items=[''];renderProd();}
 function renderProd(){const p=prods[activeProd];const cats=p.cats||[{type:'знания',items:['']},{type:'навыки',items:['']},{type:'материалы',items:['']},{type:'результаты',items:['']}];const ch=cats.map((cat,ci)=>`<div class="deliv-cat"><div class="deliv-hdr"><div style="display:flex;align-items:center;gap:8px;"><span class="cat-badge cat-${cat.type}">${cat.type}</span><select class="cat-sel" onchange="saveCats();prods[activeProd].cats[${ci}].type=this.value;renderProd()">${CATS.map(c=>`<option value="${c}"${c===cat.type?' selected':''}>${c}</option>`).join('')}</select></div><button class="del-btn" onclick="rmCat(${ci})"><i class="ti ti-trash"></i></button></div><div class="deliv-items">${cat.items.map((item,ii)=>`<div class="di"><textarea class="deliv-ta" placeholder="Напишите...">${item}</textarea><button class="rm-btn" onclick="rmCI(${ci},${ii})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addCI(${ci})"><i class="ti ti-plus"></i>Добавить пункт</button></div>`).join('');
 document.getElementById('parea').innerHTML=`<div class="prod-card"><div class="prod-name-row"><div class="prod-num">${activeProd+1}</div><input class="prod-name-inp" id="pname" value="${p.name}" placeholder="Название продукта..."><button class="del-btn" onclick="delP(${activeProd})"><i class="ti ti-trash"></i></button></div><div class="fg"><div class="fl"><i class="ti ti-file-description"></i>Концепция</div><textarea id="p_concept" placeholder="Опишите концепцию...">${p.concept}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-star"></i>Уникальность</div><textarea id="p_unique" placeholder="В чём уникальность...">${p.unique}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-list-check"></i>Задачи продукта</div><div class="ml">${p.tasks.map((t,i)=>`<div class="mi"><textarea class="task-inp2" placeholder="Задача...">${t}</textarea><button class="rm-btn" onclick="rmTP(${i})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addTP()"><i class="ti ti-plus"></i>Добавить задачу</button></div><div class="fg"><div class="sec-div"><i class="ti ti-certificate"></i>Что получат клиенты</div><div class="delivs">${ch}</div><button class="add-cat-btn" onclick="addCat()"><i class="ti ti-plus"></i>Добавить категорию</button></div><div class="fg"><div class="fl"><i class="ti ti-users"></i>Для какой аудитории</div><textarea id="p_audience" placeholder="Опишите аудиторию...">${p.audience}</textarea></div><div class="fg"><div class="fl"><i class="ti ti-chart-bar"></i>Для чего человеку твой продукт?</div><div class="ml">${(p.marketing_items&&p.marketing_items.length?p.marketing_items:[p.marketing||'']).map((t,i)=>`<div class="mi"><textarea class="mk-inp2" placeholder="Какую цель или глубинную потребность ты решишь...">${t}</textarea><button class="rm-btn" onclick="rmMK(${i})"><i class="ti ti-x"></i></button></div>`).join('')}</div><button class="add-line" onclick="addMK()"><i class="ti ti-plus"></i>Добавить результат</button></div></div>`;
-document.getElementById('ptabs').innerHTML=prods.map((pr,i)=>`<div class="ptab${i===activeProd?' active':''}" onclick="switchP(${i})">${pr.name}</div>`).join('');
-document.getElementById('prod-count').textContent='Продуктов: '+prods.length;}
+document.getElementById('ptabs').innerHTML=prods.map((pr,i)=>`<div class="ptab${i===activeProd?' active':''}" data-user onclick="switchP(${i})">${pr.name}</div>`).join('');
+document.getElementById('prod-count').textContent=tn('Продуктов: ','Products: ')+prods.length;}
 
 function markDone(){saveAllVisible();if(cur===4)saveProd();done[cur]=true;sv('done',done);updateNav();const btn=document.getElementById('btn-done');btn.innerHTML='<i class="ti ti-check"></i>Готово!';btn.style.background='var(--teal-dark)';setTimeout(()=>{btn.innerHTML='<i class="ti ti-check"></i>Блок готов';btn.style.background='var(--teal)';if(cur<7)show(cur+1);},1200);}
 const AI_P={1:'Проанализируй мои ответы про цели',2:'Выдели 4–5 ключевых якорей моего личного бренда',3:'Сформулируй портрет идеального клиента',4:'Проанализируй мои продукты',5:'Предложи 3 варианта позиционирования. Опирайся не только на инструменты, но и на мою суперсилу, ценности, якорные ассоциации, путь и другие уникальные черты из блока Распаковка.',6:'Предложи темы для первых 5 постов',7:'Дай приоритеты по чек-листу упаковки страницы'};
-function aiSum(){sendPrompt(AI_P[cur]||'Помоги проанализировать мою стратегию');}
+function aiSum(){sendPrompt(t(AI_P[cur]||'Помоги проанализировать мою стратегию'));}
 
 done=ld('done')||{};
-// активируем правильные кнопки языка
+// активируем правильные кнопки языка + включаем авто-перевод динамики
 document.querySelectorAll('[data-lang-btn]').forEach(b=>{
   b.classList.toggle('active', b.dataset.langBtn===lang);
 });
+document.querySelectorAll('[data-auth-lang]').forEach(b=>{
+  b.classList.toggle('active', b.dataset.authLang===lang);
+});
+applyStaticChrome();
+initTranslationObserver();
+applyTranslations(document.body);
 // === Режим воркшопа: без логина, всё хранится в браузере ===
 // Чтобы включить авторизацию обратно — раскомментируй initSupabase ниже.
 const REQUIRE_AUTH = true;
@@ -3303,7 +3875,7 @@ if(REQUIRE_AUTH){
 if (typeof window !== "undefined" && typeof window.sendPrompt !== "function"){
   window.sendPrompt = function(text){
     try{ console.log("[sendPrompt mock]", text); }catch(e){}
-    alert("AI-промпт (демо):\n\n" + text);
+    alert((typeof t==='function'?t('AI-промпт (демо)'):'AI-промпт (демо)') + ":\n\n" + text);
   };
 }
 </script>
